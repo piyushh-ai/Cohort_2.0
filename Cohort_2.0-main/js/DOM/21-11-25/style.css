@@ -1,0 +1,35 @@
+body {
+  background: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.piano {
+  display: flex;
+  gap: 10px;
+}
+
+.key {
+  width: 70px;
+  height: 250px;
+  background: white;
+  border: 2px solid #000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.1s;
+}
+
+.key:active,
+.key.active {
+  transform: scale(0.95);
+  background: #eee;
+  border-color: gold;
+}

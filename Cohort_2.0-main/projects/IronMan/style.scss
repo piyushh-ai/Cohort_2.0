@@ -1,0 +1,91 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: #121212;
+  color: white;
+}
+body {
+  overflow-x: hidden;
+}
+:root {
+  --x: 0;
+  --y: 0;
+}
+
+main {
+  height: 100vh;
+  width: 100vw;
+  .text {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+
+    h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      background: linear-gradient(90deg, #c00000, #ffd700);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .box {
+      height: 100%;
+      width: 100%;
+      background: radial-gradient(200px at var(--x) var(--y), rgba(255, 255, 255, 0.158), rgba(0, 0, 0, 0.848));
+      position: absolute;
+      pointer-events: none;
+    }
+  }
+
+  .video {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    .box {
+      height: 100%;
+      width: 100%;
+      background: radial-gradient(400px at var(--x) var(--y), rgba(255, 255, 255, 0.132), rgba(0, 0, 0, 0.91));
+      position: absolute;
+      pointer-events: none;
+    }
+
+    video {
+      height: 100vh;
+      width: 100vw;
+      object-fit: cover;
+      object-position: center;
+    }
+    .mute {
+      position: absolute;
+      bottom: -685px;
+      right: 20px;
+      z-index: 10;
+      background-color: rgba(0, 0, 0, 0.5);
+      border: none;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+
+      i {
+        font-size: 1.5rem;
+      }
+    }
+
+    .mute:active {
+      transform: scale(0.99);
+    }
+  }
+}

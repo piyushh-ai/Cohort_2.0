@@ -1,0 +1,39 @@
+🧩 Question 1: Student Marks System
+Ek function checkResult() bana, jo student ke marks le aur result print kare:
+Agar marks ≥ 90 → "Grade A"
+Agar marks ≥ 75 → "Grade B"
+Agar marks ≥ 50 → "Grade C"
+Warna "Fail"
+👉 Loop se 3 students ke marks input le (maan le tu manually array bana le sakta hai [95, 62, 40]) aur har student ka result print kar.
+
+🧩 Question 2: Add All Even Numbers
+Ek array nums = [1,2,3,4,5,6,7,8,9,10] de.
+Ek function sumEvenNumbers() likh:
+for ya while loop se har number check kar
+Sirf even numbers ka sum kar
+End me "Total even sum is: X" print kar
+
+🧩 Question 3: Employee Salary Calculator
+Ek array of objects de jaise:
+let employees = [
+  { name: "Piyush", salary: 20000 },
+  { name: "Om", salary: 30000 },
+  { name: "Dishant", salary: 25000 }
+];
+Ek function totalSalary() likh jo sab employees ka total salary reduce() use karke nikal kar print kare.
+Agar total salary > 70000 ho to "Company doing good!" warna "Need more work!" print kare.
+
+🧩 Question 4: Fruit Finder
+Ek array bana:
+let fruits = ["apple", "banana", "grapes", "kiwi", "papaya"]
+User se ek fruit ka naam le (maan le manually variable bana le let search = "kiwi")
+if...else se check kar:
+Agar array me fruit milta hai → "Fruit found!"
+Nahi milta → "Fruit not found!"
+Hint: use includes() method ya loop.
+
+🧩 Question 5: Rest + Spread + Nested Object
+Ek function orderSummary() bana jo rest parameters se unlimited item prices le.
+Unka total print kare
+Fir ek object order bana jisme { user: { name: "Piyush", city: "Bhopal" }, total: totalAmount }
+Fir order.user.city ko print kare.

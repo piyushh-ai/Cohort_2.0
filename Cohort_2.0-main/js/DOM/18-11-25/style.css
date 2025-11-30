@@ -1,0 +1,34 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: white;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+main{
+  height: 100vh;
+  width: 100vw;
+  background-color: rgb(35, 35, 35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+button{
+  padding: 18px 50px;
+  color: black;
+  font-size: 2rem;
+  background-color: springgreen;
+  z-index: 10;
+  cursor: pointer;
+}
+button:active{
+  scale: 0.95;
+}

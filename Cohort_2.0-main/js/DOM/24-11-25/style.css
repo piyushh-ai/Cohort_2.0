@@ -1,0 +1,112 @@
+* {
+  margin: 0;
+  color: white;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: black;
+}
+
+main {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+main .all-reel {
+  height: 680px;
+  width: 400px;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+main .all-reel .all-reel::-webkit-scrollbar {
+  display: none;
+}
+main .all-reel .reel {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  scroll-snap-align: start;
+}
+main .all-reel .reel video {
+  border-radius: 25px;
+  height: 100%;
+  width: 100%;
+}
+main .all-reel .reel .bottom {
+  height: 100px;
+  width: 400px;
+  position: absolute;
+  bottom: 0;
+  padding: 0 20px;
+}
+main .all-reel .reel .bottom .user {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 10px;
+}
+main .all-reel .reel .bottom .user img {
+  height: 30px;
+  width: 30px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+}
+main .all-reel .reel .bottom .user h2 {
+  font-size: 20px;
+  font-weight: 500;
+}
+main .all-reel .reel .bottom .user button {
+  background-color: transparent;
+  padding: 5px 5px;
+  border-radius: 8px;
+  border: 1px solid white;
+  cursor: pointer;
+}
+main .all-reel .reel .bottom h4 {
+  padding: 15px 0 0 10px;
+  font-weight: 500;
+}
+main .all-reel .reel .right {
+  height: 400px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  transform: translate(-130%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 20px;
+}
+main .all-reel .reel .right h2 {
+  font-size: 15px;
+  font-weight: 500;
+}
+main .all-reel .reel .right .share {
+  padding-top: 5px;
+}
+main .all-reel .reel .right .like {
+  cursor: pointer;
+}
+main .all-reel .reel .right .like .svg {
+  pointer-events: none;
+}
+main .all-reel .reel .right .like h2 {
+  pointer-events: none;
+}/*# sourceMappingURL=style.css.map */
