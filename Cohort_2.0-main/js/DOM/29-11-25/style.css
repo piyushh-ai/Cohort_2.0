@@ -1,0 +1,55 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  background-color: #000;
+  color: white;
+}
+
+main {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  anchor-name: --some-anchor;
+
+  
+}
+
+a {
+  text-decoration: none;
+  font-size: 3rem;
+  color: white;
+  cursor: pointer;
+}
+.link{
+    padding: 15px;
+    height: 100px;
+    width: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.link:hover {
+  anchor-name: --some-anchor;
+}
+
+.anchor {
+  background-color: #fff;
+  top: anchor(top);
+  left: anchor(left);
+  bottom: anchor(bottom);
+  right: anchor(right);
+  position: absolute;
+  position-anchor: --some-anchor;
+  transition: all 0.3s linear;
+  pointer-events: none;
+  mix-blend-mode: difference;
+}
