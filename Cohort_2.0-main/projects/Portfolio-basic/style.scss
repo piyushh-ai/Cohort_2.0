@@ -97,20 +97,20 @@ main {
   .hero {
     width: 100%;
     height: calc(100% - 100px);
-    padding: 0 100px;
+    padding: 0 15rem;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
     gap: 25rem;
 
     .box {
-      width: fit-content;
+      width: 340px;
       border-radius: 20px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 20px;
-      padding: 1rem;
+      gap: 15px;
+      padding: 1.5rem;
       box-shadow: 0 0 0px var(--shadow);
       background: linear-gradient(var(--body-bg)) padding-box,
         conic-gradient(from var(--rotate), black, var(--shadow), black, black)
@@ -154,16 +154,17 @@ main {
       box-shadow: 0 0 40px var(--shadow);
       color: var(--shadow);
       text-shadow: 0 0 20px var(--shadow);
+      transition: all 0.5s linear;
     }
     .text {
-      width: 40%;
+      width:47%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-self: center;
       gap: 20px;
 
-      h1{
+      h1 {
         font-family: var(--heading-font);
         font-size: 3rem;
         padding: 20px;

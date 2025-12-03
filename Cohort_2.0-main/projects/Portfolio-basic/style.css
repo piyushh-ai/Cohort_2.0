@@ -91,21 +91,20 @@ main nav:has(.link:hover) .anchor {
 main .hero {
   width: 100%;
   height: calc(100% - 100px);
-  padding: 0 100px;
+  padding: 0 15rem;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
   gap: 25rem;
 }
 main .hero .box {
-  width: -moz-fit-content;
-  width: fit-content;
+  width: 340px;
   border-radius: 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 20px;
-  padding: 1rem;
+  gap: 15px;
+  padding: 1.5rem;
   box-shadow: 0 0 0px var(--shadow);
   background: linear-gradient(var(--body-bg)) padding-box, conic-gradient(from var(--rotate), black, var(--shadow), black, black) border-box;
   border: 0px solid rgba(255, 255, 255, 0);
@@ -146,9 +145,10 @@ main .hero .box:hover {
   box-shadow: 0 0 40px var(--shadow);
   color: var(--shadow);
   text-shadow: 0 0 20px var(--shadow);
+  transition: all 0.5s linear;
 }
 main .hero .text {
-  width: 40%;
+  width: 47%;
   display: flex;
   flex-direction: column;
   justify-content: center;
