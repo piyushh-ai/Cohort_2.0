@@ -1,0 +1,124 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+main {
+  width: 100%;
+}
+
+main h1 {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 60px;
+}
+
+.app {
+  width: 420px;
+  min-height: 500px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.app h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.input-text {
+  display: flex;
+  gap: 10px;
+}
+
+.input-text input {
+  flex: 1;
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+}
+
+.input-text button {
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: #00d4ff;
+  color: #000;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.error {
+  display: none;
+  color: #ff3b3b;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 25px;
+  margin-top: 10px;
+}
+
+.input-text button:hover {
+  background: #00aacc;
+}
+
+.tasks {
+  margin-top: 10px;
+}
+
+.tasks ol {
+  list-style: none;
+}
+
+.tasks li {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 12px 15px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+.tasks li button {
+  background: transparent;
+  border: none;
+  color: #ff6b6b;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tasks li button:hover {
+  color: #ff3b3b;
+}
