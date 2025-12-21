@@ -111,14 +111,14 @@ function dailyPlanner() {
   });
 }
 dailyPlanner();
-
 async function motivationQuote() {
   let response = await fetch("https://api.quotable.io/random");
-  let quote = await response.json();
+  let data = await response.json();
 
-  document.querySelector(".quote").textContent = quote.content;
-  document.querySelector(".author").textContent = "— " + quote.author;
+  document.querySelector(".quote").textContent = data.content;
+  document.querySelector(".author").textContent = "— " + data.author;
 }
+
 motivationQuote();
 
 function pomodoroTimer() {
@@ -203,7 +203,7 @@ function pomodoroTimer() {
 pomodoroTimer();
 
 function weather() {
-  const api = "";
+  const api = "80312a7237044921994160302252012";
   let city = "";
   let temp = document.querySelector(".header2 h2");
   let condition = document.querySelector(".header2 h4");
