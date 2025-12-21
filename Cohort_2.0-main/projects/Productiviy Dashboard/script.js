@@ -203,7 +203,7 @@ function pomodoroTimer() {
 pomodoroTimer();
 
 function weather() {
-  const api = "80312a7237044921994160302252012";
+  const api = "";
   let city = "";
   let temp = document.querySelector(".header2 h2");
   let condition = document.querySelector(".header2 h4");
