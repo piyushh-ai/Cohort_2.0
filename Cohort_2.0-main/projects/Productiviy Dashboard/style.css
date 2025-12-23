@@ -592,8 +592,6 @@ main section.daily-goals-fullpage .tasks {
   display: flex;
   justify-content: space-between;
   gap: 30px;
-  /* ---------- ADD TASK ---------- */
-  /* ---------- ALL TASKS ---------- */
 }
 main section.daily-goals-fullpage .tasks .addTask {
   width: 35%;
@@ -702,6 +700,12 @@ main section.daily-goals-fullpage .tasks .alltasks .currtask #important {
   padding: 4px 10px;
   border-radius: 20px;
   letter-spacing: 1px;
+}
+main section.daily-goals-fullpage .tasks .alltasks .currtask span.true {
+  opacity: 1;
+}
+main section.daily-goals-fullpage .tasks .alltasks .currtask span.false {
+  opacity: 0;
 }
 main section.daily-goals-fullpage .tasks .alltasks .currtask button {
   background-color: #4e6b4a;

@@ -328,7 +328,7 @@ function dailyGoals() {
   );
   let allTasksDiv = document.querySelector(".daily-goals-fullpage .alltasks");
   let checkbox = document.querySelector(
-    ".daily-goals-fullpage .addTask #check"
+    ".daily-goals-fullpage .addTask .goal-imp"
   );
 
   let currentGoal = [];
@@ -365,6 +365,8 @@ function dailyGoals() {
     taskDetailInput.value = "";
     checkbox.checked = false;
     renderTask();
+    console.log(currentGoal);
+    
   });
   allTasksDiv.addEventListener("click", function (e) {
     if (e.target.tagName === "BUTTON") {

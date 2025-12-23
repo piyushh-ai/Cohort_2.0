@@ -769,7 +769,12 @@ main {
             padding: 4px 10px;
             border-radius: 20px;
             letter-spacing: 1px;
-          }
+          }span.true {
+              opacity: 1;
+            }
+            span.false {
+              opacity: 0;
+            }
 
           button {
             background-color: #4e6b4a;
