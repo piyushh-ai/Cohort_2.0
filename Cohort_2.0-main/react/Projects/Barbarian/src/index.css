@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("./fonts/helvetica-neue-5/HelveticaNeueBlack.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+html {
+  background-color: #000;
+  color: white;
+}
+
+@keyframes button {
+  0% {
+  }
+  100% {
+    background-color: black;
+    color: white;
+  }
+}
+
+
+
+.button:hover {
+  animation: button 0.5s ease forwards;
+  border: none;
+}
+
+
+
+
+
+.track {
+  width: max-content;
+  animation: scrollX 50s linear infinite;
+}
+
+
+
+
+
+@keyframes scrollX {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
