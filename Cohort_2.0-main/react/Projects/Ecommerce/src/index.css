@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: romie;
+  src: url(./Fonts/Kalice-Medium.woff2);
+}
+
+@font-face {
+  font-family: romieBold;
+  src: url(./Fonts/Romie-Bold.woff2);
+}
+
+body {
+  font-family: romie;
+}
+
+.product{
+  transition: all linear 0.2s;
+  cursor: pointer;
+}
+
+.product:hover {
+  scale: 1.09;
+}
+
+.btn{
+  transition: all ease 0.5s;
+}
+
+.btn:hover{
+  background-color: #fff;
+  color: black;
+}
+
+
+
+.title:hover{
+  text-decoration: underline;
+}
