@@ -1,6 +1,5 @@
 const express = require("express");
 const noteModel = require("./models/notes.model");
-const cors = require("cors");
 const path = require("path");
 
 app = express();
