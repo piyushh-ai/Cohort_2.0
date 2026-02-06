@@ -5,7 +5,7 @@ const App = () => {
   const [notes, setNotes] = useState([]);
 
   const fetcheAllNotes = () => {
-    axios.get("https://cohort-2-0-git-main-piyushh-ais-projects.vercel.app/api/notes").then((hihi) => {
+    axios.get("https://cohort-2-0-beta.vercel.app/api/notes").then((hihi) => {
       setNotes(hihi.data.notes);
     });
   };
@@ -18,7 +18,7 @@ const App = () => {
     e.preventDefault();
     const { title, description } = e.target.elements;
     axios
-      .post("https://cohort-2-0-git-main-piyushh-ais-projects.vercel.app/api/notes", {
+      .post("https://cohort-2-0-beta.vercel.app/api/notes", {
         title: title.value,
         description: description.value,
       })
@@ -31,7 +31,7 @@ const App = () => {
   };
 
   const deleteHandler = (id) => {
-    axios.delete("https://cohort-2-0-git-main-piyushh-ais-projects.vercel.app/api/notes/" + id).then((res) => {
+    axios.delete("https://cohort-2-0-beta.vercel.app/api/notes/" + id).then((res) => {
       console.log(res);
       fetcheAllNotes();
     });
