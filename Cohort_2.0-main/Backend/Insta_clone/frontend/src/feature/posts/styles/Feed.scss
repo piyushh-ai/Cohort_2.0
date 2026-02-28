@@ -1,0 +1,267 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+// ── Variables ──────────────────────────────────────────
+:root {
+  --bg:        #0d0d0d;
+  --surface:   #161616;
+  --border:    rgba(255,255,255,0.07);
+  --text:      #f0ede8;
+  --muted:     #6b6b6b;
+  --accent:    #e8c97e;
+  --like:      #e05555;
+  --save:      #7ea8e8;
+  --radius:    20px;
+  --font-body: 'DM Sans', sans-serif;
+  --font-disp: 'Cormorant Garamond', serif;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+// ── Layout ─────────────────────────────────────────────
+main {
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 16px;
+  font-family: var(--font-body);
+
+}
+
+.feed {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+// ── Post Card ──────────────────────────────────────────
+.post {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.5),
+    0 1px 0 rgba(255,255,255,0.04) inset;
+  animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+// ── Header ─────────────────────────────────────────────
+.post__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &__avatar-ring {
+    padding: 2px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #c89b4a);
+    flex-shrink: 0;
+  }
+
+  &__avatar {
+    display: block;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--surface);
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.01em;
+  }
+
+  &__location {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+}
+
+// Three-dot button
+.more-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3.5px;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.2s;
+
+  &:hover { background: rgba(255,255,255,0.06); }
+
+  span {
+    display: block;
+    width: 3.5px;
+    height: 3.5px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: background 0.2s;
+  }
+}
+
+// ── Post Image ─────────────────────────────────────────
+.post__image-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+
+  &:hover .post__image {
+    transform: scale(1.02);
+  }
+}
+
+.post__image {
+  display: block;
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.post__image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 55%,
+    rgba(10, 10, 10, 0.55) 100%
+  );
+  pointer-events: none;
+}
+
+// ── Actions ────────────────────────────────────────────
+.post__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px 8px;
+
+  &-left {
+    display: flex;
+    gap: 4px;
+  }
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  padding: 8px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.15s, color 0.2s;
+
+  &:hover {
+    background: rgba(255,255,255,0.06);
+    transform: scale(1.08);
+  }
+
+  &:active {
+    transform: scale(0.93);
+  }
+
+  svg {
+    display: block;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}
+
+// Like
+.like-btn.liked {
+  color: var(--like);
+
+  svg {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 6px rgba(224, 85, 85, 0.5));
+  }
+}
+
+// Save
+.save-btn.saved {
+  color: var(--save);
+
+  svg {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 6px rgba(126, 168, 232, 0.5));
+  }
+}
+
+// ── Bottom ─────────────────────────────────────────────
+.post__bottom {
+  padding: 4px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.post__likes {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.post__caption {
+  font-size: 13px;
+  color: rgba(240, 237, 232, 0.75);
+  line-height: 1.55;
+
+  &-user {
+    font-weight: 600;
+    color: var(--text);
+    margin-right: 6px;
+  }
+}
+
+.post__comments {
+  font-size: 12.5px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s;
+
+  &:hover { color: rgba(240, 237, 232, 0.6); }
+}
+
+.post__time {
+  font-size: 10.5px;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}

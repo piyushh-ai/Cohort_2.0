@@ -12,13 +12,22 @@ async function registerUser(req, res) {
     });
 
     if (isUserAlreadyExist) {
-      return res.status(409).json({
-        message:
-          "user already exist" +
-          (isUserAlreadyExist.email == email
-            ? " email already exist"
-            : " username already exist"),
-      });
+      if (
+        isUserAlreadyExist.email === email &&
+        isUserAlreadyExist.username === username
+      ) {
+        return res.status(409).json({
+          message: "user already Exist",
+        });
+      } else if (isUserAlreadyExist.username === username) {
+        return res.status(409).json({
+          message: "Username already Exist",
+        });
+      } else if (isUserAlreadyExist.email === email) {
+        return res.status(409).json({
+          message: "Email already Exist",
+        });
+      }
     }
 
     const hash = await bcrypt.hash(password, 10);
@@ -57,19 +66,21 @@ async function registerUser(req, res) {
 async function loginUser(req, res) {
   const { username, email, password } = req.body;
 
-  const user = await userModel.findOne({
-    $or: [
-      {
-        username: username,
-      },
-      {
-        email: email,
-      },
-    ],
-  });
+  const user = await userModel
+    .findOne({
+      $or: [
+        {
+          username: username,
+        },
+        {
+          email: email,
+        },
+      ],
+    })
+    .select("+password");
 
   if (!user) {
-    return res.status(404).json({
+    return res.status(401).json({
       message: "User not found",
     });
   }
@@ -104,7 +115,23 @@ async function loginUser(req, res) {
   });
 }
 
+async function getMe(req, res) {
+  const userId = req.user.id;
+
+  const user = await userModel.findById(userId);
+
+  res.status(200).json({
+    user: {
+      username: user.username,
+      email: user.email,
+      profileImage: user.profileImage,
+      bio: user.bio,
+    },
+  });
+}
+
 module.exports = {
   registerUser,
   loginUser,
+  getMe,
 };

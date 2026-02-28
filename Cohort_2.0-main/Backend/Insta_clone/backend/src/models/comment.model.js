@@ -1,6 +1,6 @@
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
 
-const llikeSchema = new mongoose.Schema(
+const commentSchema = new mongoose.Schema(
   {
     post: {
       type: mongoose.Schema.Types.ObjectId,
@@ -12,10 +12,14 @@ const llikeSchema = new mongoose.Schema(
       ref: "users",
       required: [true, "User ID is required to like a post"],
     },
+    comment: {
+      type: String,
+      require: [true, "comment is required"],
+    },
   },
   { timestamps: true },
 );
 
-const likeModel = mongoose.model("likes", llikeSchema);
+const commentModel = mongoose.model("Comment", commentSchema)
 
-module.exports = likeModel;
+module.exports = commentModel

@@ -1,34 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/form.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const { handleRegister, loading, user, error } = useAuth();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios
-      .post(
-        "http://localhost:3000/api/auth/register/",
-        {
-          username,
-          password,
-          email,
-        },
-        {
-          withCredentials: true,
-        },
-      )
-      .then((response) => {
-        console.log("Registration successful:", response.data);
-      })
-      .catch((error) => {
-        console.error("Registration error:", error);
-      });
+    await handleRegister(username, email, password);
   };
+
+  useEffect(() => {
+    if (user) {
+      console.log("register in user:", user);
+      navigate("/");
+    }
+  }, [user]);
+
+  if (loading) {
+    return (
+      <main>
+        <h1>Loading...</h1>
+      </main>
+    );
+  }
 
   return (
     <main>
@@ -56,6 +59,7 @@ const Register = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          {error && <p className="error-message">{error}</p>}
           <button type="submit">Sign up</button>
         </form>
 

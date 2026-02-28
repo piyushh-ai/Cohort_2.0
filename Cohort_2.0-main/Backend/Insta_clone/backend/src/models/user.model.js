@@ -11,10 +11,13 @@ const userSchema = new mongoose.Schema({
     unique: [true, "email already exist"],
     required: [true, "email is require"],
   },
-  password: String,
+  password: {
+    type:String,
+    select:false
+  },
   profileImage: {
     type: String,
-    default: "https://www.shutterstock.com/search/default-profile",
+    default: "https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg",
   },
   bio: String,
 });
