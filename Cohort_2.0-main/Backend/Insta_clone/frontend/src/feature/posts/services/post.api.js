@@ -25,15 +25,22 @@ export async function createPost(imagefile, caption) {
 }
 
 export async function likePost(postId) {
-  const response = await api.post(`/posts/like/${postId}` );
+  const response = await api.post(`/posts/like/${postId}`);
   console.log(response);
-  
+
   return response.data;
 }
 
 export async function unlikePost(postId) {
   const response = await api.post(`/posts/unlike/${postId}`);
   console.log(response);
-  
+
+  return response.data;
+}
+
+export async function getComment(postId) {
+  const response = await api.get(`/posts/comment/${postId}`);
+  console.log(response);
+
   return response.data;
 }

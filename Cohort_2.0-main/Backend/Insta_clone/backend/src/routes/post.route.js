@@ -7,6 +7,7 @@ const {
   getAllPostController,
   unLikePostController,
   commentPostController,
+  getCommentPostController,
 } = require("../controllers/post.controller");
 const multer = require("multer");
 const identifyUser = require("../middlewares/auth.middleware");
@@ -49,6 +50,12 @@ postRoute.post("/unlike/:postId", identifyUser, unLikePostController);
  * @access Public
  */
 postRoute.post("/comment/:postId", identifyUser, commentPostController);
+
+/**
+ * @route GET /api/posts/comment/:postId to get comments of a perticular post
+ * @access Public
+ */
+postRoute.get("/comment/:postId", identifyUser, getCommentPostController);
 
 /**
  * @route GET /api/posts/feed to get full fedd

@@ -30,16 +30,26 @@ main {
   padding: 16px 16px;
   font-family: var(--font-body);
 
+
 }
 
 .feed {
   width: 100%;
-  max-width: 420px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  // flex-direction: column;
+  justify-content: space-between;
   align-items: center;
   gap: 1.5rem;
+  padding: 2rem 3rem;
+
+  .post-div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 2rem;
+  }
 }
 
 // ── Post Card ──────────────────────────────────────────

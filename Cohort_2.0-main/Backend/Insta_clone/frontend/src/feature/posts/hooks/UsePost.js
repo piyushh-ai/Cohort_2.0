@@ -38,13 +38,31 @@ export const UsePost = () => {
   };
 
   const handleLike = async (postid) => {
-    const data = await likePost(postid);
-    await handleGetFeed();
+    try {
+      await likePost(postid);
+
+      setFeed((prevFeed) =>
+        prevFeed.map((post) =>
+          post._id === postid ? { ...post, isLiked: true } : post,
+        ),
+      );
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   const handleUnLike = async (postid) => {
-    const data = await unlikePost(postid);
-    await handleGetFeed();
+    try {
+      await unlikePost(postid);
+
+      setFeed((prevFeed) =>
+        prevFeed.map((post) =>
+          post._id === postid ? { ...post, isLiked: false } : post,
+        ),
+      );
+    } catch (error) {
+      console.log(error.message);
+    }
   };
   useEffect(() => {
     handleGetFeed();

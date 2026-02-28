@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { UsePost } from "../hooks/UsePost";
 import { timeAgo } from "../../shared/functions/FormatData";
+import { useEffect } from "react";
 
 const Posts = ({ user, post, handleLike, handleUnLike }) => {
   const [saved, setSaved] = useState(false);
+
+  
 
   const handleSave = () => setSaved((prev) => !prev);
   return (

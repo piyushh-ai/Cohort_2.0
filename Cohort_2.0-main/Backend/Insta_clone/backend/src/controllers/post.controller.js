@@ -158,8 +158,7 @@ async function commentPostController(req, res) {
   const userId = req.user.id;
   const postId = req.params.postId;
   const { userComment } = req.body;
- 
-  
+
   const comment = await commentModel.create({
     user: userId,
     post: postId,
@@ -172,6 +171,29 @@ async function commentPostController(req, res) {
   });
 }
 
+async function getCommentPostController(req, res) {
+  const postId = req.params.postId;
+
+  const post = await commentModel
+    .find({
+      post: postId,
+    })
+    .sort({ _id: -1 })
+    .populate("user")
+    .lean();
+
+  if (!post) {
+    res.status(204).json({
+      message: "no comments found",
+    });
+  }
+
+  res.status(201).json({
+    message: "comments fetched successfully",
+    post,
+  });
+}
+
 module.exports = {
   createPost,
   getPostController,
@@ -180,4 +202,5 @@ module.exports = {
   getAllPostController,
   unLikePostController,
   commentPostController,
+  getCommentPostController,
 };
