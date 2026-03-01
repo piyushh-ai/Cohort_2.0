@@ -60,11 +60,7 @@ const Posts = ({
       <div className="post__header">
         <div className="user">
           <div className="user__avatar-ring">
-            <img
-              src={Postuser.avatar}
-              alt="user"
-              className="user__avatar"
-            />
+            <img src={Postuser.avatar} alt="user" className="user__avatar" />
           </div>
           <div className="user__info">
             <p className="user__name">{Postuser.username}</p>
@@ -149,40 +145,7 @@ const Posts = ({
               <path d="M21 15a4 4 0 01-4 4H7l-4 4V5a4 4 0 014-4h10a4 4 0 014 4z" />
             </svg>
           </button>
-
-          {/* Share */}
-          <button className="icon-btn" aria-label="Share">
-            <svg
-              viewBox="0 0 24 24"
-              width="22"
-              height="22"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <line x1="22" y1="2" x2="11" y2="13" />
-              <polygon points="22 2 15 22 11 13 2 9 22 2" />
-            </svg>
-          </button>
         </div>
-
-        {/* Save */}
-        <button
-          className={`icon-btn save-btn ${saved ? "saved" : ""}`}
-          onClick={handleSave}
-          aria-label="Save"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            width="22"
-            height="22"
-            fill={saved ? "currentColor" : "none"}
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M6 2h12a1 1 0 011 1v19l-7-5-7 5V3a1 1 0 011-1z" />
-          </svg>
-        </button>
       </div>
 
       {/* Bottom */}
