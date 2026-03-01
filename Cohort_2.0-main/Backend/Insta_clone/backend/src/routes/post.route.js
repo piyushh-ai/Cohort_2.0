@@ -8,6 +8,8 @@ const {
   unLikePostController,
   commentPostController,
   getCommentPostController,
+  deleteCommentController,
+  deletePostController,
 } = require("../controllers/post.controller");
 const multer = require("multer");
 const identifyUser = require("../middlewares/auth.middleware");
@@ -56,6 +58,18 @@ postRoute.post("/comment/:postId", identifyUser, commentPostController);
  * @access Public
  */
 postRoute.get("/comment/:postId", identifyUser, getCommentPostController);
+
+/**
+ * @route DELETE /api/posts/comment/:commentId to delete comments 
+ * @access Public
+ */
+postRoute.delete("/comment/:commentId", identifyUser, deleteCommentController);
+
+/**
+ * @route DELETE /api/posts/:postId  to delete comments 
+ * @access Public   
+ */
+postRoute.delete("/:postId", identifyUser, deletePostController);
 
 /**
  * @route GET /api/posts/feed to get full fedd

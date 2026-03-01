@@ -1,31 +1,110 @@
 import React, { useState } from "react";
-import { UsePost } from "../hooks/UsePost";
 import { timeAgo } from "../../shared/functions/FormatData";
-import { useEffect } from "react";
+import "../styles/Post.scss";
+import { FaTimes } from "react-icons/fa";
+import { useAuth } from "../../auth/hooks/useAuth";
 
-const Posts = ({ user, post, handleLike, handleUnLike }) => {
+const Posts = ({
+  Postuser,
+  post,
+  handleLike,
+  handleUnLike,
+  handleGetAllComments,
+  allComments,
+  handlePostComments,
+  onMobileCommentOpen,
+  handleDeletePost,
+}) => {
   const [saved, setSaved] = useState(false);
+  const [commentOpen, setCommentOpen] = useState(false);
+  const [dotsOpen, setdDotsOpen] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
 
-  
+  const { user } = useAuth();
+
+  const handleDeleteClick = () => {
+    if (user?.id === post.user._id) {
+      handleDeletePost(post._id);
+    } else {
+      setShowDeletePopup(true);
+    }
+  };
+
+  const isMobile = () => window.innerWidth <= 768;
 
   const handleSave = () => setSaved((prev) => !prev);
+
+  const handleCommentToggle = () => {
+    if (isMobile()) {
+      // On mobile: open bottom sheet instead
+      if (onMobileCommentOpen) onMobileCommentOpen();
+    } else {
+      setCommentOpen((prev) => !prev);
+    }
+  };
+
+  const handleDotToggle = () => {
+    setdDotsOpen((prev) => !prev);
+  };
+
+  const handleCommentSubmit = () => {
+    if (!commentText.trim()) return;
+    handlePostComments(post._id, commentText);
+    setCommentText("");
+  };
+
   return (
     <div className="post">
       {/* Header */}
       <div className="post__header">
         <div className="user">
           <div className="user__avatar-ring">
-            <img src={user.profileImage} alt="user" className="user__avatar" />
+            <img
+              src={Postuser.avatar}
+              alt="user"
+              className="user__avatar"
+            />
           </div>
           <div className="user__info">
-            <p className="user__name">{user.username}</p>
+            <p className="user__name">{Postuser.username}</p>
             <p className="user__location">New York, USA</p>
           </div>
         </div>
+
+        <div className={`more ${dotsOpen ? "dot-active" : ""}`}>
+          {dotsOpen && (
+            <button
+              onClick={handleDeleteClick}
+              className="delete-btn"
+              aria-label="Delete"
+            >
+              Delete
+            </button>
+          )}
+
+          <button
+            onClick={handleDotToggle}
+            className="more-btn"
+            aria-label="More options"
+          >
+            {dotsOpen ? (
+              <span className="close-btn">
+                <FaTimes />
+              </span>
+            ) : (
+              <>
+                <span />
+                <span />
+                <span />
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Image */}
-      <div className="post__image-wrap">
+      {/* Image — fixed height, crops to fit */}
+      <div className="post__image-container">
         <img src={post.imgUrl} alt="post" className="post__image" />
         <div className="post__image-overlay" />
       </div>
@@ -53,8 +132,12 @@ const Posts = ({ user, post, handleLike, handleUnLike }) => {
             </svg>
           </button>
 
-          {/* Comment */}
-          <button className="icon-btn" aria-label="Comment">
+          {/* Comment — toggles input on desktop, bottom sheet on mobile */}
+          <button
+            className={`icon-btn comment-btn ${commentOpen ? "active" : ""}`}
+            onClick={handleCommentToggle}
+            aria-label="Comment"
+          >
             <svg
               viewBox="0 0 24 24"
               width="22"
@@ -105,9 +188,37 @@ const Posts = ({ user, post, handleLike, handleUnLike }) => {
       {/* Bottom */}
       <div className="post__bottom">
         <p className="post__caption">{post.caption}</p>
-        <p className="post__comments">View all 42 comments</p>
+        <p className="post__comments">View all comments</p>
         <p className="post__time">{timeAgo(post.createdAt)}</p>
       </div>
+
+      {/* Comment input — desktop only, slides down */}
+      <div className={`comment-input-wrap ${commentOpen ? "open" : ""}`}>
+        <div className="comment-input-inner">
+          <input
+            type="text"
+            placeholder="Add a comment…"
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleCommentSubmit()}
+          />
+          <button className="comment-submit-btn" onClick={handleCommentSubmit}>
+            Post
+          </button>
+        </div>
+      </div>
+      {showDeletePopup && (
+        <div
+          className="delete-popup-overlay"
+          onClick={() => setShowDeletePopup(false)}
+        >
+          <div className="delete-popup" onClick={(e) => e.stopPropagation()}>
+            <h3>Not Allowed</h3>
+            <p>You cannot delete this post.</p>
+            <button onClick={() => setShowDeletePopup(false)}>Okay</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

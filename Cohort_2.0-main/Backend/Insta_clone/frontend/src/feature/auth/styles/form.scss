@@ -106,6 +106,24 @@ main {
     }
   }
 }
+.password-wrapper {
+  position: relative;
+
+  input {
+    width: 100%;
+    padding-right: 40px; // space for icon
+  }
+
+  .toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #aaa;
+    font-size: 1rem;
+  }
+}
 
 /* 💻 Large Screens */
 @media (min-width: 1024px) {

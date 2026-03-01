@@ -8,8 +8,7 @@ const api = axios.create({
 export async function login(username, password) {
   try {
     const response = await api.post("/login", { username, password });
-    
-    
+
     return response;
   } catch (error) {
     console.error("Login error:", error);
@@ -26,6 +25,16 @@ export async function register(username, email, password) {
     throw error;
   }
 }
+
+export const handleLogout = async () => {
+  try {
+    const response = await api.get("/logout");
+    return response;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
 
 export async function getMe() {
   try {

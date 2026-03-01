@@ -1,0 +1,119 @@
+// ── commentSection.scss ────────────────────────────────
+// Comment panel — fixed height container, internal scroll only
+
+.comment-section {
+  // Takes full height of .feed-right (which is var(--comment-h))
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+  }
+}
+
+// ── Empty state ────────────────────────────────────────
+.no-comments {
+  text-align: center;
+  font-size: 0.82rem;
+  color: rgba(240, 237, 232, 0.35);
+  padding: 24px 16px;
+  font-style: italic;
+  font-family: var(--font-disp);
+  letter-spacing: 0.02em;
+}
+
+// ── Comment row ────────────────────────────────────────
+.comment-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  transition: background 0.18s;
+
+  &:hover { background: rgba(255, 255, 255, 0.025); }
+}
+
+// ── Avatar ─────────────────────────────────────────────
+.comment-left {
+  flex-shrink: 0;
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.07);
+    overflow: hidden;
+    background: linear-gradient(135deg, #2a2030, #1a1020);
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+}
+
+// ── Text side ──────────────────────────────────────────
+.comment-right {
+  flex: 1;
+  min-width: 0;   // allows text truncation
+
+  .username {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.01em;
+    margin: 0 0 2px;
+  }
+
+  .comment-text {
+    font-size: 0.8rem;
+    color: rgba(240, 237, 232, 0.58);
+    line-height: 1.48;
+    margin: 0;
+    word-break: break-word;
+  }
+
+  .divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+    margin-top: 9px;
+  }
+}
+
+// ── Delete button ──────────────────────────────────────
+.comment-delete-btn {
+  flex-shrink: 0;
+  align-self: center;
+  background: none;
+  border: 1px solid rgba(224, 85, 85, 0.3);
+  border-radius: 6px;
+  color: rgba(224, 85, 85, 0.65);
+  font-size: 0.7rem;
+  font-family: var(--font-body);
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+
+  &:hover {
+    background: rgba(224, 85, 85, 0.1);
+    border-color: var(--like);
+    color: var(--like);
+  }
+}
+
+// ── Mobile bottom sheet overrides ─────────────────────
+.mobile-sheet-body .comment-section {
+  // Inside mobile sheet, same scroll behaviour
+  height: 100%;
+  padding-bottom: 12px;
+}

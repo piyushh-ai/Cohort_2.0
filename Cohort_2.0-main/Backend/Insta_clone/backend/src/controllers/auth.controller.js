@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 
 async function registerUser(req, res) {
   try {
-    const { username, email, password, profileImage, bio } = req.body;
+    const { username, email, password, avatar, bio } = req.body;
 
     const isUserAlreadyExist = await userModel.findOne({
       $or: [{ username }, { email }],
@@ -36,7 +36,7 @@ async function registerUser(req, res) {
       username,
       email,
       password: hash,
-      profileImage,
+      avatar,
       bio,
     });
 
@@ -54,7 +54,7 @@ async function registerUser(req, res) {
       user: {
         username: user.username,
         email: user.email,
-        profileImage: user.profileImage,
+        avatar: user.avatar,
         bio: user.bio,
       },
     });
@@ -107,9 +107,10 @@ async function loginUser(req, res) {
   res.status(200).json({
     message: "user login successfully",
     user: {
+      id: user._id,
       username: user.username,
       email: user.email,
-      profileImage: user.profileImage,
+      avatar: user.avatar,
       bio: user.bio,
     },
   });
@@ -122,16 +123,31 @@ async function getMe(req, res) {
 
   res.status(200).json({
     user: {
+      id: user._id,
       username: user.username,
       email: user.email,
-      profileImage: user.profileImage,
+      avatar: user.avatar,
       bio: user.bio,
     },
   });
 }
 
+const logoutUser = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false, // production me true
+    sameSite: "strict",
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getMe,
+  logoutUser
 };

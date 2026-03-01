@@ -4,6 +4,7 @@ const { Folders } = require("@imagekit/nodejs/resources/index.js");
 const jwt = require("jsonwebtoken");
 const likeModel = require("../models/like.model");
 const commentModel = require("../models/comment.model");
+const userModel = require("../models/user.model");
 
 const client = new imageKit({
   publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
@@ -24,6 +25,9 @@ async function createPost(req, res) {
     user: req.user.id,
   });
 
+  await userModel.findByIdAndUpdate(req.user.id, {
+      $inc: { postsCount: 1 },
+    });
   const populatedPost = await post.populate("user");
   res.status(201).json({
     message: "post created successfully",
@@ -121,6 +125,8 @@ async function unLikePostController(req, res) {
 
   await likeModel.findByIdAndDelete({ _id: isLiked._id });
 
+  
+
   res.status(201).json({
     message: "post unlike successfully",
   });
@@ -194,6 +200,63 @@ async function getCommentPostController(req, res) {
   });
 }
 
+async function deleteCommentController(req, res) {
+  const userId = req.user.id;
+  const commentId = req.params.commentId;
+
+  // comment find karo
+  const comment = await commentModel.findById(commentId);
+
+  if (!comment) {
+    return res.status(404).json({
+      message: "Comment not found",
+    });
+  }
+
+  // check karo ki comment jisne delete karna hai wahi owner hai
+  if (comment.user.toString() !== userId) {
+    return res.status(403).json({
+      message: "You are not allowed to delete this comment",
+    });
+  }
+
+  await commentModel.findByIdAndDelete(commentId);
+
+  res.status(200).json({
+    message: "Comment deleted successfully",
+  });
+}
+
+async function deletePostController(req, res) {
+  const userId = req.user.id;
+  const postId = req.params.postId;
+
+  const post = await postModel.findById(postId);
+
+  if (!post) {
+    return res.status(404).json({
+      message: "post not found",
+    });
+  }
+
+  // check karo ki comment jisne delete karna hai wahi owner hai
+  if (post.user.toString() !== userId) {
+    return res.status(403).json({
+      message: "You are not allowed to delete this post",
+    });
+  }
+
+  await postModel.findByIdAndDelete(postId);
+
+  await userModel.findByIdAndUpdate(userId, {
+      $inc: { postsCount: -1 },
+    });
+
+  res.status(200).json({
+    message: "Comment deleted successfully",
+  });
+}
+
 module.exports = {
   createPost,
   getPostController,
@@ -203,4 +266,6 @@ module.exports = {
   unLikePostController,
   commentPostController,
   getCommentPostController,
+  deleteCommentController,
+  deletePostController
 };

@@ -10,3 +10,9 @@ html, body {
   background-color: #000;
   color: white;
 }
+
+.loaderDiv{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -5,28 +5,32 @@ const {
   unfollowUserController,
   acceptFollowRequest,
   rejectFollowRequest,
+  followUser,
+  unfollowUser,
+  getFollowers,
+  getFollowing,
+  getSuggestions,
 } = require("../controllers/follow.controller");
 
 const followRoute = express.Router();
 
-// /api/follow/followUser/:username
+// /api/follow/followUser/:userId
 
-followRoute.post("/followUser/:username", identifyUser, followUserController);
+followRoute.post("/followUser/:userId", identifyUser, followUser);
 
-// /api/follow/unfollowUser/:username
+// /api/follow/unfollowUser/:userId
 
-followRoute.post(
-  "/unfollowUser/:username",
-  identifyUser,
-  unfollowUserController,
-);
+followRoute.post("/unfollowUser/:userId", identifyUser, unfollowUser);
 
-// /api/follow/accept/:username
+// /api/follow/followers
 
-followRoute.post("/accept/:username", identifyUser, acceptFollowRequest);
+followRoute.get("/followers", identifyUser, getFollowers);
 
-// /api/follow/reject/:username
+// /api/follow/following
 
-followRoute.post("/reject/:username", identifyUser, rejectFollowRequest);
+followRoute.get("/following", identifyUser, getFollowing);
+
+// /api/follow/suggestions
+followRoute.get("/suggestions", identifyUser, getSuggestions);
 
 module.exports = followRoute;

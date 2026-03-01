@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import "../styles/form.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import Loader from "../../shared/components/Loader";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const { loading, user, handleLogin, error } = useAuth();
 
@@ -14,7 +17,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await handleLogin(username, password);
-  };
+      };
 
   useEffect(() => {
     if (user) {
@@ -26,7 +29,7 @@ const Login = () => {
   if (loading) {
     return (
       <main>
-        <h1>Loading...</h1>
+        <Loader />
       </main>
     );
   }
@@ -43,13 +46,22 @@ const Login = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-          <input
-            type="password"
-            placeholder="Password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="password-wrapper">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <span
+              className="toggle-password"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
 
           {error && <p className="error-message">{error}</p>}
           <button type="submit">Sign up</button>

@@ -1,0 +1,432 @@
+// ── Post.scss ──────────────────────────────────────────
+// Post card — fixed dimensions, nothing grows from content
+
+.post {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden; // clips image overflow
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  display: flex;
+
+  flex-direction: column;
+  font-family: var(--font-body);
+  animation: cardIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+
+  @keyframes cardIn {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+// ── Header ─────────────────────────────────────────────
+.post__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 15px;
+  flex-shrink: 0; // never compress header
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &__avatar-ring {
+    padding: 2px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #c89b4a);
+    flex-shrink: 0;
+  }
+
+  &__avatar {
+    display: block;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--surface);
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.01em;
+  }
+
+  &__location {
+    font-size: 10.5px;
+    color: var(--muted);
+  }
+}
+
+.more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  .delete-btn {
+    flex-shrink: 0;
+    align-self: center;
+    background: none;
+    border: 1px solid rgba(224, 85, 85, 0.3);
+    border-radius: 6px;
+    color: rgba(224, 85, 85, 0.65);
+    font-family: var(--font-body);
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+
+    &:hover {
+      background: rgba(224, 85, 85, 0.1);
+      border-color: var(--like);
+      color: var(--like);
+    }
+  }
+
+  .more-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px;
+    border-radius: 8px;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    span {
+      display: block;
+      width: 3.5px;
+      height: 3.5px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+
+    .close-btn {
+      width: auto;
+      height: auto;
+      background: transparent;
+      color: #fff;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s ease;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+.delete-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.delete-popup {
+  background: #161616;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 28px;
+  border-radius: 18px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  animation: scaleIn 0.25s ease forwards;
+
+  h3 {
+    color: #fff;
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  p {
+    color: #aaa;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  button {
+    background: #ff3b5c;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 999px;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    &:hover {
+      background: #ff1744;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// ── Image — FIXED HEIGHT, never grows ─────────────────
+.post__image-container {
+  height: 100%;
+  width: 100%;
+  height: var(--post-img-h); // hard fixed height
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+  background: #111;
+  height: 50vh;
+
+  &:hover .post__image {
+    transform: scale(1.04);
+  }
+}
+
+.post__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; // fills container, crops if needed
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.post__image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 55%,
+    rgba(10, 10, 10, 0.55) 100%
+  );
+  pointer-events: none;
+}
+
+// ── Actions ────────────────────────────────────────────
+.post__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 13px 6px;
+  flex-shrink: 0;
+
+  &-left {
+    display: flex;
+    gap: 2px;
+  }
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  padding: 7px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.2s,
+    transform 0.15s,
+    color 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: scale(1.08);
+  }
+  &:active {
+    transform: scale(0.92);
+  }
+
+  svg {
+    display: block;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}
+
+.like-btn.liked {
+  color: var(--like);
+  svg {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 5px rgba(224, 85, 85, 0.5));
+  }
+}
+
+.save-btn.saved {
+  color: var(--save);
+  svg {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 5px rgba(126, 168, 232, 0.5));
+  }
+}
+
+.icon-btn.comment-btn.active {
+  color: var(--accent);
+  background: rgba(232, 201, 126, 0.08);
+}
+
+// ── Bottom — fixed content, no growing ────────────────
+.post__bottom {
+  padding: 4px 15px 14px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.post__caption {
+  font-size: 12.5px;
+  color: rgba(240, 237, 232, 0.72);
+  line-height: 1.5;
+  // Clamp to 2 lines — caption never expands card
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post__comments {
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s;
+  &:hover {
+    color: rgba(240, 237, 232, 0.55);
+  }
+}
+
+.post__time {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+// ── Comment Input — slides down, no extra height ───────
+.comment-input-wrap {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  flex-shrink: 0;
+  transition:
+    max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.28s ease,
+    padding 0.28s ease;
+  padding: 0 14px;
+
+  &.open {
+    max-height: 76px;
+    opacity: 1;
+    padding: 10px 14px 14px;
+    border-top: 1px solid var(--border);
+  }
+}
+
+.comment-input-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid var(--border);
+    border-radius: 50px;
+    padding: 8px 14px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.83rem;
+    outline: none;
+    transition:
+      border-color 0.22s,
+      box-shadow 0.22s;
+
+    &::placeholder {
+      color: var(--muted);
+    }
+    &:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(232, 201, 126, 0.1);
+    }
+  }
+}
+
+.comment-submit-btn {
+  padding: 8px 18px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, var(--accent), #a07828);
+  border: none;
+  color: #0d0d0d;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 3px 12px rgba(232, 201, 126, 0.2);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 18px rgba(232, 201, 126, 0.32);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+}

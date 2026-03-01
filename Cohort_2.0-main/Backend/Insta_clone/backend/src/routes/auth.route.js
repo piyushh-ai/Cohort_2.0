@@ -3,6 +3,7 @@ const {
   registerUser,
   loginUser,
   getMe,
+  logoutUser,
 } = require("../controllers/auth.controller");
 const identifyUser = require("../middlewares/auth.middleware");
 
@@ -19,6 +20,12 @@ authRouter.post("/register", registerUser);
  * @access Public
  */
 authRouter.post("/login", loginUser);
+
+/**
+ * @route GET /api/auth/logout to logout user
+ * @access Public
+ */
+authRouter.get("/logout", logoutUser);
 
 /**
  * @route POST /api/auth/get-me to get user

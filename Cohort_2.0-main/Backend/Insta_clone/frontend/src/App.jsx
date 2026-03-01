@@ -1,19 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./AppRoutes";
-import { AuthProvider } from "./feature/auth/Auth.context";
-import { PostContextProvider } from "./feature/posts/Post.context";
+import { useAuth } from "./feature/auth/hooks/useAuth";
 
 const App = () => {
-  return (
-    <div>
-      <AuthProvider>
-        <PostContextProvider>
-          <RouterProvider router={router} />
-        </PostContextProvider>
-      </AuthProvider>
-    </div>
-  );
+  const { fetchCurrentUser } = useAuth();
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, []);
+
+  return <RouterProvider router={router} />;
 };
 
 export default App;

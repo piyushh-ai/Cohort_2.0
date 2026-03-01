@@ -3,26 +3,20 @@ const { default: mongoose } = require("mongoose");
 const followSchema = new mongoose.Schema(
   {
     follower: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
       required: true,
     },
-    followee: {
-      type: String,
+    following: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
       required: true,
-    },
-    status: {
-      type: String,
-      default: "pending",
-      enum: {
-        values: ["pending", "accepted", "rejected"],
-        message: "status can only be pending, accepted or rejected",    
-      },
     },
   },
   { timestamps: true },
 );
 
-followSchema.index({ follower: 1, followee: 1 }, { unique: true });
+followSchema.index({ follower: 1, following: 1 }, { unique: true });
 
 const followModel = mongoose.model("follow", followSchema);
 

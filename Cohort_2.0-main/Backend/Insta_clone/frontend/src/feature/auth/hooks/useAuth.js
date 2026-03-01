@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "../Auth.context";
-import { login, register, getMe } from "../services/Auth.api";
+import { login, register, getMe, handleLogout } from "../services/Auth.api";
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -11,7 +11,7 @@ export const useAuth = () => {
     setLoading(true);
     try {
       const response = await login(username, password);
-      setUser(response.data.user);
+      setUser(response.data);
     } catch (error) {
       if (error.response) {
         if (error.response.status === 401) {
@@ -50,13 +50,26 @@ export const useAuth = () => {
     }
   };
 
+  const handleUserLogout = async () => {
+    setLoading(true);
+    try {
+      await handleLogout();
+      setUser(null); 
+      setError(null);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchCurrentUser = async () => {
     setLoading(true);
     try {
       const data = await getMe();
       setUser(data.user);
     } catch (error) {
-      console.error("Error fetching current user:", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -69,5 +82,6 @@ export const useAuth = () => {
     handleRegister,
     fetchCurrentUser,
     error,
+    handleUserLogout
   };
 };

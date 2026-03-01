@@ -1,277 +1,244 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap');
-
-// ── Variables ──────────────────────────────────────────
+// ── CSS Variables ──────────────────────────────────────
 :root {
-  --bg:        #0d0d0d;
-  --surface:   #161616;
-  --border:    rgba(255,255,255,0.07);
-  --text:      #f0ede8;
-  --muted:     #6b6b6b;
-  --accent:    #e8c97e;
-  --like:      #e05555;
-  --save:      #7ea8e8;
-  --radius:    20px;
-  --font-body: 'DM Sans', sans-serif;
-  --font-disp: 'Cormorant Garamond', serif;
+  --bg:             #0d0d0d;
+  --surface:        #161616;
+  --border:         rgba(255, 255, 255, 0.07);
+  --text:           #f0ede8;
+  --muted:          #6b6b6b;
+  --accent:         #e8c97e;
+  --like:           #e05555;
+  --save:           #7ea8e8;
+  --radius:         20px;
+  --font-body:      "DM Sans", sans-serif;
+  --font-disp:      "Cormorant Garamond", serif;
+  --nav-height:     64px;
+
+  // Post card dimensions — change here to affect everything
+  --post-img-h:     300px;   // image fixed height
+  --comment-h:      520px;   // comment panel fixed height = roughly matches post card
+  // --sidebar-w:      340px;
 }
 
+// ── Reset ──────────────────────────────────────────────
 *,
 *::before,
-*::after { box-sizing: border-box; margin: 0; padding: 0; }
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-// ── Layout ─────────────────────────────────────────────
+// ── Page ───────────────────────────────────────────────
+body {
+  background: var(--bg);
+  font-family: var(--font-body);
+  color: var(--text);
+}
+
 main {
   background: var(--bg);
   min-height: 100vh;
+  // overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 16px 16px;
-  font-family: var(--font-body);
 
-
+  &::-webkit-scrollbar       { width: 5px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+  }
 }
 
+.loaderDiv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+// ── Feed wrapper ── sidebar + posts ───────────────────
 .feed {
-  width: 100%;
-  display: flex;
-  // flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 2rem 3rem;
-
-  .post-div{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 2rem;
-  }
-}
-
-// ── Post Card ──────────────────────────────────────────
-.post {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow:
-    0 4px 24px rgba(0,0,0,0.5),
-    0 1px 0 rgba(255,255,255,0.04) inset;
-  animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+  column-gap: 4rem;
   
+  padding-top: 2rem;
+  max-width: 100%;
+  margin: 0 auto;
+  align-items: start;   // sidebar doesn't stretch with posts
+}
 
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
+// ── LEFT: sticky sidebar column ───────────────────────
+.feed-left {
+  position: sticky;
+  top: calc(var(--nav-height) + 1.5rem);
+  // height limited so it never overflows viewport
+  max-height: calc(100vh - var(--nav-height) - 3rem);
+  overflow-y: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+// ── RIGHT: vertical stack of rows ─────────────────────
+.post-div {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  width: 50vw;
+}
+
+// ── Each row: post card + comment panel ───────────────
+.feed-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;   // equal halves, both same width
+  gap: 4rem;
+  align-items: start;               // neither column stretches the other
+}
+
+// ── Post column ───────────────────────────────────────
+.feed-center {
+  // post card natural width inside its column
+}
+
+// ── Comment panel column ──────────────────────────────
+.feed-right {
+  height: var(--comment-h);        // hard fixed height
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;                // clips everything inside
+  background: rgba(22, 22, 22, 0.7);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+// ── Mobile: bottom sheet for comments ─────────────────
+.mobile-comment-overlay {
+  display: none;
+}
+
+// ── Responsive ────────────────────────────────────────
+@media (max-width: 1024px) {
+  .feed {
+    grid-template-columns: 200px 1fr;
+    column-gap: 24px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .feed-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
   }
 }
 
-// ── Header ─────────────────────────────────────────────
-.post__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-}
-
-.user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  &__avatar-ring {
-    padding: 2px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), #c89b4a);
-    flex-shrink: 0;
+@media (max-width: 768px) {
+  :root {
+    --post-img-h: 260px;
+  }
+  .post-div{
+    width: 85vw;
+    margin-top: 2rem;
   }
 
-  &__avatar {
-    display: block;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--surface);
+  .feed {
+    // sidebar hidden on mobile — single column
+    grid-template-columns: 1fr;
+    padding: 0.5rem 0 6rem;
   }
 
-  &__info {
+  .feed-left {
+    display: none;  // sidebar hidden on mobile
+  }
+
+  .feed-row {
+    // comment panel hidden in row — opens as bottom sheet
+    grid-template-columns: 1fr;
+  }
+
+  .feed-right {
+    display: none;  // hidden, opens via JS as bottom-sheet
+  }
+
+  // Mobile: bottom sheet overlay shown when .open class is added by JS
+  .mobile-comment-overlay {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0, 0, 0, 0.6);
+    align-items: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+
+    &.open {
+      opacity: 1;
+      pointer-events: all;
+
+      .mobile-comment-sheet {
+        transform: translateY(0);
+      }
+    }
+  }
+
+  .mobile-comment-sheet {
+    width: 100%;
+    height: 75vh;
+    background: #1a1a1a;
+    border-radius: 20px 20px 0 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
   }
 
-  &__name {
-    font-size: 13.5px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: 0.01em;
-  }
-
-  &__location {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.02em;
-  }
-}
-
-// Three-dot button
-.more-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 3.5px;
-  padding: 6px;
-  border-radius: 8px;
-  transition: background 0.2s;
-
-  &:hover { background: rgba(255,255,255,0.06); }
-
-  span {
-    display: block;
-    width: 3.5px;
-    height: 3.5px;
-    border-radius: 50%;
-    background: var(--muted);
-    transition: background 0.2s;
-  }
-}
-
-// ── Post Image ─────────────────────────────────────────
-.post__image-wrap {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-
-  &:hover .post__image {
-    transform: scale(1.02);
-  }
-}
-
-.post__image {
-  display: block;
-  width: 100%;
-  height: 420px;
-  object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.post__image-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 55%,
-    rgba(10, 10, 10, 0.55) 100%
-  );
-  pointer-events: none;
-}
-
-// ── Actions ────────────────────────────────────────────
-.post__actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 14px 8px;
-
-  &-left {
+  .mobile-sheet-header {
     display: flex;
-    gap: 4px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+
+    h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 4px;
+      line-height: 1;
+    }
+  }
+
+  .mobile-sheet-body {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,.1) transparent;
   }
 }
 
-.icon-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text);
-  padding: 8px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s, transform 0.15s, color 0.2s;
-
-  &:hover {
-    background: rgba(255,255,255,0.06);
-    transform: scale(1.08);
+@media (max-width: 480px) {
+  .feed {
+    padding: 0.25rem 0 6rem;
   }
-
-  &:active {
-    transform: scale(0.93);
-  }
-
-  svg {
-    display: block;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-}
-
-// Like
-.like-btn.liked {
-  color: var(--like);
-
-  svg {
-    transform: scale(1.2);
-    filter: drop-shadow(0 0 6px rgba(224, 85, 85, 0.5));
-  }
-}
-
-// Save
-.save-btn.saved {
-  color: var(--save);
-
-  svg {
-    transform: scale(1.15);
-    filter: drop-shadow(0 0 6px rgba(126, 168, 232, 0.5));
-  }
-}
-
-// ── Bottom ─────────────────────────────────────────────
-.post__bottom {
-  padding: 4px 16px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.post__likes {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.post__caption {
-  font-size: 13px;
-  color: rgba(240, 237, 232, 0.75);
-  line-height: 1.55;
-
-  &-user {
-    font-weight: 600;
-    color: var(--text);
-    margin-right: 6px;
-  }
-}
-
-.post__comments {
-  font-size: 12.5px;
-  color: var(--muted);
-  cursor: pointer;
-  transition: color 0.2s;
-
-  &:hover { color: rgba(240, 237, 232, 0.6); }
-}
-
-.post__time {
-  font-size: 10.5px;
-  color: var(--muted);
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  margin-top: 2px;
 }

@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import "../styles/createPost.scss";
 import { UsePost } from "../hooks/UsePost";
 import { useNavigate } from "react-router-dom";
+import Loader from "../../shared/components/Loader";
 
 const CreatePost = () => {
   const navigate = useNavigate();
@@ -31,8 +32,8 @@ const CreatePost = () => {
 
   if (loading) {
     return (
-      <main>
-        <h1>Loading...</h1>
+       <main className="loaderDiv">
+        <Loader/>
       </main>
     );
   }

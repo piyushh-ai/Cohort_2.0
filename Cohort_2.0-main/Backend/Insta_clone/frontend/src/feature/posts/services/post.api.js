@@ -19,28 +19,41 @@ export async function createPost(imagefile, caption) {
 
   const response = await api.post("/posts", formData);
 
-  console.log(response);
-
   return response.data;
 }
 
 export async function likePost(postId) {
   const response = await api.post(`/posts/like/${postId}`);
-  console.log(response);
 
   return response.data;
 }
 
 export async function unlikePost(postId) {
   const response = await api.post(`/posts/unlike/${postId}`);
-  console.log(response);
 
   return response.data;
 }
 
 export async function getComment(postId) {
   const response = await api.get(`/posts/comment/${postId}`);
-  console.log(response);
 
-  return response.data;
+  return response;
+}
+
+export async function postComment(postId, userComment) {
+  const response = await api.post(`/posts/comment/${postId}`, { userComment });
+
+  return response;
+}
+
+export async function deleteComment(commentId) {
+  const response = await api.delete(`/posts/comment/${commentId}`);
+
+  return response.data
+}
+
+export async function deletePost(postId) {
+  const response = await api.delete(`/posts/${postId}`);
+
+  return response.data
 }

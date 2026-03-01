@@ -6,6 +6,8 @@ import Feed from "./feature/posts/pages/feed";
 import CreatePost from "./feature/posts/pages/CreatePost";
 import ProtectedRoute from "./Protected_Public_Routes/ProtectedRoute";
 import PublicRoute from "./Protected_Public_Routes/PublicRoute";
+import Sidebar from "./feature/posts/component/Sidebar";
+import ProfilePage from "./feature/shared/components/ProfilePage";
 
 export const router = createBrowserRouter([
   {
@@ -31,5 +33,9 @@ export const router = createBrowserRouter([
   {
     path: "/create-post",
     element: <CreatePost />,
+  },
+  {
+    path: "/profile",
+    element: <ProfilePage />,
   },
 ]);
