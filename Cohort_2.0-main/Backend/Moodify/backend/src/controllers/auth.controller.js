@@ -4,6 +4,15 @@ const jwt = require("jsonwebtoken");
 const blacklistModel = require("../models/blacklist.model");
 const redis = require("../config/cache");
 
+// ── Cookie options ─────────────────────────────────────────
+// SameSite=None + Secure required for cross-site (localhost ↔ onrender.com)
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "None",
+  maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days (matches JWT expiry)
+};
+
 const registerController = async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -27,15 +36,12 @@ const registerController = async (req, res) => {
   });
 
   const token = jwt.sign(
-    {
-      id: user._id,
-      username: user.username,
-    },
+    { id: user._id, username: user.username },
     process.env.JWT_SECRET,
-    { expiresIn: "3d" },
+    { expiresIn: "3d" }
   );
 
-  res.cookie("token", token);
+  res.cookie("token", token, COOKIE_OPTIONS); // ✅ fixed
 
   return res.status(200).json({
     success: true,
@@ -52,9 +58,7 @@ const loginController = async (req, res) => {
   const { username, email, password } = req.body;
 
   const user = await userModel
-    .findOne({
-      $or: [{ email }, { username }],
-    })
+    .findOne({ $or: [{ email }, { username }] })
     .select("+password");
 
   if (!user) {
@@ -74,15 +78,12 @@ const loginController = async (req, res) => {
   }
 
   const token = jwt.sign(
-    {
-      id: user._id,
-      username: user.username,
-    },
+    { id: user._id, username: user.username },
     process.env.JWT_SECRET,
-    { expiresIn: "3d" },
+    { expiresIn: "3d" }
   );
 
-  res.cookie("token", token);
+  res.cookie("token", token, COOKIE_OPTIONS); // ✅ fixed
 
   return res.status(200).json({
     success: true,
@@ -98,9 +99,7 @@ const loginController = async (req, res) => {
 const getMe = async (req, res) => {
   const user = await userModel.findById(req.user.id);
   if (!user) {
-    return res.status(201).json({
-      message: "user not found",
-    });
+    return res.status(404).json({ message: "user not found" });
   }
   return res.status(200).json({
     message: "user details fetched successfully",
@@ -111,13 +110,11 @@ const getMe = async (req, res) => {
 const logoutController = async (req, res) => {
   const token = req.cookies.token;
 
-  res.clearCookie("token");
+  res.clearCookie("token", COOKIE_OPTIONS); // ✅ clearCookie bhi same options chahiye
 
   await redis.set(token, Date.now().toString(), "EX", 60 * 60);
 
-  return res.status(200).json({
-    message: "user logout successfully",
-  });
+  return res.status(200).json({ message: "user logout successfully" });
 };
 
 module.exports = {

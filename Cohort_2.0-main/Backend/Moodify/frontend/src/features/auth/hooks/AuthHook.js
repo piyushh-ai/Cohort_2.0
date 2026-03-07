@@ -47,7 +47,6 @@ export const authHook = () => {
       setLoading(true);
       const data = await getMe();
       setUser(data.user);
-      
     } catch (error) {
       console.log("handleGetMe error ", error);
     } finally{
