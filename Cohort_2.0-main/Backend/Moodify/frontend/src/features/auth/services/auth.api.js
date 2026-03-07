@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: "https://moodify-21kd.onrender.com/api",
   withCredentials: true,
 });
 
@@ -12,7 +12,6 @@ export const login = async ({ username, email, password }) => {
       email,
       password,
     });
-
     return response;
   } catch (error) {
     console.log("login api error ", error);
@@ -27,7 +26,6 @@ export const register = async ({ username, email, password }) => {
       email,
       password,
     });
-
     return response;
   } catch (error) {
     console.log("register api error ", error);
@@ -36,12 +34,10 @@ export const register = async ({ username, email, password }) => {
 };
 
 export const getMe = async () => {
-  try {
-    const response = await api.get("/auth/get-me");
-    return response.data;
-  } catch (error) {
-    console.log("get me api error ", error);
-  }
+  // Must throw on failure so AuthHook knows user is not logged in
+  const response = await api.get("/auth/get-me");
+  console.log(response);
+  return response.data;
 };
 
 export const logOut = async () => {

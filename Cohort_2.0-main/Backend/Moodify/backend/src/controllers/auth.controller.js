@@ -97,7 +97,11 @@ const loginController = async (req, res) => {
 
 const getMe = async (req, res) => {
   const user = await userModel.findById(req.user.id);
-
+  if (!user) {
+    return res.status(201).json({
+      message: "user not found",
+    });
+  }
   return res.status(200).json({
     message: "user details fetched successfully",
     user,

@@ -1,6 +1,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const path = require("path");
 
 /**
  * All Routes are imports here
@@ -23,6 +24,17 @@ app.use(
  */
 
 app.use("/api/auth", authRouter);
-app.use("/api/song", songRouter)
+app.use("/api/song", songRouter);
+
+const distPath = path.join(__dirname, "../dist");
+
+/**
+ * frontend linking
+ */
+app.use(express.static(distPath));
+
+app.get("/{*any}", (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
 
 module.exports = app;
