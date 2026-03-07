@@ -1,0 +1,27 @@
+/* Keyframes */
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes riseIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes letterRise {
+  to {
+    opacity: 1;
+    transform: translateY(0) skewY(0);
+  }
+}
+@keyframes wave {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.4);
+  }
+}
