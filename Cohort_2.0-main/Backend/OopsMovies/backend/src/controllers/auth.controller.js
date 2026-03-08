@@ -34,7 +34,8 @@ export const registerUserController = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
+      sameSite: "None",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -74,7 +75,8 @@ export const loginUserController = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
+      sameSite: "None",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -142,8 +144,8 @@ export const getFavorites = async (req, res) => {
 
     const movies = await Promise.all(
       user.favorites.map((movieId) =>
-        fetchMovieFromTMDB(movieId).catch(() => null)
-      )
+        fetchMovieFromTMDB(movieId).catch(() => null),
+      ),
     );
 
     res.json({ movies: movies.filter(Boolean) });
@@ -159,7 +161,7 @@ export const addToHistory = async (req, res) => {
     const user = await UserModel.findById(req.user._id);
 
     const existingIndex = user.watchHistory.findIndex(
-      (h) => h.movieId === Number(movieId)
+      (h) => h.movieId === Number(movieId),
     );
 
     if (existingIndex !== -1) {
@@ -190,8 +192,8 @@ export const getWatchHistory = async (req, res) => {
 
     const movies = await Promise.all(
       user.watchHistory.map((item) =>
-        fetchMovieFromTMDB(item.movieId).catch(() => null)
-      )
+        fetchMovieFromTMDB(item.movieId).catch(() => null),
+      ),
     );
 
     res.json({ movies: movies.filter(Boolean) });
