@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap');
+/* Fonts loaded via index.html preload — removed blocking @import */
 
 :root {
   --red:      #ef4444;
@@ -44,7 +44,7 @@
   &::after {
     content:'';position:fixed;inset:-60%;width:220%;height:220%;
     background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.032'/%3E%3C/svg%3E");
-    pointer-events:none;z-index:9999;animation:noise 0.5s steps(1) infinite;
+    pointer-events:none;z-index:9999; /* noise animation removed — was repainting every 500ms */
   }
 }
 
@@ -96,7 +96,7 @@
   height:70px;display:flex;align-items:center;justify-content:space-between;
   padding:0 60px;
   background:rgba(4,5,10,.78);
-  backdrop-filter:blur(24px) saturate(1.5);
+  backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border);
   animation:fadeIn .7s ease both;
 
@@ -142,9 +142,9 @@
     }
   }
   .orb {
-    position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;
-    &-1{width:600px;height:600px;background:radial-gradient(circle,rgba(239,68,68,.15) 0%,transparent 65%);top:-150px;right:-100px;animation:float1 13s ease-in-out infinite}
-    &-2{width:400px;height:400px;background:radial-gradient(circle,rgba(249,115,22,.1) 0%,transparent 65%);bottom:-80px;left:-80px;animation:float2 16s ease-in-out infinite;animation-delay:-6s}
+    position:absolute;border-radius:50%;filter:blur(40px);pointer-events:none;
+    &-1{width:600px;height:600px;background:radial-gradient(circle,rgba(239,68,68,.15) 0%,transparent 65%);top:-150px;right:-100px;}
+    &-2{width:400px;height:400px;background:radial-gradient(circle,rgba(249,115,22,.1) 0%,transparent 65%);bottom:-80px;left:-80px;}
   }
   &__content{position:relative;z-index:2;max-width:780px}
   &__pill {
@@ -168,7 +168,7 @@
       background:linear-gradient(135deg,var(--red),var(--orange));
       background-size:200%;
       -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-      animation:gradShift 4s ease infinite;
+      animation:gradShift 8s ease infinite;
     }
   }
   &__sub {

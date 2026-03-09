@@ -16,11 +16,16 @@ function Navbar() {
   const [dropdownLoading, setDropdownLoading] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // Two separate refs: desktop wrapper, mobile input
   const desktopSearchRef = useRef(null);
   const mobileInputRef   = useRef(null);
   const desktopInputRef  = useRef(null);
   const debounceRef      = useRef(null);
+
+  // ── FIX: logout karne ke baad /welcome pe navigate karo ──
+  const handleLogout = async () => {
+    await logout();
+    navigate("/welcome", { replace: true });
+  };
 
   const handleQueryChange = useCallback((val) => {
     setQuery(val);
@@ -63,7 +68,6 @@ function Navbar() {
     e.preventDefault();
     if (query.trim()) {
       closeSearch();
-      // navigate(`/search/${query.trim()}`);
     }
   };
 
@@ -86,7 +90,6 @@ function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Click outside desktop search → close
   useEffect(() => {
     const handler = (e) => {
       if (desktopSearchRef.current && !desktopSearchRef.current.contains(e.target)) {
@@ -98,7 +101,6 @@ function Navbar() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Escape → close
   useEffect(() => {
     const handler = (e) => {
       if (e.key === "Escape" && searchOpen) closeSearch();
@@ -107,7 +109,6 @@ function Navbar() {
     return () => document.removeEventListener("keydown", handler);
   }, [searchOpen, closeSearch]);
 
-  // Route change → reset
   useEffect(() => {
     setMenuOpen(false);
     closeSearch();
@@ -118,7 +119,8 @@ function Navbar() {
   }, []);
 
   const navLinks = [
-    { to: "/discover",    label: "Discover"  },
+    { to: "/",          label: "Home"      },
+    { to: "/discover",  label: "Discover"  },
     { to: "/favorites", label: "Favorites" },
     { to: "/history",   label: "History"   },
   ];
@@ -184,12 +186,11 @@ function Navbar() {
         {/* Right side */}
         <div className="hn__right">
 
-          {/* ── DESKTOP SEARCH (>768px) ── */}
+          {/* Desktop search */}
           <div
             className={`hn__search${searchOpen ? " hn__search--open" : ""}`}
             ref={desktopSearchRef}
           >
-            {/* Input form — only on desktop */}
             {searchOpen && (
               <form className="hn__search-form" onSubmit={handleSearch}>
                 <input
@@ -206,7 +207,6 @@ function Navbar() {
               </form>
             )}
 
-            {/* Icon button */}
             <button
               className="hn__search-btn"
               onClick={toggleSearch}
@@ -224,7 +224,6 @@ function Navbar() {
               )}
             </button>
 
-            {/* Desktop dropdown */}
             {searchOpen && dropdownOpen && dropdownResults.length > 0 && (
               <div className="hn__dropdown">
                 <DropdownList />
@@ -240,8 +239,8 @@ function Navbar() {
             </div>
           )}
 
-          {/* Logout */}
-          <button className="hn__logout" onClick={logout}>
+          {/* Logout — uses handleLogout instead of logout directly */}
+          <button className="hn__logout" onClick={handleLogout}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
               <polyline points="16 17 21 12 16 7" />
@@ -259,7 +258,7 @@ function Navbar() {
             <span /><span /><span />
           </button>
 
-          {/* Search icon on mobile (separate, always visible) */}
+          {/* Mobile search icon */}
           <button
             className="hn__search-mobile-btn"
             onClick={toggleSearch}
@@ -279,7 +278,7 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* ── MOBILE SEARCH BAR (below navbar, full width) ── */}
+      {/* Mobile search bar */}
       {searchOpen && (
         <div className="hn__mobile-search-bar">
           <form className="hn__mobile-search-form" onSubmit={handleSearch}>
@@ -303,7 +302,6 @@ function Navbar() {
             </div>
           </form>
 
-          {/* Mobile dropdown — rendered here, NOT inside navbar */}
           {dropdownOpen && dropdownResults.length > 0 && (
             <div className="hn__mobile-dropdown">
               <DropdownList />
@@ -320,7 +318,8 @@ function Navbar() {
           ))}
           <div className="hn__mobile-footer">
             {user && <span className="hn__mobile-user">👤 {user.name}</span>}
-            <button className="hn__mobile-logout" onClick={logout}>Log Out</button>
+            {/* Mobile logout bhi fix kiya */}
+            <button className="hn__mobile-logout" onClick={handleLogout}>Log Out</button>
           </div>
         </div>
       )}

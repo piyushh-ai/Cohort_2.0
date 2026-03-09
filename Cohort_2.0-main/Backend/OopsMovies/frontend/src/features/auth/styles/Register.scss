@@ -1,75 +1,34 @@
-// Register uses the same design system as Login.scss
-// Just import the shared styles
+/* Register uses the same design system as Login.scss */
 @use '../styles/Login' as *;
 
-// ── Register-specific extras ──────────────────
+/* ── Register-specific extras ────────────────────────────────── */
 
-// Step indicator
-.reg-steps {
-  display:flex; align-items:center; gap:0;
-  margin-bottom:36px;
-  animation:fadeUp 0.6s cubic-bezier(.22,1,.36,1) both;
-  animation-delay:0.1s;
-
-  .rs {
-    display:flex; align-items:center;
-
-    .rs-dot {
-      width:28px; height:28px; border-radius:50%;
-      display:flex; align-items:center; justify-content:center;
-      font-size:12px; font-weight:700; font-family:var(--font-d);
-      border:1.5px solid var(--border);
-      color:var(--t3); background:transparent;
-      transition:all 0.3s;
-      flex-shrink:0;
-    }
-    .rs-label { font-size:11.5px; color:var(--t3); margin-left:7px; letter-spacing:.3px; }
-
-    &.active {
-      .rs-dot { background:var(--red); border-color:var(--red); color:#fff; box-shadow:0 0 14px var(--red-glow); }
-      .rs-label { color:var(--text); }
-    }
-    &.done {
-      .rs-dot { background:rgba(34,197,94,.2); border-color:rgba(34,197,94,.4); color:#22c55e; }
-      .rs-label { color:var(--t2); }
-    }
-  }
-
-  .rs-line {
-    flex:1; height:1px; background:var(--border); margin:0 10px;
-    max-width:36px;
-    &.active { background:var(--red); }
-  }
-}
-
-// Password strength (register-specific, also used in login import)
+/* Password strength bar */
 .pw-strength-bar {
-  height:3px; border-radius:4px; overflow:hidden;
-  background:rgba(255,255,255,.06); margin:7px 0 4px;
+  height:3px;border-radius:4px;overflow:hidden;
+  background:rgba(255,255,255,.06);margin:7px 0 4px;
   .psb-fill {
-    height:100%; border-radius:4px;
-    transition:width 0.45s cubic-bezier(.22,1,.36,1), background 0.4s;
-    &.w { width:25%; background:#ef4444 }
-    &.f { width:50%; background:#f97316 }
-    &.g { width:75%; background:#84cc16 }
-    &.s { width:100%; background:#22c55e }
+    height:100%;border-radius:4px;
+    transition:width .35s ease, background .35s;
+    &.w{width:25%;background:#ef4444}
+    &.f{width:50%;background:#f97316}
+    &.g{width:75%;background:#84cc16}
+    &.s{width:100%;background:#22c55e}
   }
 }
-.psb-label { font-size:11px; color:var(--t3); letter-spacing:.5px; }
+.psb-label{font-size:11px;color:var(--t3);letter-spacing:.5px}
 
-// Terms checkbox
+/* Terms checkbox */
 .terms-wrap {
-  display:flex; align-items:flex-start; gap:10px;
-  animation:fadeUp 0.6s cubic-bezier(.22,1,.36,1) both;
-  animation-delay:0.54s;
-
-  input[type=checkbox] {
-    margin-top:2px; width:15px; height:15px;
-    border-radius:4px; accent-color:var(--red); cursor:pointer; flex-shrink:0;
+  display:flex;align-items:flex-start;gap:10px;
+  animation:fadeUp .5s ease both .4s;
+  input[type=checkbox]{
+    margin-top:2px;width:15px;height:15px;
+    border-radius:4px;accent-color:var(--red);cursor:pointer;flex-shrink:0;
   }
-  span {
-    font-size:13px; color:var(--t2); line-height:1.55;
-    a { color:var(--red); text-decoration:none; font-weight:500;
-      &:hover{text-decoration:underline} }
+  span{
+    font-size:13px;color:var(--t2);line-height:1.55;
+    a{color:var(--red);text-decoration:none;font-weight:500;
+      &:hover{text-decoration:underline}}
   }
 }

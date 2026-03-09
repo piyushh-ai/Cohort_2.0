@@ -32,11 +32,11 @@ export const registerUserController = async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.cookie("token", token, {
+    res.clearCookie("token", {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
     });
 
     res.status(201).json({
@@ -73,11 +73,11 @@ export const loginUserController = async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.cookie("token", token, {
+    res.clearCookie("token", {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
     });
 
     res.status(200).json({

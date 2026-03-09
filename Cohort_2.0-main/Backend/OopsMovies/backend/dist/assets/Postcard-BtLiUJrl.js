@@ -1,0 +1,1 @@
+import{R as o,j as a}from"./index-CTvJKiSf.js";const d=({movie:s,IMG:t,delay:r})=>a.jsx("div",{className:`pm-card${s?"":" pm-loading"}`,children:s&&a.jsx("img",{src:`${t}${s.poster_path}`,alt:"",style:{transitionDelay:`${r}ms`},onLoad:e=>e.currentTarget.classList.add("pm-visible"),loading:"lazy"})}),n=o.memo(d);export{n as default};

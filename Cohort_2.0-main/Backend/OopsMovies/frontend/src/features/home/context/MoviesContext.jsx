@@ -1,12 +1,12 @@
 import { createContext, useState, useEffect } from "react";
-import {
-  getFavoritesApi,
-  getHistoryApi,
-} from "../api/movie.api";
+import { getFavoritesApi, getHistoryApi } from "../api/movie.api";
+import { useAuth } from "../../auth/hooks/useAuth";
 
 export const MovieContext = createContext();
 
 export const MovieContextProvider = ({ children }) => {
+  const { user } = useAuth();
+
   /* ---------------- MOVIE LIST ---------------- */
   const [trending, setTrending] = useState([]);
   const [popular, setPopular] = useState([]);
@@ -57,8 +57,7 @@ export const MovieContextProvider = ({ children }) => {
   const fetchHistoryMovies = async () => {
     try {
       const res = await getHistoryApi();
-      const raw =
-        res.data?.movies ?? res.data?.data ?? res.data ?? [];
+      const raw = res.data?.movies ?? res.data?.data ?? res.data ?? [];
       const list = Array.isArray(raw) ? raw : [];
       setHistoryMovies(list);
     } catch (err) {
@@ -69,9 +68,10 @@ export const MovieContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    if (!user) return;
     fetchFavMovies();
     fetchHistoryMovies();
-  }, []);
+  }, [user]);
 
   return (
     <MovieContext.Provider

@@ -1,0 +1,1 @@
+function p(n){const t=n.currentTarget,c=document.createElement("span"),e=Math.max(t.clientWidth,t.clientHeight),l=t.getBoundingClientRect();c.className="rpl",c.style.cssText=`width:${e}px;height:${e}px;left:${n.clientX-l.left-e/2}px;top:${n.clientY-l.top-e/2}px;`,t.querySelector(".rpl")?.remove(),t.appendChild(c)}export{p as a};
