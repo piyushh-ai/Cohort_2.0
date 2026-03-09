@@ -1,1 +1,0 @@
-import{R as o,j as s}from"./index-GH8OhzQ2.js";const l=({movie:a,IMG:t,delay:r})=>s.jsx("div",{className:"pm-card",children:a?.poster_path?s.jsx("img",{src:`${t}${a.poster_path}`,alt:"",style:{transitionDelay:`${r}ms`},onLoad:e=>e.currentTarget.classList.add("pm-visible"),loading:"lazy"}):s.jsx("div",{className:"pm-placeholder"})}),d=o.memo(l);export{d as default};

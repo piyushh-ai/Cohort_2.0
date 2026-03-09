@@ -2,6 +2,8 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import ProtectedRoute from "./features/auth/components/ProtectedRoute";
 import Loader from "./shared/component/Loader";
+import Admin from "./features/admin/pages/Admin";
+import Profile from "./features/auth/pages/Profile";
 
 // Lazy loaded pages
 const Login = lazy(() => import("./features/auth/pages/Login"));
@@ -112,6 +114,22 @@ export const router = createBrowserRouter([
     element: (
       <Suspense fallback={<Loader />}>
         <Tmdb />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/admin",
+    element: (
+      <Suspense fallback={<Loader />}>
+        <Admin />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/profile",
+    element: (
+      <Suspense fallback={<Loader />}>
+        <Profile />
       </Suspense>
     ),
   },

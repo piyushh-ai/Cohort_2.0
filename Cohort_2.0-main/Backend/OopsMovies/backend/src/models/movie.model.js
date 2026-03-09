@@ -17,6 +17,7 @@ const movieSchema = new mongoose.Schema(
       default: "Description not available",
     },
 
+    // TMDB movie ID — isse hum TMDB se extra info fetch kar sakte hain
     tmdbId: {
       type: Number,
     },
@@ -27,6 +28,12 @@ const movieSchema = new mongoose.Schema(
 
     trailerUrl: {
       type: String,
+    },
+
+    // ✅ NEW: Admin custom streaming video URL (Google Drive, S3, etc.)
+    videoUrl: {
+      type: String,
+      default: "",
     },
 
     genre: {

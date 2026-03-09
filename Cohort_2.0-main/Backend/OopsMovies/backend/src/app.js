@@ -15,6 +15,7 @@ const __dirname = path.dirname(__filename);
  */
 import authRouter from "./routes/auth.route.js";
 import movieRouter from "./routes/movie.route.js";
+import adminRouter from "./routes/admin.route.js";
 
 const app = express();
 app.use(express.json());
@@ -31,6 +32,7 @@ app.use(
  */
 app.use("/api/auth", authRouter);
 app.use("/api/movies", movieRouter);
+app.use("/api/admin", adminRouter);
 
 const distPath = path.join(__dirname, "../dist");
 
