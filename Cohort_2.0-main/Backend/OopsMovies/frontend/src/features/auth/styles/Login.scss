@@ -90,17 +90,32 @@
     .fs-hole{width:14px;height:20px;border:2px solid rgba(255,255,255,.5);border-radius:3px;flex-shrink:0}
   }
 
-  /* poster mosaic — CSS-only colored cards, no real images on this panel */
+  /* poster mosaic */
   .poster-mosaic {
     position:absolute;inset:0;z-index:1;
-    display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(5,1fr);
-    gap:6px;padding:40px;opacity:.25;pointer-events:none;
+    display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);
+    gap:6px;padding:40px;opacity:.3;pointer-events:none;
 
     .pm-card {
       border-radius:8px;overflow:hidden;
-      background:#111827; /* single static color — no per-child gradients */
-      &.pm-visible img{opacity:1}
-      img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s}
+      background:#0f1220;
+      position:relative;
+
+      img {
+        width:100%;height:100%;object-fit:cover;
+        opacity:0;
+        transition:opacity .5s ease;
+        display:block;
+        /* pm-visible class img par hi lagti hai — Postcard.jsx mein onLoad se */
+        &.pm-visible { opacity:1; }
+      }
+
+      /* Placeholder jab movie nahi aaya */
+      .pm-placeholder {
+        width:100%;height:100%;
+        background:linear-gradient(135deg,#0f1220,#1a2040);
+        animation:skelPulse 1.8s ease infinite;
+      }
     }
   }
 
