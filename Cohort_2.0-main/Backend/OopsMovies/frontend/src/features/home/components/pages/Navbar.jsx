@@ -16,10 +16,12 @@ function Navbar() {
   const [dropdownLoading, setDropdownLoading] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const desktopSearchRef = useRef(null);
-  const mobileInputRef   = useRef(null);
-  const desktopInputRef  = useRef(null);
-  const debounceRef      = useRef(null);
+  const desktopSearchRef  = useRef(null);
+  const mobileInputRef    = useRef(null);
+  const desktopInputRef   = useRef(null);
+  const debounceRef       = useRef(null);
+  const mobileSearchBtnRef = useRef(null);
+  const mobileSearchBarRef = useRef(null);
 
   // ── FIX: logout karne ke baad /welcome pe navigate karo ──
   const handleLogout = async () => {
@@ -71,7 +73,8 @@ function Navbar() {
     }
   };
 
-  const toggleSearch = () => {
+  const toggleSearch = (e) => {
+    e?.stopPropagation(); // touchend/mousedown ko document tak mat jane do
     if (searchOpen) {
       closeSearch();
     } else {
@@ -91,15 +94,27 @@ function Navbar() {
   }, []);
 
   useEffect(() => {
+    if (!searchOpen) return; // sirf tab listen karo jab search open ho
+
     const handler = (e) => {
-      if (desktopSearchRef.current && !desktopSearchRef.current.contains(e.target)) {
-        setSearchOpen(false);
-        setDropdownOpen(false);
-      }
+      const target = e.target;
+      // In elements ke andar click → search band mat karo
+      if (desktopSearchRef.current?.contains(target)) return;
+      if (mobileSearchBtnRef.current?.contains(target)) return;
+      if (mobileSearchBarRef.current?.contains(target)) return;
+      // Bahar click → band karo
+      setSearchOpen(false);
+      setDropdownOpen(false);
     };
+
+    // touchend bhi handle karo (mobile ke liye)
     document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
+    document.addEventListener("touchend", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("touchend", handler);
+    };
+  }, [searchOpen]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -260,6 +275,7 @@ function Navbar() {
 
           {/* Mobile search icon */}
           <button
+            ref={mobileSearchBtnRef}
             className="hn__search-mobile-btn"
             onClick={toggleSearch}
             aria-label={searchOpen ? "Close search" : "Open search"}
@@ -280,7 +296,7 @@ function Navbar() {
 
       {/* Mobile search bar */}
       {searchOpen && (
-        <div className="hn__mobile-search-bar">
+        <div className="hn__mobile-search-bar" ref={mobileSearchBarRef}>
           <form className="hn__mobile-search-form" onSubmit={handleSearch}>
             <div className="hn__mobile-search-inner">
               <svg className="hn__mobile-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -293,7 +309,6 @@ function Navbar() {
                 onChange={(e) => handleQueryChange(e.target.value)}
                 placeholder="Search movies…"
                 autoComplete="off"
-                autoFocus
               />
               {dropdownLoading && <div className="hn__search-spinner hn__search-spinner--mobile" />}
               {query && !dropdownLoading && (

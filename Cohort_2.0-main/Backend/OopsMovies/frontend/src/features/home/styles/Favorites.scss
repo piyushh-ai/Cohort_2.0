@@ -21,18 +21,7 @@
   overflow-x: hidden;
   position: relative;
 
-  // film grain — same as Home
-  &::after {
-    content: '';
-    position: fixed;
-    inset: -60%;
-    width: 220%;
-    height: 220%;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 9999;
-    /* noise animation removed */
-  }
+  /* grain pseudo-element removed — feTurbulence repaint on every scroll */
 }
 
 // ══════════════════════════════════════════════
@@ -80,7 +69,7 @@
     &-icon {
       font-size: 13px;
       color: #ef4444;
-      animation: heartbeat 1.8s ease-in-out infinite;
+      /* heartbeat infinite animation removed */
       display: inline-block;
     }
 
@@ -181,7 +170,7 @@
   font-weight: 600;
   letter-spacing: 0.3px;
   cursor: pointer;
-  transition: all 0.22s;
+  transition: color 0.22s, background 0.22s, border-color 0.22s;
 
   svg {
     width: 13px;

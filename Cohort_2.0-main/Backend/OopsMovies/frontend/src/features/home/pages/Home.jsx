@@ -153,7 +153,7 @@ function Home() {
             <div
               key={movie.id}
               className="home-grid__item"
-              style={{ animationDelay: `${(i % 20) * 0.04}s` }}
+              style={i < 20 ? { animationDelay: `${(i % 20) * 0.04}s` } : undefined}
             >
               <MovieCard movie={movie} />
             </div>
