@@ -8,6 +8,6 @@ const PORT = 3000;
 
 connectToDb()
 
-app.listen(port, () => {
-  console.log(`Server running: http://localhost:${port}/`);
+app.listen(PORT, () => {
+  console.log(`Server running: http://localhost:${PORT}/`);
 });
