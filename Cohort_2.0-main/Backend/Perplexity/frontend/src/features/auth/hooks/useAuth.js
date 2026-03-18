@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux";
 import { register, login, getMe } from "../service/auth.api";
 import { setUser, setError, setLoading } from "../auth.slice";
+import { useEffect } from "react";
 
 export function useAuth() {
   const dispatch = useDispatch();
@@ -44,6 +45,9 @@ export function useAuth() {
     }
   }
 
+  useEffect(() => {
+    handleGetMe();
+  }, []);
   return {
     handleRegister,
     handleLogin,
