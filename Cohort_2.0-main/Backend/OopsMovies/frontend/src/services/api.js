@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://oopsmovies-t16j.onrender.com/api",
+  baseURL: "https://oopsmovies-xymf.onrender.com/api",
   withCredentials: true,
 });
 
