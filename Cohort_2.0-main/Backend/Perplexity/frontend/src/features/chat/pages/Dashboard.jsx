@@ -1,13 +1,12 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useSelector } from "react-redux";
-import { useChat } from "../hooks/useChat";
-import { useAuth } from "../../auth/hooks/useAuth";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { PlusIcon, SendIcon, LogoIcon, DotsIcon } from "../../shared/icons.jsx";
+import { useChat } from "../hooks/useChat";
+import { useAuth } from "../../auth/hooks/useAuth";
 import { setCurrentChatId } from "../chats.slice";
-import { useDispatch } from "react-redux";
+import { PlusIcon, SendIcon, LogoIcon, DotsIcon } from "../../shared/icons.jsx";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 const TrashIcon = () => (
@@ -23,14 +22,13 @@ const TrashIcon = () => (
   >
     <polyline points="3 6 5 6 21 6" />
     <path d="M19 6l-1 14H6L5 6" />
-    <path d="M10 11v6M14 11v6" />
-    <path d="M9 6V4h6v2" />
+    <path d="M10 11v6M14 11v6M9 6V4h6v2" />
   </svg>
 );
 const ShareIcon = () => (
   <svg
-    width="13"
-    height="13"
+    width="14"
+    height="14"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -91,8 +89,8 @@ const GlobeIcon = () => (
 );
 const LogoutIcon = () => (
   <svg
-    width="14"
-    height="14"
+    width="13"
+    height="13"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -122,8 +120,8 @@ const MenuIcon = () => (
 );
 const XIcon = () => (
   <svg
-    width="16"
-    height="16"
+    width="15"
+    height="15"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -134,14 +132,42 @@ const XIcon = () => (
     <line x1="6" y1="6" x2="18" y2="18" />
   </svg>
 );
+const LinkIcon = () => (
+  <svg
+    width="11"
+    height="11"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+  >
+    <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+    <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+  </svg>
+);
+const SpinnerSVG = ({ size = 14 }) => (
+  <svg
+    className="animate-spin"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" opacity="0.25" />
+    <path d="M21 12a9 9 0 00-9-9" strokeLinecap="round" />
+  </svg>
+);
 
 // ─── Typing dots ──────────────────────────────────────────────────────────────
 const TypingDots = () => (
-  <div className="flex items-center gap-1.5 py-1 px-1">
+  <div className="flex items-center gap-1.5 py-1">
     {[0, 1, 2].map((i) => (
       <div
         key={i}
-        className="w-2 h-2 rounded-full bg-[#20b2aa]/70"
+        className="w-1.5 h-1.5 rounded-full bg-[#20b2aa]/60"
         style={{
           animation: `typingBounce 1.2s ease-in-out ${i * 0.2}s infinite`,
         }}
@@ -149,25 +175,24 @@ const TypingDots = () => (
     ))}
     <style>{`
       @keyframes typingBounce {
-        0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
-        30% { transform: translateY(-6px); opacity: 1; }
+        0%,60%,100% { transform:translateY(0); opacity:0.6; }
+        30% { transform:translateY(-5px); opacity:1; }
       }
     `}</style>
   </div>
 );
 
-// ─── Sources panel ────────────────────────────────────────────────────────────
+// ─── Sources Panel ────────────────────────────────────────────────────────────
 const SourcesPanel = ({ sources }) => {
   if (!sources) return null;
-
   let blocks = [];
-  if (typeof sources === "string") {
+  if (typeof sources === "string")
     blocks = sources.split("\n\n").filter(Boolean);
-  } else if (Array.isArray(sources)) {
+  else if (Array.isArray(sources))
     blocks = sources.map(
       (s, i) => `[${i + 1}] ${s.title}\n${s.content}\nSource: ${s.url}`,
     );
-  } else return null;
+  else return null;
 
   const parsed = blocks
     .map((block, i) => {
@@ -184,8 +209,8 @@ const SourcesPanel = ({ sources }) => {
   if (!parsed.length) return null;
 
   return (
-    <div className="mt-4 pt-3 border-t border-[#1a1a1a]">
-      <div className="flex items-center gap-1.5 text-[11px] text-[#444] uppercase tracking-wider font-medium mb-2">
+    <div className="mt-4 pt-3 border-t border-[#161616]">
+      <div className="flex items-center gap-1.5 text-[10px] text-[#333] uppercase tracking-widest font-semibold mb-2.5">
         <GlobeIcon /> Sources
       </div>
       <div className="flex flex-wrap gap-1.5">
@@ -195,11 +220,11 @@ const SourcesPanel = ({ sources }) => {
             href={s.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full border border-[#1e1e1e] text-[#555] hover:text-[#20b2aa] hover:border-[#20b2aa]/25 transition-all"
+            className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full border border-[#1e1e1e] text-[#444] hover:text-[#20b2aa] hover:border-[#20b2aa]/20 hover:bg-[#20b2aa]/5 transition-all duration-150"
           >
-            <span className="text-[#333]">[{s.index}]</span>
-            {s.title.slice(0, 28)}
-            {s.title.length > 28 ? "…" : ""}
+            <span className="text-[#2a2a2a]">[{s.index}]</span>
+            {s.title.slice(0, 30)}
+            {s.title.length > 30 ? "…" : ""}
           </a>
         ))}
       </div>
@@ -207,10 +232,9 @@ const SourcesPanel = ({ sources }) => {
   );
 };
 
-// ─── Message bubble ───────────────────────────────────────────────────────────
+// ─── Message Bubble ───────────────────────────────────────────────────────────
 const MessageBubble = ({ msg }) => {
   const [copied, setCopied] = useState(false);
-
   const copy = () => {
     navigator.clipboard.writeText(msg.content);
     setCopied(true);
@@ -219,8 +243,8 @@ const MessageBubble = ({ msg }) => {
 
   if (msg.role === "user") {
     return (
-      <div className="flex justify-end mb-4">
-        <div className="max-w-[75%] px-4 py-3 rounded-2xl rounded-tr-sm text-sm text-white/90 leading-relaxed bg-[#1a2a2a] border border-[#20b2aa]/15">
+      <div className="flex justify-end mb-5">
+        <div className="max-w-[78%] px-4 py-3 rounded-2xl rounded-tr-sm text-sm text-white/85 leading-relaxed bg-[#111] border border-[#1e1e1e]">
           {msg.content}
         </div>
       </div>
@@ -228,29 +252,28 @@ const MessageBubble = ({ msg }) => {
   }
 
   return (
-    <div className="flex gap-3 mb-6">
-      <div className="flex-shrink-0 w-6 h-6 rounded-lg bg-[#20b2aa] flex items-center justify-center mt-0.5">
+    <div className="flex gap-3 mb-7 group/msg">
+      <div className="flex-shrink-0 w-6 h-6 rounded-lg bg-[#20b2aa] flex items-center justify-center mt-0.5 shadow-[0_0_12px_rgba(32,178,170,0.3)]">
         <LogoIcon />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-[11px] font-semibold text-[#20b2aa] tracking-widest uppercase">
+        <div className="flex items-center gap-2 mb-2.5">
+          <span className="text-[10px] font-bold text-[#20b2aa] tracking-widest uppercase">
             Perplexity
           </span>
           {msg.searched && (
-            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-[#20b2aa]/10 border border-[#20b2aa]/20 text-[#20b2aa]">
+            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-[#20b2aa]/8 border border-[#20b2aa]/15 text-[#20b2aa]/70">
               <GlobeIcon /> searched web
             </span>
           )}
         </div>
 
-        {/* ✅ Fixed: remark-gfm for tables, lists, etc. */}
-        <div className="text-[#bbb] text-sm leading-7">
+        <div className="text-[#b0b0b8] text-sm leading-[1.8]">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
               p: ({ children }) => (
-                <p className="mb-3 last:mb-0 text-[#bbb] leading-7">
+                <p className="mb-3 last:mb-0 text-[#b0b0b8] leading-[1.8]">
                   {children}
                 </p>
               ),
@@ -258,50 +281,52 @@ const MessageBubble = ({ msg }) => {
                 <strong className="text-white font-semibold">{children}</strong>
               ),
               em: ({ children }) => (
-                <em className="text-[#aaa] italic">{children}</em>
+                <em className="text-[#888] italic">{children}</em>
               ),
               ul: ({ children }) => (
-                <ul className="mb-3 space-y-1 list-none pl-0">{children}</ul>
+                <ul className="mb-3 space-y-1.5 list-none pl-0">{children}</ul>
               ),
               ol: ({ children }) => (
-                <ol className="mb-3 space-y-1 list-decimal pl-5 text-[#bbb]">
+                <ol className="mb-3 space-y-1.5 list-decimal pl-5 text-[#b0b0b8]">
                   {children}
                 </ol>
               ),
               li: ({ children }) => (
-                <li className="flex gap-2 text-[#bbb]">
-                  <span className="text-[#20b2aa] mt-1.5 flex-shrink-0">•</span>
+                <li className="flex gap-2 text-[#b0b0b8]">
+                  <span className="text-[#20b2aa] mt-1.5 flex-shrink-0 text-xs">
+                    ▸
+                  </span>
                   <span>{children}</span>
                 </li>
               ),
               code: ({ inline, children }) =>
                 inline ? (
-                  <code className="text-[#20b2aa] bg-[#20b2aa]/10 px-1.5 py-0.5 rounded text-xs font-mono">
+                  <code className="text-[#20b2aa] bg-[#20b2aa]/8 px-1.5 py-0.5 rounded-md text-[12px] font-mono border border-[#20b2aa]/10">
                     {children}
                   </code>
                 ) : (
-                  <code className="block bg-[#0d0d0d] border border-[#1e1e1e] rounded-xl p-4 text-xs font-mono text-[#aaa] overflow-x-auto my-3">
+                  <code className="block bg-[#0c0c0c] border border-[#1a1a1a] rounded-xl p-4 text-[12px] font-mono text-[#999] overflow-x-auto my-3 leading-relaxed">
                     {children}
                   </code>
                 ),
               pre: ({ children }) => <div className="my-3">{children}</div>,
               h1: ({ children }) => (
-                <h1 className="text-white font-semibold text-lg mb-2 mt-4">
+                <h1 className="text-white font-semibold text-base mb-2 mt-5 pb-1 border-b border-[#161616]">
                   {children}
                 </h1>
               ),
               h2: ({ children }) => (
-                <h2 className="text-white font-semibold text-base mb-2 mt-4">
+                <h2 className="text-white font-semibold text-sm mb-2 mt-4">
                   {children}
                 </h2>
               ),
               h3: ({ children }) => (
-                <h3 className="text-white font-medium text-sm mb-1.5 mt-3">
+                <h3 className="text-[#ccc] font-medium text-sm mb-1.5 mt-3">
                   {children}
                 </h3>
               ),
               blockquote: ({ children }) => (
-                <blockquote className="border-l-2 border-[#20b2aa]/40 pl-4 my-3 text-[#888] italic">
+                <blockquote className="border-l-2 border-[#20b2aa]/30 pl-4 my-3 text-[#666] italic">
                   {children}
                 </blockquote>
               ),
@@ -310,25 +335,25 @@ const MessageBubble = ({ msg }) => {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#20b2aa] hover:text-[#2dd4bf] underline decoration-[#20b2aa]/30"
+                  className="text-[#20b2aa] hover:text-[#2dd4bf] underline decoration-[#20b2aa]/20 underline-offset-2 transition-colors"
                 >
                   {children}
                 </a>
               ),
               table: ({ children }) => (
-                <div className="overflow-x-auto my-3">
+                <div className="overflow-x-auto my-3 rounded-xl border border-[#1a1a1a]">
                   <table className="w-full text-xs border-collapse">
                     {children}
                   </table>
                 </div>
               ),
               th: ({ children }) => (
-                <th className="border border-[#222] px-3 py-2 text-left text-white font-medium bg-[#111]">
+                <th className="border-b border-[#1a1a1a] px-3 py-2 text-left text-[#888] font-semibold bg-[#0e0e0e] text-[11px] uppercase tracking-wide">
                   {children}
                 </th>
               ),
               td: ({ children }) => (
-                <td className="border border-[#1a1a1a] px-3 py-2 text-[#aaa]">
+                <td className="border-b border-[#131313] px-3 py-2 text-[#666] last:border-0">
                   {children}
                 </td>
               ),
@@ -340,10 +365,10 @@ const MessageBubble = ({ msg }) => {
 
         <SourcesPanel sources={msg.sources} />
 
-        <div className="mt-2 flex items-center gap-0.5">
+        <div className="mt-2.5 flex items-center gap-1 opacity-0 group-hover/msg:opacity-100 transition-opacity duration-200">
           <button
             onClick={copy}
-            className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-lg text-[#333] hover:text-[#777] hover:bg-[#141414] transition-all"
+            className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-lg text-[#2a2a2a] hover:text-[#666] hover:bg-[#111] transition-all border border-transparent hover:border-[#1a1a1a]"
           >
             {copied ? (
               <>
@@ -361,18 +386,18 @@ const MessageBubble = ({ msg }) => {
   );
 };
 
-// ─── Share modal ──────────────────────────────────────────────────────────────
+// ─── Share Modal ──────────────────────────────────────────────────────────────
 const ShareModal = ({ chat, onShare, onUnshare, onClose }) => {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
-  // ✅ Local state — modal mein live update
+  // Local state so modal updates live without waiting for Redux round-trip
   const [sharedUrl, setSharedUrl] = useState(chat.shareUrl || null);
   const [isShared, setIsShared] = useState(chat.isShared || false);
 
   const copy = () => {
     navigator.clipboard.writeText(sharedUrl);
     setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    setTimeout(() => setCopied(false), 1800);
   };
 
   const handleShare = async () => {
@@ -396,88 +421,125 @@ const ShareModal = ({ chat, onShare, onUnshare, onClose }) => {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-4"
-      style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }}
+      style={{ background: "rgba(0,0,0,0.82)", backdropFilter: "blur(8px)" }}
+      onClick={onClose}
     >
-      <div className="bg-[#111] border border-[#1e1e1e] rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-        <div className="flex items-center justify-between mb-1">
-          <h3 className="text-sm font-semibold text-white">
-            Share conversation
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-[#444] hover:text-[#888] transition-colors p-1"
-          >
-            <XIcon />
-          </button>
-        </div>
-        <p className="text-xs text-[#444] mb-5 leading-relaxed">
-          Anyone with the link can read — they cannot reply or edit.
-        </p>
+      <div
+        className="bg-[#0e0e0e] border border-[#1e1e1e] rounded-2xl w-full max-w-[380px] shadow-2xl overflow-hidden"
+        style={{ animation: "modalIn 0.2s cubic-bezier(0.34,1.56,0.64,1)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <style>{`@keyframes modalIn { from { opacity:0; transform:scale(0.95) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }`}</style>
 
-        {isShared && sharedUrl ? (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 bg-[#0a0a0a] border border-[#1e1e1e] rounded-xl px-3 py-2.5">
-              <span className="text-xs text-[#444] flex-1 truncate font-mono">
-                {sharedUrl}
-              </span>
+        {/* Header */}
+        <div className="px-5 pt-5 pb-4 border-b border-[#161616]">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#20b2aa]/10 border border-[#20b2aa]/15 flex items-center justify-center text-[#20b2aa]">
+                <ShareIcon />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-white">
+                  Share conversation
+                </h3>
+                <p className="text-[11px] text-[#333] mt-0.5">
+                  Readers can view — not reply or edit
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-[#333] hover:text-[#666] transition-colors p-1 rounded-lg hover:bg-[#161616] mt-0.5"
+            >
+              <XIcon />
+            </button>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="px-5 py-4 space-y-3">
+          {isShared && sharedUrl ? (
+            <>
+              {/* Active badge */}
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-1.5 h-1.5 rounded-full bg-[#20b2aa] shadow-[0_0_6px_#20b2aa]"
+                  style={{ animation: "pulseDot 2s infinite" }}
+                />
+                <span className="text-[11px] text-[#444]">
+                  Link is live — anyone can read
+                </span>
+                <style>{`@keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>
+              </div>
+
+              {/* URL row */}
+              <div className="flex items-center gap-2 bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl px-3 py-2.5">
+                <span className="text-[#333]">
+                  <LinkIcon />
+                </span>
+                <span className="text-[11px] text-[#444] flex-1 truncate font-mono">
+                  {sharedUrl}
+                </span>
+                <button
+                  onClick={copy}
+                  className={`flex-shrink-0 text-[11px] flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-all border ${
+                    copied
+                      ? "text-[#20b2aa] border-[#20b2aa]/20 bg-[#20b2aa]/5"
+                      : "text-[#444] border-[#1e1e1e] hover:text-[#20b2aa] hover:border-[#20b2aa]/20"
+                  }`}
+                >
+                  {copied ? (
+                    <>
+                      <CheckIcon /> Copied!
+                    </>
+                  ) : (
+                    <>
+                      <CopyIcon /> Copy
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Revoke */}
               <button
-                onClick={copy}
-                className="flex-shrink-0 text-[11px] flex items-center gap-1 text-[#20b2aa] hover:text-[#2dd4bf] transition-colors font-medium"
+                onClick={handleUnshare}
+                disabled={loading}
+                className="w-full text-[12px] py-2.5 rounded-xl border border-red-500/10 text-red-400/50 hover:text-red-400 hover:bg-red-500/5 hover:border-red-500/20 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
               >
-                {copied ? (
+                {loading ? <SpinnerSVG size={12} /> : <XIcon />}
+                {loading ? "Revoking…" : "Revoke link"}
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="bg-[#0a0a0a] border border-[#161616] rounded-xl px-4 py-3.5 text-[12px] text-[#333] leading-relaxed">
+                Generate a public link for this chat. Anyone with the link can
+                read the full conversation without logging in.
+              </div>
+              <button
+                onClick={handleShare}
+                disabled={loading}
+                className="w-full text-sm py-2.5 rounded-xl bg-[#20b2aa] hover:bg-[#1aa39b] active:bg-[#178a82] text-white font-semibold transition-all disabled:opacity-40 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(32,178,170,0.18)]"
+              >
+                {loading ? (
                   <>
-                    <CheckIcon /> Copied
+                    <SpinnerSVG size={13} /> Generating…
                   </>
                 ) : (
                   <>
-                    <CopyIcon /> Copy
+                    <ShareIcon /> Generate share link
                   </>
                 )}
               </button>
-            </div>
-            <button
-              onClick={handleUnshare}
-              disabled={loading}
-              className="w-full text-xs py-2 rounded-xl border border-red-500/15 text-red-400/70 hover:text-red-400 hover:bg-red-500/8 transition-all disabled:opacity-40"
-            >
-              {loading ? "Revoking…" : "Revoke link"}
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={handleShare}
-            disabled={loading}
-            className="w-full text-sm py-2.5 rounded-xl bg-[#20b2aa] hover:bg-[#1aa39b] text-white font-semibold transition-all disabled:opacity-40 flex items-center justify-center gap-2"
-          >
-            {loading ? (
-              <>
-                <svg
-                  className="animate-spin"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" opacity="0.25" />
-                  <path d="M21 12a9 9 0 00-9-9" strokeLinecap="round" />
-                </svg>{" "}
-                Generating…
-              </>
-            ) : (
-              <>
-                <ShareIcon /> Generate link
-              </>
-            )}
-          </button>
-        )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-// ─── Chat list item ───────────────────────────────────────────────────────────
+// ─── Chat List Item ───────────────────────────────────────────────────────────
 const ChatItem = ({ chat, isActive, onOpen, onDelete, onShare }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -495,19 +557,26 @@ const ChatItem = ({ chat, isActive, onOpen, onDelete, onShare }) => {
     <div
       className={`group relative flex items-center gap-2 rounded-xl px-3 py-2.5 cursor-pointer transition-all duration-150 ${
         isActive
-          ? "bg-[#20b2aa]/10 border border-[#20b2aa]/15"
-          : "hover:bg-[#111] border border-transparent"
+          ? "bg-[#20b2aa]/8 border border-[#20b2aa]/12"
+          : "hover:bg-[#0f0f0f] border border-transparent"
       }`}
       onClick={() => onOpen(chat.id)}
     >
       {isActive && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-full bg-[#20b2aa]" />
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-full bg-[#20b2aa]" />
       )}
-      <span className="flex-1 text-sm truncate text-[#666] group-hover:text-[#aaa] transition-colors">
+
+      <span
+        className={`flex-1 text-[13px] truncate transition-colors ${isActive ? "text-[#ccc]" : "text-[#555] group-hover:text-[#888]"}`}
+      >
         {chat.title}
       </span>
+
       {chat.isShared && (
-        <div className="w-1.5 h-1.5 rounded-full bg-[#20b2aa]/50 flex-shrink-0" />
+        <div
+          className="w-1.5 h-1.5 rounded-full bg-[#20b2aa]/60 flex-shrink-0 shadow-[0_0_4px_#20b2aa]"
+          title="Shared"
+        />
       )}
 
       <div ref={menuRef} className="relative flex-shrink-0">
@@ -516,30 +585,30 @@ const ChatItem = ({ chat, isActive, onOpen, onDelete, onShare }) => {
             e.stopPropagation();
             setMenuOpen(!menuOpen);
           }}
-          className="p-1 rounded-lg text-[#333] hover:text-[#666] hover:bg-[#1a1a1a] opacity-0 group-hover:opacity-100 transition-all"
+          className="p-1 rounded-lg text-[#222] hover:text-[#555] hover:bg-[#181818] opacity-0 group-hover:opacity-100 transition-all"
         >
           <DotsIcon />
         </button>
         {menuOpen && (
-          <div className="absolute right-0 top-7 z-20 bg-[#131313] border border-[#1e1e1e] rounded-xl py-1 w-36 shadow-xl">
+          <div className="absolute right-0 top-7 z-20 bg-[#111] border border-[#1e1e1e] rounded-xl py-1 w-36 shadow-2xl">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setMenuOpen(false);
                 onShare(chat);
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-[#666] hover:text-white hover:bg-[#1a1a1a] transition-colors"
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-[12px] text-[#555] hover:text-white hover:bg-[#181818] transition-colors"
             >
-              <ShareIcon /> Share
+              <ShareIcon /> {chat.isShared ? "Manage share" : "Share"}
             </button>
-            <div className="my-1 border-t border-[#1a1a1a]" />
+            <div className="my-1 border-t border-[#181818]" />
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setMenuOpen(false);
                 onDelete(chat.id);
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-red-400/60 hover:text-red-400 hover:bg-red-500/5 transition-colors"
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-[12px] text-red-400/50 hover:text-red-400 hover:bg-red-500/5 transition-colors"
             >
               <TrashIcon /> Delete
             </button>
@@ -550,7 +619,7 @@ const ChatItem = ({ chat, isActive, onOpen, onDelete, onShare }) => {
   );
 };
 
-// ─── Empty state ──────────────────────────────────────────────────────────────
+// ─── Empty State ──────────────────────────────────────────────────────────────
 const EmptyState = ({ onPrompt }) => {
   const prompts = [
     "What's happening in tech today?",
@@ -559,14 +628,16 @@ const EmptyState = ({ onPrompt }) => {
     "Gold price in India today",
   ];
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-8 px-4 py-12">
+    <div className="flex flex-col items-center justify-center h-full gap-8 px-4 py-16">
       <div className="text-center">
-        <div className="w-12 h-12 rounded-2xl bg-[#20b2aa] flex items-center justify-center mx-auto mb-4">
+        <div className="w-12 h-12 rounded-2xl bg-[#20b2aa] flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(32,178,170,0.25)]">
           <LogoIcon />
         </div>
-        <h2 className="text-lg font-semibold text-white mb-1">Ask anything</h2>
-        <p className="text-xs text-[#444]">
-          Powered by Gemini · searches web when needed
+        <h2 className="text-xl font-semibold text-white mb-1.5 tracking-tight">
+          Ask anything
+        </h2>
+        <p className="text-xs text-[#333] leading-relaxed">
+          Powered by Gemini · searches the web when needed
         </p>
       </div>
       <div className="grid grid-cols-2 gap-2 w-full max-w-sm">
@@ -574,13 +645,41 @@ const EmptyState = ({ onPrompt }) => {
           <button
             key={i}
             onClick={() => onPrompt(p)}
-            className="text-left text-xs px-3.5 py-3 rounded-xl border border-[#161616] text-[#444] hover:text-[#888] hover:border-[#222] hover:bg-[#0e0e0e] transition-all leading-relaxed"
+            className="text-left text-[12px] px-3.5 py-3 rounded-xl border border-[#141414] text-[#3a3a3a] hover:text-[#777] hover:border-[#202020] hover:bg-[#0c0c0c] transition-all duration-150 leading-relaxed"
           >
             {p}
           </button>
         ))}
       </div>
     </div>
+  );
+};
+
+// ─── Topbar Share Button ──────────────────────────────────────────────────────
+const TopbarShareBtn = ({ chat, onClick }) => {
+  if (!chat) return null;
+  const isShared = chat.isShared;
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[12px] font-semibold transition-all duration-200 border ${
+        isShared
+          ? "text-[#20b2aa] bg-[#20b2aa]/8 border-[#20b2aa]/15 hover:bg-[#20b2aa]/14 hover:border-[#20b2aa]/25"
+          : "text-[#444] bg-transparent border-[#1a1a1a] hover:text-[#20b2aa] hover:border-[#20b2aa]/20 hover:bg-[#20b2aa]/5"
+      }`}
+    >
+      <ShareIcon />
+      <span>{isShared ? "Shared" : "Share"}</span>
+      {isShared && (
+        <>
+          <div
+            className="w-1.5 h-1.5 rounded-full bg-[#20b2aa] shadow-[0_0_6px_#20b2aa]"
+            style={{ animation: "pulseDot 2s infinite" }}
+          />
+          <style>{`@keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:0.35} }`}</style>
+        </>
+      )}
+    </button>
   );
 };
 
@@ -603,6 +702,7 @@ const Dashboard = () => {
   const [shareTarget, setShareTarget] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // ── Real Redux state ──────────────────────────────────────────────────────
   const chats = useSelector((s) => s.chat.chats);
   const currentId = useSelector((s) => s.chat.currentChatId);
   const isLoading = useSelector((s) => s.chat.isLoading);
@@ -612,11 +712,12 @@ const Dashboard = () => {
   const inputRef = useRef(null);
   const textareaRef = useRef(null);
 
+  const currentChat = currentId ? chats[currentId] : null;
+  const currentMessages = currentChat?.messages || [];
+
   const sortedChats = Object.values(chats)
     .filter((c) => !c.id?.startsWith("temp-"))
     .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
-
-  const currentMessages = currentId ? chats[currentId]?.messages || [] : [];
 
   useEffect(() => {
     initializeSocketConnection();
@@ -627,15 +728,20 @@ const Dashboard = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [currentMessages, isLoading]);
 
+  // Keep share modal in sync if Redux updates (e.g. after share/unshare)
+  useEffect(() => {
+    if (shareTarget && chats[shareTarget.id]) {
+      setShareTarget(chats[shareTarget.id]);
+    }
+  }, [chats]);
+
   const handleSubmit = useCallback(
     async (e) => {
       e?.preventDefault();
       const trimmed = chatInput.trim();
       if (!trimmed || isLoading) return;
       setChatInput("");
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "24px";
-      }
+      if (textareaRef.current) textareaRef.current.style.height = "24px";
       await handleSendMessage({ message: trimmed, chatId: currentId });
     },
     [chatInput, currentId, isLoading],
@@ -657,7 +763,7 @@ const Dashboard = () => {
   const handleNewChat = () => {
     dispatch(setCurrentChatId(null));
     setSidebarOpen(false);
-    inputRef.current?.focus();
+    setTimeout(() => inputRef.current?.focus(), 50);
   };
 
   const doLogout = async () => {
@@ -665,14 +771,20 @@ const Dashboard = () => {
     navigate("/login");
   };
 
+  const openShareModal = (chat) => {
+    setShareTarget(chat);
+    setSidebarOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-[#080808] flex text-white overflow-hidden">
-      {/* Sidebar */}
+      {/* ── Sidebar ────────────────────────────────────────────────────────── */}
       <aside
-        className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:relative z-30 h-screen w-60 flex-shrink-0 bg-[#0b0b0b] border-r border-[#131313] flex flex-col transition-transform duration-200`}
+        className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:relative z-30 h-screen w-60 flex-shrink-0 bg-[#080808] border-r border-[#111] flex flex-col transition-transform duration-200`}
       >
-        <div className="flex items-center gap-2.5 px-4 py-4 border-b border-[#131313]">
-          <div className="w-7 h-7 rounded-xl bg-[#20b2aa] flex items-center justify-center flex-shrink-0">
+        {/* Brand */}
+        <div className="flex items-center gap-2.5 px-4 py-[15px] border-b border-[#111]">
+          <div className="w-7 h-7 rounded-xl bg-[#20b2aa] flex items-center justify-center flex-shrink-0 shadow-[0_0_12px_rgba(32,178,170,0.3)]">
             <LogoIcon />
           </div>
           <span className="text-sm font-semibold tracking-tight">
@@ -680,19 +792,26 @@ const Dashboard = () => {
           </span>
         </div>
 
+        {/* New Chat */}
         <div className="px-2 py-2.5">
           <button
             onClick={handleNewChat}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-[#161616] text-[#444] hover:text-[#888] hover:border-[#222] hover:bg-[#0e0e0e] transition-all text-xs"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-[#141414] text-[#383838] hover:text-[#666] hover:border-[#1c1c1c] hover:bg-[#0d0d0d] transition-all text-[12px] group"
           >
-            <PlusIcon /> New chat
+            <span className="text-[#20b2aa]/50 group-hover:text-[#20b2aa]/80 transition-colors">
+              <PlusIcon />
+            </span>
+            New chat
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-0.5 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#1e1e1e] [&::-webkit-scrollbar-thumb]:rounded-full">
+        {/* Chat list */}
+        <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-0.5 [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#181818] [&::-webkit-scrollbar-thumb]:rounded-full">
           {sortedChats.length === 0 ? (
-            <p className="text-[11px] text-[#2a2a2a] text-center mt-8">
-              No chats yet
+            <p className="text-[11px] text-[#202020] text-center mt-10 leading-relaxed">
+              No chats yet.
+              <br />
+              Start a conversation.
             </p>
           ) : (
             sortedChats.map((chat) => (
@@ -705,29 +824,27 @@ const Dashboard = () => {
                   setSidebarOpen(false);
                 }}
                 onDelete={handleDeleteChat}
-                onShare={(c) => {
-                  setShareTarget(c);
-                  setSidebarOpen(false);
-                }}
+                onShare={openShareModal}
               />
             ))
           )}
         </div>
 
-        <div className="px-2 py-2.5 border-t border-[#131313]">
-          <div className="flex items-center gap-2 px-3 py-2">
-            <div className="w-6 h-6 rounded-full bg-[#20b2aa]/15 border border-[#20b2aa]/25 flex items-center justify-center flex-shrink-0">
-              <span className="text-[10px] font-semibold text-[#20b2aa]">
+        {/* User row */}
+        <div className="px-2 py-2.5 border-t border-[#0f0f0f]">
+          <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-[#0d0d0d] transition-colors group cursor-default">
+            <div className="w-6 h-6 rounded-full bg-[#20b2aa]/10 border border-[#20b2aa]/15 flex items-center justify-center flex-shrink-0">
+              <span className="text-[10px] font-bold text-[#20b2aa]">
                 {user?.username?.[0]?.toUpperCase()}
               </span>
             </div>
-            <span className="text-xs text-[#444] truncate flex-1">
+            <span className="text-[12px] text-[#333] truncate flex-1">
               {user?.username}
             </span>
             <button
               onClick={doLogout}
               title="Logout"
-              className="text-[#2a2a2a] hover:text-[#666] transition-colors p-0.5"
+              className="text-[#222] hover:text-[#555] transition-colors opacity-0 group-hover:opacity-100"
             >
               <LogoutIcon />
             </button>
@@ -735,36 +852,48 @@ const Dashboard = () => {
         </div>
       </aside>
 
+      {/* Sidebar backdrop (mobile) */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-20 bg-black/60 md:hidden"
+          className="fixed inset-0 z-20 bg-black/70 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Main */}
+      {/* ── Main ───────────────────────────────────────────────────────────── */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* Mobile header */}
-        <header className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-[#111]">
+        {/* Topbar */}
+        <header className="flex items-center gap-3 px-4 h-[53px] border-b border-[#0f0f0f] flex-shrink-0 bg-[#080808]">
+          {/* Mobile menu toggle */}
           <button
             onClick={() => setSidebarOpen(true)}
-            className="text-[#444] hover:text-white transition-colors"
+            className="md:hidden text-[#333] hover:text-[#666] transition-colors flex-shrink-0"
           >
             <MenuIcon />
           </button>
-          <span className="text-sm font-medium text-[#888]">
-            {currentId ? chats[currentId]?.title || "Chat" : "Perplexity"}
+
+          {/* Title */}
+          <span className="text-[13px] text-[#2e2e2e] truncate flex-1">
+            {currentChat?.title || (currentId ? "Chat" : "New conversation")}
           </span>
+
+          {/* ── Share button — always visible when a chat is open ── */}
+          {currentChat && (
+            <TopbarShareBtn
+              chat={currentChat}
+              onClick={() => openShareModal(currentChat)}
+            />
+          )}
         </header>
 
         {/* Messages area */}
-        <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#1e1e1e] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#2a2a2a]">
+        <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#181818] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#252525]">
           <div className="max-w-2xl mx-auto px-4 py-6">
             {currentMessages.length === 0 && !isLoading ? (
               <EmptyState
                 onPrompt={(s) => {
                   setChatInput(s);
-                  inputRef.current?.focus();
+                  setTimeout(() => inputRef.current?.focus(), 50);
                 }}
               />
             ) : (
@@ -772,14 +901,12 @@ const Dashboard = () => {
                 {currentMessages.map((msg, i) => (
                   <MessageBubble key={i} msg={msg} />
                 ))}
-
-                {/* ✅ AI loading indicator */}
                 {isLoading && (
                   <div className="flex gap-3 mb-6">
-                    <div className="w-6 h-6 rounded-lg bg-[#20b2aa] flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="flex-shrink-0 w-6 h-6 rounded-lg bg-[#20b2aa] flex items-center justify-center mt-0.5 shadow-[0_0_10px_rgba(32,178,170,0.25)]">
                       <LogoIcon />
                     </div>
-                    <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-2xl px-4 py-3">
+                    <div className="bg-[#0d0d0d] border border-[#161616] rounded-2xl px-4 py-3.5">
                       <TypingDots />
                     </div>
                   </div>
@@ -791,9 +918,9 @@ const Dashboard = () => {
         </div>
 
         {/* Input */}
-        <div className="border-t border-[#0f0f0f] bg-[#080808] px-4 py-3">
+        <div className="border-t border-[#0d0d0d] bg-[#080808] px-4 py-3 flex-shrink-0">
           <div className="max-w-2xl mx-auto">
-            <div className="flex items-end gap-2 bg-[#0f0f0f] border border-[#1a1a1a] rounded-2xl px-4 py-3 focus-within:border-[#20b2aa]/25 transition-colors">
+            <div className="flex items-end gap-3 bg-[#0d0d0d] border border-[#181818] rounded-2xl px-4 py-3 focus-within:border-[#20b2aa]/20 focus-within:shadow-[0_0_0_3px_rgba(32,178,170,0.04)] transition-all duration-200">
               <textarea
                 ref={(el) => {
                   inputRef.current = el;
@@ -805,24 +932,25 @@ const Dashboard = () => {
                 placeholder="Ask anything…"
                 rows={1}
                 disabled={isLoading}
-                className="flex-1 bg-transparent text-sm text-white placeholder-[#2a2a2a] outline-none resize-none leading-relaxed disabled:opacity-50"
+                className="flex-1 bg-transparent text-sm text-white placeholder-[#252525] outline-none resize-none leading-relaxed disabled:opacity-40"
                 style={{ minHeight: "24px", maxHeight: "130px" }}
               />
               <button
                 onClick={handleSubmit}
                 disabled={!chatInput.trim() || isLoading}
-                className="flex-shrink-0 w-7 h-7 rounded-xl bg-[#20b2aa] hover:bg-[#1aa39b] disabled:opacity-25 disabled:cursor-not-allowed text-white flex items-center justify-center transition-all"
+                className="flex-shrink-0 w-7 h-7 rounded-xl bg-[#20b2aa] hover:bg-[#1aa39b] active:bg-[#178a82] disabled:opacity-20 disabled:cursor-not-allowed text-white flex items-center justify-center transition-all shadow-[0_0_12px_rgba(32,178,170,0.2)] hover:shadow-[0_0_16px_rgba(32,178,170,0.35)]"
               >
-                <SendIcon />
+                {isLoading ? <SpinnerSVG size={13} /> : <SendIcon />}
               </button>
             </div>
-            <p className="text-center text-[10px] text-[#1e1e1e] mt-1.5">
+            <p className="text-center text-[10px] text-[#1a1a1a] mt-1.5">
               Enter to send · Shift+Enter for new line
             </p>
           </div>
         </div>
       </main>
 
+      {/* Share Modal */}
       {shareTarget && (
         <ShareModal
           chat={shareTarget}

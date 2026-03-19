@@ -102,8 +102,8 @@ export async function login(req, res) {
     // ✅ Fixed: httpOnly + secure + sameSite for proper security
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true, // ✅ HTTPS required
+      sameSite: "none", // ✅ cross-origin ke liye
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -184,10 +184,11 @@ export async function verifyEmail(req, res) {
  * @route POST /api/auth/logout
  */
 export async function logout(req, res) {
-  res.clearCookie("token", {
+  res.cookie("token", token, {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: true, // ✅ HTTPS required
+    sameSite: "none", // ✅ cross-origin ke liye
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   res.status(200).json({ message: "Logged out successfully", success: true });
 }
