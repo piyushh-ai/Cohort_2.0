@@ -6,6 +6,15 @@ import cors from "cors";
 import morgan from "morgan";
 import shareRouter from "./routes/share.route.js";
 import dotend from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";   // 👈 add this
+
+/**
+ * ES module me __dirname create karna
+ */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 dotend.config();
 
@@ -23,9 +32,7 @@ app.use(
   }),
 );
 
-app.get("/", (req, res) => {
-  res.json({ message: "Server is running" });
-});
+
 
 // Auth routes — stricter limit
 app.use("/api/auth", authRouter);
@@ -33,5 +40,16 @@ app.use("/api/auth", authRouter);
 // Chat routes — chatLimiter is applied in chat.route.js directly on /message
 app.use("/api/chats", chatRouter);
 app.use("/api", shareRouter);
+
+const distPath = path.join(__dirname, "../dist");
+
+/**
+ * frontend linking
+ */
+app.use(express.static(distPath));
+
+app.get("/{*any}", (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
 
 export default app;

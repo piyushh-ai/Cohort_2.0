@@ -8,181 +8,805 @@ import { useAuth } from "../../auth/hooks/useAuth";
 import { setCurrentChatId } from "../chats.slice";
 import { PlusIcon, SendIcon, LogoIcon, DotsIcon } from "../../shared/icons.jsx";
 
-// ─── Icons ────────────────────────────────────────────────────────────────────
-const TrashIcon = () => (
-  <svg
-    width="13"
-    height="13"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="3 6 5 6 21 6" />
-    <path d="M19 6l-1 14H6L5 6" />
-    <path d="M10 11v6M14 11v6M9 6V4h6v2" />
-  </svg>
-);
-const ShareIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="18" cy="5" r="3" />
-    <circle cx="6" cy="12" r="3" />
-    <circle cx="18" cy="19" r="3" />
-    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-  </svg>
-);
-const CopyIcon = () => (
-  <svg
-    width="12"
-    height="12"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="9" y="9" width="13" height="13" rx="2" />
-    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-  </svg>
-);
-const CheckIcon = () => (
-  <svg
-    width="12"
-    height="12"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
-const GlobeIcon = () => (
-  <svg
-    width="11"
-    height="11"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-  >
-    <circle cx="12" cy="12" r="10" />
-    <line x1="2" y1="12" x2="22" y2="12" />
-    <path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" />
-  </svg>
-);
-const LogoutIcon = () => (
-  <svg
-    width="13"
-    height="13"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-    <polyline points="16 17 21 12 16 7" />
-    <line x1="21" y1="12" x2="9" y2="12" />
-  </svg>
-);
-const MenuIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-  >
-    <line x1="3" y1="6" x2="21" y2="6" />
-    <line x1="3" y1="12" x2="21" y2="12" />
-    <line x1="3" y1="18" x2="21" y2="18" />
-  </svg>
-);
-const XIcon = () => (
-  <svg
-    width="15"
-    height="15"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-  >
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
-const LinkIcon = () => (
-  <svg
-    width="11"
-    height="11"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-  >
-    <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
-    <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
-  </svg>
-);
-const SpinnerSVG = ({ size = 14 }) => (
-  <svg
-    className="animate-spin"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-  >
-    <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" opacity="0.25" />
-    <path d="M21 12a9 9 0 00-9-9" strokeLinecap="round" />
-  </svg>
+/* ─── GLOBAL STYLES ────────────────────────────────────────────────────────── */
+const G = () => (
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c-bg:       #050507;
+      --c-s1:       #09090d;
+      --c-s2:       #0e0e14;
+      --c-s3:       #141420;
+      --c-border:   rgba(255,255,255,0.055);
+      --c-border2:  rgba(255,255,255,0.08);
+      --c-teal:     #2dd4bf;
+      --c-teal2:    #14b8a6;
+      --c-teal3:    #0d9488;
+      --c-glow:     rgba(45,212,191,0.15);
+      --c-glow2:    rgba(45,212,191,0.07);
+      --c-glow3:    rgba(45,212,191,0.03);
+      --c-text:     #f0f0f5;
+      --c-text2:    #7878a0;
+      --c-text3:    #3a3a55;
+      --c-text4:    #22223a;
+      --c-red:      #f87171;
+      --f-sans:     'DM Sans', sans-serif;
+      --f-mono:     'DM Mono', monospace;
+      --r:          16px;
+      --r-sm:       10px;
+      --sidebar:    264px;
+      --topbar:     56px;
+    }
+
+    html, body { height: 100%; overflow: hidden; }
+    body { font-family: var(--f-sans); background: var(--c-bg); color: var(--c-text); -webkit-font-smoothing: antialiased; }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 3px; height: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--c-s3); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--c-text3); }
+
+    /* ── Layout ── */
+    .root { display: flex; height: 100dvh; width: 100vw; overflow: hidden; position: relative; }
+
+    /* ── Ambient light ── */
+    .ambient {
+      pointer-events: none; position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 55% 35% at 15% 0%, rgba(45,212,191,0.055) 0%, transparent 70%),
+        radial-gradient(ellipse 35% 50% at 90% 90%, rgba(45,212,191,0.035) 0%, transparent 65%);
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: relative; z-index: 20;
+      width: var(--sidebar); flex-shrink: 0;
+      height: 100dvh;
+      display: flex; flex-direction: column;
+      background: var(--c-s1);
+      border-right: 1px solid var(--c-border);
+      transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+    }
+    @media (max-width: 767px) {
+      .sidebar { position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: 0 0 60px rgba(0,0,0,0.8); }
+    }
+
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 10px;
+      padding: 18px 16px 16px;
+      border-bottom: 1px solid var(--c-border);
+    }
+    .brand-logo {
+      width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--c-teal3), var(--c-teal));
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 20px rgba(45,212,191,0.35), 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .brand-name {
+      font-size: 15px; font-weight: 600; letter-spacing: -0.02em;
+      color: var(--c-text);
+    }
+
+    .new-chat {
+      margin: 10px 12px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 12px;
+      border-radius: var(--r-sm);
+      border: 1px dashed var(--c-border2);
+      background: transparent;
+      color: var(--c-text3);
+      font-family: var(--f-sans); font-size: 13px;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .new-chat:hover {
+      border-color: var(--c-teal); color: var(--c-teal);
+      background: var(--c-glow3);
+      box-shadow: 0 0 16px rgba(45,212,191,0.08);
+    }
+    .new-chat svg { flex-shrink: 0; }
+
+    .chat-section-label {
+      padding: 8px 16px 4px;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--c-text4);
+    }
+
+    .chat-list { flex: 1; overflow-y: auto; padding: 2px 8px 8px; }
+
+    .chat-item {
+      position: relative;
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 10px 9px 12px;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+      margin-bottom: 1px;
+    }
+    .chat-item:hover { background: var(--c-s2); border-color: var(--c-border); }
+    .chat-item.active {
+      background: var(--c-glow2);
+      border-color: rgba(45,212,191,0.15);
+    }
+    .chat-item.active::before {
+      content: ''; position: absolute; left: -1px; top: 50%; transform: translateY(-50%);
+      width: 2px; height: 18px; border-radius: 99px;
+      background: var(--c-teal);
+      box-shadow: 0 0 8px var(--c-teal);
+    }
+    .chat-title {
+      flex: 1; font-size: 13px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+      color: var(--c-text3); transition: color 0.15s;
+    }
+    .chat-item:hover .chat-title { color: var(--c-text2); }
+    .chat-item.active .chat-title { color: var(--c-text); }
+
+    .shared-pip {
+      width: 5px; height: 5px; border-radius: 99px;
+      background: var(--c-teal); flex-shrink: 0;
+      box-shadow: 0 0 6px var(--c-teal);
+      animation: pipPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pipPulse { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+    .chat-item-actions {
+      display: none; align-items: center; gap: 1px;
+    }
+    .chat-item:hover .chat-item-actions { display: flex; }
+    .icon-btn-sm {
+      width: 26px; height: 26px; border: none; background: none;
+      color: var(--c-text4); cursor: pointer; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .icon-btn-sm:hover { background: var(--c-s3); color: var(--c-text2); }
+    .icon-btn-sm.danger:hover { background: rgba(248,113,113,0.1); color: var(--c-red); }
+
+    .sidebar-footer {
+      padding: 10px 12px;
+      border-top: 1px solid var(--c-border);
+    }
+    .user-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: var(--r-sm);
+      cursor: pointer; transition: background 0.15s;
+    }
+    .user-row:hover { background: var(--c-s2); }
+    .user-avatar {
+      width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, #0d2626, #0f3030);
+      border: 1px solid rgba(45,212,191,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: var(--c-teal);
+    }
+    .user-name { font-size: 12.5px; color: var(--c-text3); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .logout-btn {
+      width: 26px; height: 26px; border: none; background: none;
+      color: var(--c-text4); cursor: pointer; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .logout-btn:hover { background: var(--c-s3); color: var(--c-text2); }
+
+    /* ── Backdrop (mobile) ── */
+    .backdrop {
+      display: none; position: fixed; inset: 0; z-index: 19;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+    }
+    .backdrop.show { display: block; }
+
+    /* ── Main ── */
+    .main { flex: 1; display: flex; flex-direction: column; height: 100dvh; min-width: 0; position: relative; z-index: 1; }
+
+    /* ── Topbar ── */
+    .topbar {
+      height: var(--topbar); flex-shrink: 0;
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--c-border);
+      background: rgba(5,5,7,0.85);
+      backdrop-filter: blur(16px);
+      position: relative; z-index: 5;
+    }
+    .menu-toggle {
+      width: 34px; height: 34px; border: none;
+      background: var(--c-s2); border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--c-text3); cursor: pointer; flex-shrink: 0;
+      transition: all 0.15s;
+      border: 1px solid var(--c-border);
+    }
+    .menu-toggle:hover { background: var(--c-s3); color: var(--c-text); }
+    @media (min-width: 768px) { .menu-toggle { display: none; } }
+
+    .topbar-title {
+      flex: 1; font-size: 13.5px; font-weight: 500;
+      color: var(--c-text3); white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ── THE SHARE BUTTON — crown jewel ── */
+    .share-btn {
+      display: flex; align-items: center; gap: 7px;
+      padding: 7px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--c-border2);
+      background: var(--c-s2);
+      color: var(--c-text2);
+      font-family: var(--f-sans); font-size: 12.5px; font-weight: 600;
+      cursor: pointer; flex-shrink: 0;
+      transition: all 0.2s;
+      letter-spacing: 0.01em;
+    }
+    .share-btn:hover {
+      border-color: var(--c-teal);
+      color: var(--c-teal);
+      background: var(--c-glow2);
+      box-shadow: 0 0 20px rgba(45,212,191,0.12), 0 0 0 1px rgba(45,212,191,0.12);
+    }
+    .share-btn.is-shared {
+      border-color: rgba(45,212,191,0.3);
+      color: var(--c-teal);
+      background: var(--c-glow2);
+      box-shadow: 0 0 16px rgba(45,212,191,0.1);
+    }
+    .share-btn.is-shared:hover {
+      box-shadow: 0 0 24px rgba(45,212,191,0.18), 0 0 0 1px rgba(45,212,191,0.2);
+    }
+    .share-live-dot {
+      width: 6px; height: 6px; border-radius: 99px;
+      background: var(--c-teal);
+      box-shadow: 0 0 8px var(--c-teal);
+      animation: pipPulse 2s infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── Messages ── */
+    .messages-wrap {
+      flex: 1; overflow-y: auto;
+      padding-bottom: 8px;
+    }
+    .messages-inner {
+      max-width: 700px; margin: 0 auto;
+      padding: 28px 20px 16px;
+    }
+    @media (max-width: 640px) {
+      .messages-inner { padding: 20px 14px 12px; }
+    }
+
+    /* User bubble */
+    .msg-user {
+      display: flex; justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+    .msg-user-bubble {
+      max-width: 78%;
+      padding: 12px 16px;
+      background: var(--c-s3);
+      border: 1px solid var(--c-border2);
+      border-radius: 20px 20px 4px 20px;
+      font-size: 14px; line-height: 1.65;
+      color: rgba(240,240,245,0.88);
+    }
+    @media (max-width: 640px) {
+      .msg-user-bubble { max-width: 88%; font-size: 13.5px; }
+    }
+
+    /* AI bubble */
+    .msg-ai { display: flex; gap: 12px; margin-bottom: 28px; }
+    .ai-avatar {
+      width: 28px; height: 28px; border-radius: 9px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--c-teal3), var(--c-teal));
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 16px rgba(45,212,191,0.3), 0 2px 6px rgba(0,0,0,0.4);
+      margin-top: 1px;
+    }
+    .ai-body { flex: 1; min-width: 0; }
+
+    .ai-header {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 10px;
+    }
+    .ai-label {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--c-teal);
+    }
+    .searched-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 500;
+      padding: 2px 8px; border-radius: 99px;
+      background: var(--c-glow3);
+      border: 1px solid rgba(45,212,191,0.12);
+      color: rgba(45,212,191,0.6);
+    }
+
+    /* Markdown content */
+    .md-content { font-size: 14px; line-height: 1.82; color: #a8a8c0; }
+    .md-content p { margin-bottom: 10px; }
+    .md-content p:last-child { margin-bottom: 0; }
+    .md-content strong { color: var(--c-text); font-weight: 600; }
+    .md-content em { color: #8888a8; font-style: italic; }
+    .md-content code {
+      font-family: var(--f-mono); font-size: 12.5px;
+      background: rgba(45,212,191,0.07);
+      border: 1px solid rgba(45,212,191,0.12);
+      padding: 1px 6px; border-radius: 5px;
+      color: var(--c-teal);
+    }
+    .md-content pre {
+      background: var(--c-s2); border: 1px solid var(--c-border);
+      border-radius: 12px; padding: 16px;
+      overflow-x: auto; margin: 12px 0;
+    }
+    .md-content pre code { background: none; border: none; padding: 0; color: #8888a8; font-size: 12.5px; }
+    .md-content ul { list-style: none; padding: 0; margin-bottom: 10px; }
+    .md-content ul li { display: flex; gap: 8px; color: #a8a8c0; margin-bottom: 5px; }
+    .md-content ul li::before { content: '▸'; color: var(--c-teal); flex-shrink: 0; margin-top: 2px; font-size: 11px; }
+    .md-content ol { padding-left: 20px; margin-bottom: 10px; color: #a8a8c0; }
+    .md-content ol li { margin-bottom: 5px; }
+    .md-content h1,.md-content h2,.md-content h3 { color: var(--c-text); font-weight: 600; margin: 16px 0 8px; }
+    .md-content h1 { font-size: 17px; }
+    .md-content h2 { font-size: 15px; }
+    .md-content h3 { font-size: 14px; }
+    .md-content blockquote {
+      border-left: 2px solid rgba(45,212,191,0.3);
+      padding-left: 14px; margin: 12px 0;
+      color: #666688; font-style: italic;
+    }
+    .md-content a { color: var(--c-teal); text-decoration: none; border-bottom: 1px solid rgba(45,212,191,0.25); transition: border-color 0.15s; }
+    .md-content a:hover { border-color: var(--c-teal); }
+    .md-content table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+    .md-content th { background: var(--c-s2); border: 1px solid var(--c-border); padding: 8px 12px; text-align: left; color: var(--c-text2); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .md-content td { border: 1px solid var(--c-border); padding: 8px 12px; color: #7878a0; }
+    @media (max-width: 640px) { .md-content { font-size: 13.5px; } }
+
+    /* Sources */
+    .sources {
+      margin-top: 14px; padding-top: 12px;
+      border-top: 1px solid var(--c-border);
+    }
+    .sources-label {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--c-text4); margin-bottom: 8px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .source-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .source-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 99px;
+      border: 1px solid var(--c-border);
+      background: var(--c-s2);
+      font-size: 11.5px; color: var(--c-text3);
+      text-decoration: none; transition: all 0.15s;
+      font-family: var(--f-mono);
+    }
+    .source-chip:hover {
+      border-color: rgba(45,212,191,0.25);
+      color: var(--c-teal); background: var(--c-glow3);
+    }
+
+    /* Copy btn */
+    .copy-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 10px; padding: 5px 10px; border-radius: 7px;
+      border: none; background: none;
+      font-family: var(--f-sans); font-size: 11.5px;
+      color: var(--c-text4); cursor: pointer;
+      transition: all 0.15s; opacity: 0;
+    }
+    .msg-ai:hover .copy-btn { opacity: 1; }
+    .copy-btn:hover { background: var(--c-s2); color: var(--c-text3); }
+
+    /* Typing indicator */
+    .typing-wrap { display: flex; gap: 12px; margin-bottom: 20px; }
+    .typing-dots {
+      display: flex; align-items: center; gap: 5px;
+      padding: 14px 16px;
+      background: var(--c-s2);
+      border: 1px solid var(--c-border);
+      border-radius: 20px;
+    }
+    .typing-dot {
+      width: 6px; height: 6px; border-radius: 99px;
+      background: var(--c-teal);
+    }
+    .typing-dot:nth-child(1) { animation: tdot 1.3s ease-in-out 0s infinite; }
+    .typing-dot:nth-child(2) { animation: tdot 1.3s ease-in-out 0.18s infinite; }
+    .typing-dot:nth-child(3) { animation: tdot 1.3s ease-in-out 0.36s infinite; }
+    @keyframes tdot { 0%,60%,100%{transform:translateY(0);opacity:0.4} 30%{transform:translateY(-6px);opacity:1} }
+
+    /* ── Empty / Welcome ── */
+    .welcome {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 60vh; padding: 40px 20px;
+      text-align: center;
+    }
+    .welcome-glow {
+      width: 64px; height: 64px; border-radius: 20px;
+      background: linear-gradient(135deg, var(--c-teal3), var(--c-teal));
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 22px;
+      box-shadow:
+        0 0 0 1px rgba(45,212,191,0.3),
+        0 0 40px rgba(45,212,191,0.25),
+        0 0 80px rgba(45,212,191,0.1);
+    }
+    .welcome-title {
+      font-size: 26px; font-weight: 700;
+      letter-spacing: -0.03em; color: var(--c-text);
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #fff 30%, rgba(255,255,255,0.55));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .welcome-sub { font-size: 13.5px; color: var(--c-text3); margin-bottom: 36px; line-height: 1.6; }
+    .suggestions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 440px; }
+    @media (max-width: 480px) { .suggestions { grid-template-columns: 1fr; } }
+    .suggestion {
+      padding: 12px 14px; border-radius: 12px;
+      border: 1px solid var(--c-border);
+      background: var(--c-s1);
+      text-align: left; font-family: var(--f-sans);
+      font-size: 12.5px; color: var(--c-text3);
+      cursor: pointer; transition: all 0.18s; line-height: 1.5;
+    }
+    .suggestion:hover {
+      border-color: rgba(45,212,191,0.2);
+      background: var(--c-glow3); color: var(--c-text2);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    /* ── Input area ── */
+    .input-area {
+      flex-shrink: 0;
+      padding: 12px 16px 16px;
+      border-top: 1px solid var(--c-border);
+      background: rgba(5,5,7,0.9);
+      backdrop-filter: blur(16px);
+    }
+    .input-wrap { max-width: 700px; margin: 0 auto; }
+    .input-box {
+      display: flex; align-items: flex-end; gap: 10px;
+      background: var(--c-s1);
+      border: 1px solid var(--c-border2);
+      border-radius: 16px;
+      padding: 12px 12px 12px 16px;
+      transition: all 0.2s;
+    }
+    .input-box:focus-within {
+      border-color: rgba(45,212,191,0.3);
+      box-shadow: 0 0 0 3px rgba(45,212,191,0.06), 0 0 40px rgba(45,212,191,0.06);
+    }
+    .input-ta {
+      flex: 1; background: none; border: none; outline: none;
+      color: var(--c-text); font-family: var(--f-sans);
+      font-size: 14px; line-height: 1.6; resize: none;
+    }
+    .input-ta::placeholder { color: var(--c-text4); }
+    .input-ta:disabled { opacity: 0.35; }
+    @media (max-width: 640px) { .input-ta { font-size: 16px; } /* prevent zoom */ }
+    .send-btn {
+      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--c-teal3), var(--c-teal));
+      border: none; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+      box-shadow: 0 0 16px rgba(45,212,191,0.25), 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .send-btn:hover:not(:disabled) {
+      box-shadow: 0 0 24px rgba(45,212,191,0.4), 0 2px 10px rgba(0,0,0,0.3);
+      transform: scale(1.05);
+    }
+    .send-btn:disabled { opacity: 0.2; cursor: not-allowed; transform: none; box-shadow: none; }
+    .input-hint { text-align: center; font-size: 10.5px; color: var(--c-text4); margin-top: 8px; }
+
+    /* ── Share Modal ── */
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: center; padding: 16px;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(10px);
+      animation: fadein 0.15s ease;
+    }
+    @keyframes fadein { from{opacity:0} to{opacity:1} }
+    .modal {
+      width: 100%; max-width: 400px;
+      background: var(--c-s1);
+      border: 1px solid var(--c-border2);
+      border-radius: 20px; overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(45,212,191,0.06);
+      animation: slideup 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes slideup { from{transform:translateY(16px) scale(0.97);opacity:0} to{transform:translateY(0) scale(1);opacity:1} }
+
+    .modal-head {
+      padding: 20px 20px 18px;
+      border-bottom: 1px solid var(--c-border);
+      display: flex; align-items: flex-start; justify-content: space-between;
+    }
+    .modal-icon-wrap {
+      width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+      background: var(--c-glow2); border: 1px solid rgba(45,212,191,0.18);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--c-teal);
+    }
+    .modal-title { font-size: 14.5px; font-weight: 600; color: var(--c-text); margin-bottom: 2px; }
+    .modal-sub { font-size: 11.5px; color: var(--c-text3); line-height: 1.5; }
+    .close-btn {
+      width: 30px; height: 30px; border-radius: 8px; border: none;
+      background: none; color: var(--c-text3); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .close-btn:hover { background: var(--c-s3); color: var(--c-text); }
+
+    .modal-body { padding: 18px 20px 20px; }
+
+    .live-status {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 12px; border-radius: 10px;
+      background: var(--c-glow3); border: 1px solid rgba(45,212,191,0.1);
+      margin-bottom: 14px;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 99px; flex-shrink: 0;
+      background: var(--c-teal); box-shadow: 0 0 8px var(--c-teal);
+      animation: pipPulse 2s infinite;
+    }
+    .live-text { font-size: 12px; color: var(--c-text3); }
+
+    .url-box {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--c-bg); border: 1px solid var(--c-border2);
+      border-radius: 11px; padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .url-text {
+      flex: 1; font-size: 11.5px; font-family: var(--f-mono);
+      color: var(--c-text3); overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
+    }
+    .copy-link-btn {
+      flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 7px;
+      border: 1px solid var(--c-border2);
+      background: var(--c-s2);
+      font-family: var(--f-sans); font-size: 11.5px; font-weight: 500;
+      color: var(--c-text3); cursor: pointer; transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .copy-link-btn:hover { border-color: var(--c-teal); color: var(--c-teal); background: var(--c-glow3); }
+    .copy-link-btn.done { border-color: var(--c-teal); color: var(--c-teal); background: var(--c-glow3); }
+
+    .generate-btn {
+      width: 100%; padding: 12px;
+      border-radius: 12px; border: none;
+      background: linear-gradient(135deg, var(--c-teal3), var(--c-teal));
+      color: #fff; font-family: var(--f-sans); font-size: 13.5px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 0 24px rgba(45,212,191,0.2), 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .generate-btn:hover:not(:disabled) {
+      box-shadow: 0 0 32px rgba(45,212,191,0.35), 0 4px 16px rgba(0,0,0,0.35);
+      transform: translateY(-1px);
+    }
+    .generate-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .revoke-btn {
+      width: 100%; padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(248,113,113,0.15);
+      background: none;
+      font-family: var(--f-sans); font-size: 12.5px;
+      color: rgba(248,113,113,0.5); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.18s;
+    }
+    .revoke-btn:hover:not(:disabled) {
+      border-color: rgba(248,113,113,0.4); color: var(--c-red);
+      background: rgba(248,113,113,0.05);
+    }
+    .revoke-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .share-info-box {
+      padding: 12px 14px; border-radius: 11px;
+      background: var(--c-bg); border: 1px solid var(--c-border);
+      font-size: 12.5px; color: var(--c-text3); line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    /* spin */
+    .spin { animation: spin 0.75s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── dots menu ── */
+    .dots-menu {
+      position: absolute; right: 0; top: calc(100% + 4px); z-index: 30;
+      background: var(--c-s2); border: 1px solid var(--c-border2);
+      border-radius: 12px; overflow: hidden; min-width: 140px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+      animation: fadein 0.12s ease;
+    }
+    .dots-menu-item {
+      width: 100%; display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px;
+      background: none; border: none; border-bottom: 1px solid var(--c-border);
+      font-family: var(--f-sans); font-size: 12.5px;
+      color: var(--c-text3); cursor: pointer; transition: all 0.12s;
+      text-align: left;
+    }
+    .dots-menu-item:last-child { border-bottom: none; }
+    .dots-menu-item:hover { background: var(--c-s3); color: var(--c-text); }
+    .dots-menu-item.red:hover { background: rgba(248,113,113,0.08); color: var(--c-red); }
+  `}</style>
 );
 
-// ─── Typing dots ──────────────────────────────────────────────────────────────
-const TypingDots = () => (
-  <div className="flex items-center gap-1.5 py-1">
-    {[0, 1, 2].map((i) => (
-      <div
-        key={i}
-        className="w-1.5 h-1.5 rounded-full bg-[#20b2aa]/60"
-        style={{
-          animation: `typingBounce 1.2s ease-in-out ${i * 0.2}s infinite`,
-        }}
-      />
-    ))}
-    <style>{`
-      @keyframes typingBounce {
-        0%,60%,100% { transform:translateY(0); opacity:0.6; }
-        30% { transform:translateY(-5px); opacity:1; }
-      }
-    `}</style>
-  </div>
-);
+/* ─── SVG ICONS ─────────────────────────────────────────────────────────────── */
+const Ic = {
+  Share: () => (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+    </svg>
+  ),
+  Trash: () => (
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2" />
+    </svg>
+  ),
+  Copy: () => (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="9" y="9" width="13" height="13" rx="2" />
+      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+    </svg>
+  ),
+  Check: () => (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  ),
+  Globe: () => (
+    <svg
+      width="11"
+      height="11"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" />
+    </svg>
+  ),
+  Logout: () => (
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+  ),
+  Menu: () => (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    >
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+  ),
+  X: () => (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    >
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  ),
+  Link: () => (
+    <svg
+      width="11"
+      height="11"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    >
+      <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+    </svg>
+  ),
+  Spin: ({ s = 14 }) => (
+    <svg
+      className="spin"
+      width={s}
+      height={s}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" opacity="0.2" />
+      <path d="M21 12a9 9 0 00-9-9" strokeLinecap="round" />
+    </svg>
+  ),
+};
 
-// ─── Sources Panel ────────────────────────────────────────────────────────────
+/* ─── SOURCES ────────────────────────────────────────────────────────────────── */
 const SourcesPanel = ({ sources }) => {
   if (!sources) return null;
   let blocks = [];
@@ -193,38 +817,35 @@ const SourcesPanel = ({ sources }) => {
       (s, i) => `[${i + 1}] ${s.title}\n${s.content}\nSource: ${s.url}`,
     );
   else return null;
-
   const parsed = blocks
-    .map((block, i) => {
-      const urlMatch = block.match(/Source:\s*(https?:\/\/[^\s]+)/);
-      const titleMatch = block.match(/^\[(\d+)\]\s(.+)/);
+    .map((b, i) => {
+      const u = b.match(/Source:\s*(https?:\/\/[^\s]+)/);
+      const t = b.match(/^\[(\d+)\]\s(.+)/);
       return {
-        url: urlMatch?.[1],
-        title: titleMatch?.[2]?.split("\n")[0] || `Source ${i + 1}`,
+        url: u?.[1],
+        title: t?.[2]?.split("\n")[0] || `Source ${i + 1}`,
         index: i + 1,
       };
     })
     .filter((s) => s.url);
-
   if (!parsed.length) return null;
-
   return (
-    <div className="mt-4 pt-3 border-t border-[#161616]">
-      <div className="flex items-center gap-1.5 text-[10px] text-[#333] uppercase tracking-widest font-semibold mb-2.5">
-        <GlobeIcon /> Sources
+    <div className="sources">
+      <div className="sources-label">
+        <Ic.Globe /> Sources
       </div>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="source-chips">
         {parsed.map((s) => (
           <a
             key={s.index}
             href={s.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full border border-[#1e1e1e] text-[#444] hover:text-[#20b2aa] hover:border-[#20b2aa]/20 hover:bg-[#20b2aa]/5 transition-all duration-150"
+            className="source-chip"
           >
-            <span className="text-[#2a2a2a]">[{s.index}]</span>
-            {s.title.slice(0, 30)}
-            {s.title.length > 30 ? "…" : ""}
+            <span style={{ color: "var(--c-text4)" }}>[{s.index}]</span>
+            {s.title.slice(0, 28)}
+            {s.title.length > 28 ? "…" : ""}
           </a>
         ))}
       </div>
@@ -232,7 +853,31 @@ const SourcesPanel = ({ sources }) => {
   );
 };
 
-// ─── Message Bubble ───────────────────────────────────────────────────────────
+/* ─── MESSAGE BUBBLE ─────────────────────────────────────────────────────────── */
+const components = {
+  p: ({ children }) => <p>{children}</p>,
+  strong: ({ children }) => <strong>{children}</strong>,
+  em: ({ children }) => <em>{children}</em>,
+  ul: ({ children }) => <ul>{children}</ul>,
+  ol: ({ children }) => <ol>{children}</ol>,
+  li: ({ children }) => <li>{children}</li>,
+  code: ({ inline, children }) =>
+    inline ? <code>{children}</code> : <code>{children}</code>,
+  pre: ({ children }) => <pre>{children}</pre>,
+  h1: ({ children }) => <h1>{children}</h1>,
+  h2: ({ children }) => <h2>{children}</h2>,
+  h3: ({ children }) => <h3>{children}</h3>,
+  blockquote: ({ children }) => <blockquote>{children}</blockquote>,
+  a: ({ href, children }) => (
+    <a href={href} target="_blank" rel="noopener noreferrer">
+      {children}
+    </a>
+  ),
+  table: ({ children }) => <table>{children}</table>,
+  th: ({ children }) => <th>{children}</th>,
+  td: ({ children }) => <td>{children}</td>,
+};
+
 const MessageBubble = ({ msg }) => {
   const [copied, setCopied] = useState(false);
   const copy = () => {
@@ -241,156 +886,53 @@ const MessageBubble = ({ msg }) => {
     setTimeout(() => setCopied(false), 1500);
   };
 
-  if (msg.role === "user") {
+  if (msg.role === "user")
     return (
-      <div className="flex justify-end mb-5">
-        <div className="max-w-[78%] px-4 py-3 rounded-2xl rounded-tr-sm text-sm text-white/85 leading-relaxed bg-[#111] border border-[#1e1e1e]">
-          {msg.content}
-        </div>
+      <div className="msg-user">
+        <div className="msg-user-bubble">{msg.content}</div>
       </div>
     );
-  }
 
   return (
-    <div className="flex gap-3 mb-7 group/msg">
-      <div className="flex-shrink-0 w-6 h-6 rounded-lg bg-[#20b2aa] flex items-center justify-center mt-0.5 shadow-[0_0_12px_rgba(32,178,170,0.3)]">
+    <div className="msg-ai">
+      <div className="ai-avatar">
         <LogoIcon />
       </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-2.5">
-          <span className="text-[10px] font-bold text-[#20b2aa] tracking-widest uppercase">
-            Perplexity
-          </span>
+      <div className="ai-body">
+        <div className="ai-header">
+          <span className="ai-label">Perplexity</span>
           {msg.searched && (
-            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-[#20b2aa]/8 border border-[#20b2aa]/15 text-[#20b2aa]/70">
-              <GlobeIcon /> searched web
+            <span className="searched-badge">
+              <Ic.Globe /> searched web
             </span>
           )}
         </div>
-
-        <div className="text-[#b0b0b8] text-sm leading-[1.8]">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              p: ({ children }) => (
-                <p className="mb-3 last:mb-0 text-[#b0b0b8] leading-[1.8]">
-                  {children}
-                </p>
-              ),
-              strong: ({ children }) => (
-                <strong className="text-white font-semibold">{children}</strong>
-              ),
-              em: ({ children }) => (
-                <em className="text-[#888] italic">{children}</em>
-              ),
-              ul: ({ children }) => (
-                <ul className="mb-3 space-y-1.5 list-none pl-0">{children}</ul>
-              ),
-              ol: ({ children }) => (
-                <ol className="mb-3 space-y-1.5 list-decimal pl-5 text-[#b0b0b8]">
-                  {children}
-                </ol>
-              ),
-              li: ({ children }) => (
-                <li className="flex gap-2 text-[#b0b0b8]">
-                  <span className="text-[#20b2aa] mt-1.5 flex-shrink-0 text-xs">
-                    ▸
-                  </span>
-                  <span>{children}</span>
-                </li>
-              ),
-              code: ({ inline, children }) =>
-                inline ? (
-                  <code className="text-[#20b2aa] bg-[#20b2aa]/8 px-1.5 py-0.5 rounded-md text-[12px] font-mono border border-[#20b2aa]/10">
-                    {children}
-                  </code>
-                ) : (
-                  <code className="block bg-[#0c0c0c] border border-[#1a1a1a] rounded-xl p-4 text-[12px] font-mono text-[#999] overflow-x-auto my-3 leading-relaxed">
-                    {children}
-                  </code>
-                ),
-              pre: ({ children }) => <div className="my-3">{children}</div>,
-              h1: ({ children }) => (
-                <h1 className="text-white font-semibold text-base mb-2 mt-5 pb-1 border-b border-[#161616]">
-                  {children}
-                </h1>
-              ),
-              h2: ({ children }) => (
-                <h2 className="text-white font-semibold text-sm mb-2 mt-4">
-                  {children}
-                </h2>
-              ),
-              h3: ({ children }) => (
-                <h3 className="text-[#ccc] font-medium text-sm mb-1.5 mt-3">
-                  {children}
-                </h3>
-              ),
-              blockquote: ({ children }) => (
-                <blockquote className="border-l-2 border-[#20b2aa]/30 pl-4 my-3 text-[#666] italic">
-                  {children}
-                </blockquote>
-              ),
-              a: ({ href, children }) => (
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#20b2aa] hover:text-[#2dd4bf] underline decoration-[#20b2aa]/20 underline-offset-2 transition-colors"
-                >
-                  {children}
-                </a>
-              ),
-              table: ({ children }) => (
-                <div className="overflow-x-auto my-3 rounded-xl border border-[#1a1a1a]">
-                  <table className="w-full text-xs border-collapse">
-                    {children}
-                  </table>
-                </div>
-              ),
-              th: ({ children }) => (
-                <th className="border-b border-[#1a1a1a] px-3 py-2 text-left text-[#888] font-semibold bg-[#0e0e0e] text-[11px] uppercase tracking-wide">
-                  {children}
-                </th>
-              ),
-              td: ({ children }) => (
-                <td className="border-b border-[#131313] px-3 py-2 text-[#666] last:border-0">
-                  {children}
-                </td>
-              ),
-            }}
-          >
+        <div className="md-content">
+          <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
             {msg.content}
           </ReactMarkdown>
         </div>
-
         <SourcesPanel sources={msg.sources} />
-
-        <div className="mt-2.5 flex items-center gap-1 opacity-0 group-hover/msg:opacity-100 transition-opacity duration-200">
-          <button
-            onClick={copy}
-            className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-lg text-[#2a2a2a] hover:text-[#666] hover:bg-[#111] transition-all border border-transparent hover:border-[#1a1a1a]"
-          >
-            {copied ? (
-              <>
-                <CheckIcon /> Copied
-              </>
-            ) : (
-              <>
-                <CopyIcon /> Copy
-              </>
-            )}
-          </button>
-        </div>
+        <button className="copy-btn" onClick={copy}>
+          {copied ? (
+            <>
+              <Ic.Check /> Copied
+            </>
+          ) : (
+            <>
+              <Ic.Copy /> Copy
+            </>
+          )}
+        </button>
       </div>
     </div>
   );
 };
 
-// ─── Share Modal ──────────────────────────────────────────────────────────────
+/* ─── SHARE MODAL ────────────────────────────────────────────────────────────── */
 const ShareModal = ({ chat, onShare, onUnshare, onClose }) => {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
-  // Local state so modal updates live without waiting for Redux round-trip
   const [sharedUrl, setSharedUrl] = useState(chat.shareUrl || null);
   const [isShared, setIsShared] = useState(chat.isShared || false);
 
@@ -400,7 +942,7 @@ const ShareModal = ({ chat, onShare, onUnshare, onClose }) => {
     setTimeout(() => setCopied(false), 1800);
   };
 
-  const handleShare = async () => {
+  const doShare = async () => {
     setLoading(true);
     const url = await onShare(chat.id);
     if (url) {
@@ -409,8 +951,7 @@ const ShareModal = ({ chat, onShare, onUnshare, onClose }) => {
     }
     setLoading(false);
   };
-
-  const handleUnshare = async () => {
+  const doUnshare = async () => {
     setLoading(true);
     await onUnshare(chat.id);
     setSharedUrl(null);
@@ -419,119 +960,85 @@ const ShareModal = ({ chat, onShare, onUnshare, onClose }) => {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-4"
-      style={{ background: "rgba(0,0,0,0.82)", backdropFilter: "blur(8px)" }}
-      onClick={onClose}
-    >
-      <div
-        className="bg-[#0e0e0e] border border-[#1e1e1e] rounded-2xl w-full max-w-[380px] shadow-2xl overflow-hidden"
-        style={{ animation: "modalIn 0.2s cubic-bezier(0.34,1.56,0.64,1)" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <style>{`@keyframes modalIn { from { opacity:0; transform:scale(0.95) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }`}</style>
-
-        {/* Header */}
-        <div className="px-5 pt-5 pb-4 border-b border-[#161616]">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#20b2aa]/10 border border-[#20b2aa]/15 flex items-center justify-center text-[#20b2aa]">
-                <ShareIcon />
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-white">
-                  Share conversation
-                </h3>
-                <p className="text-[11px] text-[#333] mt-0.5">
-                  Readers can view — not reply or edit
-                </p>
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        {/* Head */}
+        <div className="modal-head">
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+            <div className="modal-icon-wrap">
+              <Ic.Share />
+            </div>
+            <div>
+              <div className="modal-title">Share conversation</div>
+              <div className="modal-sub">
+                Anyone with the link can view — not reply
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="text-[#333] hover:text-[#666] transition-colors p-1 rounded-lg hover:bg-[#161616] mt-0.5"
-            >
-              <XIcon />
-            </button>
           </div>
+          <button className="close-btn" onClick={onClose}>
+            <Ic.X />
+          </button>
         </div>
 
         {/* Body */}
-        <div className="px-5 py-4 space-y-3">
+        <div className="modal-body">
           {isShared && sharedUrl ? (
-            <>
-              {/* Active badge */}
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-1.5 h-1.5 rounded-full bg-[#20b2aa] shadow-[0_0_6px_#20b2aa]"
-                  style={{ animation: "pulseDot 2s infinite" }}
-                />
-                <span className="text-[11px] text-[#444]">
-                  Link is live — anyone can read
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="live-status">
+                <div className="live-dot" />
+                <span className="live-text">
+                  Link is live — anyone can read this chat
                 </span>
-                <style>{`@keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:0.3} }`}</style>
               </div>
-
-              {/* URL row */}
-              <div className="flex items-center gap-2 bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl px-3 py-2.5">
-                <span className="text-[#333]">
-                  <LinkIcon />
-                </span>
-                <span className="text-[11px] text-[#444] flex-1 truncate font-mono">
-                  {sharedUrl}
-                </span>
+              <div className="url-box">
+                <Ic.Link />
+                <span className="url-text">{sharedUrl}</span>
                 <button
+                  className={`copy-link-btn ${copied ? "done" : ""}`}
                   onClick={copy}
-                  className={`flex-shrink-0 text-[11px] flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-medium transition-all border ${
-                    copied
-                      ? "text-[#20b2aa] border-[#20b2aa]/20 bg-[#20b2aa]/5"
-                      : "text-[#444] border-[#1e1e1e] hover:text-[#20b2aa] hover:border-[#20b2aa]/20"
-                  }`}
                 >
                   {copied ? (
                     <>
-                      <CheckIcon /> Copied!
+                      <Ic.Check /> Copied!
                     </>
                   ) : (
                     <>
-                      <CopyIcon /> Copy
+                      <Ic.Copy /> Copy
                     </>
                   )}
                 </button>
               </div>
-
-              {/* Revoke */}
               <button
-                onClick={handleUnshare}
+                className="revoke-btn"
+                onClick={doUnshare}
                 disabled={loading}
-                className="w-full text-[12px] py-2.5 rounded-xl border border-red-500/10 text-red-400/50 hover:text-red-400 hover:bg-red-500/5 hover:border-red-500/20 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
               >
-                {loading ? <SpinnerSVG size={12} /> : <XIcon />}
+                {loading ? <Ic.Spin s={12} /> : <Ic.X />}
                 {loading ? "Revoking…" : "Revoke link"}
               </button>
-            </>
+            </div>
           ) : (
-            <>
-              <div className="bg-[#0a0a0a] border border-[#161616] rounded-xl px-4 py-3.5 text-[12px] text-[#333] leading-relaxed">
-                Generate a public link for this chat. Anyone with the link can
-                read the full conversation without logging in.
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div className="share-info-box">
+                Create a public link for this conversation. Anyone with the link
+                can read without logging in.
               </div>
               <button
-                onClick={handleShare}
+                className="generate-btn"
+                onClick={doShare}
                 disabled={loading}
-                className="w-full text-sm py-2.5 rounded-xl bg-[#20b2aa] hover:bg-[#1aa39b] active:bg-[#178a82] text-white font-semibold transition-all disabled:opacity-40 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(32,178,170,0.18)]"
               >
                 {loading ? (
                   <>
-                    <SpinnerSVG size={13} /> Generating…
+                    <Ic.Spin s={14} /> Generating…
                   </>
                 ) : (
                   <>
-                    <ShareIcon /> Generate share link
+                    <Ic.Share /> Generate share link
                   </>
                 )}
               </button>
-            </>
+            </div>
           )}
         </div>
       </div>
@@ -539,15 +1046,13 @@ const ShareModal = ({ chat, onShare, onUnshare, onClose }) => {
   );
 };
 
-// ─── Chat List Item ───────────────────────────────────────────────────────────
+/* ─── CHAT ITEM ──────────────────────────────────────────────────────────────── */
 const ChatItem = ({ chat, isActive, onOpen, onDelete, onShare }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
-
+  const [menu, setMenu] = useState(false);
+  const ref = useRef(null);
   useEffect(() => {
     const h = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target))
-        setMenuOpen(false);
+      if (ref.current && !ref.current.contains(e.target)) setMenu(false);
     };
     document.addEventListener("mousedown", h);
     return () => document.removeEventListener("mousedown", h);
@@ -555,62 +1060,46 @@ const ChatItem = ({ chat, isActive, onOpen, onDelete, onShare }) => {
 
   return (
     <div
-      className={`group relative flex items-center gap-2 rounded-xl px-3 py-2.5 cursor-pointer transition-all duration-150 ${
-        isActive
-          ? "bg-[#20b2aa]/8 border border-[#20b2aa]/12"
-          : "hover:bg-[#0f0f0f] border border-transparent"
-      }`}
+      className={`chat-item ${isActive ? "active" : ""}`}
       onClick={() => onOpen(chat.id)}
     >
-      {isActive && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-full bg-[#20b2aa]" />
-      )}
+      <span className="chat-title">{chat.title}</span>
+      {chat.isShared && <div className="shared-pip" title="Shared" />}
 
-      <span
-        className={`flex-1 text-[13px] truncate transition-colors ${isActive ? "text-[#ccc]" : "text-[#555] group-hover:text-[#888]"}`}
+      <div
+        className="chat-item-actions"
+        ref={ref}
+        style={{ position: "relative" }}
       >
-        {chat.title}
-      </span>
-
-      {chat.isShared && (
-        <div
-          className="w-1.5 h-1.5 rounded-full bg-[#20b2aa]/60 flex-shrink-0 shadow-[0_0_4px_#20b2aa]"
-          title="Shared"
-        />
-      )}
-
-      <div ref={menuRef} className="relative flex-shrink-0">
         <button
+          className="icon-btn-sm"
+          title="More"
           onClick={(e) => {
             e.stopPropagation();
-            setMenuOpen(!menuOpen);
+            setMenu(!menu);
           }}
-          className="p-1 rounded-lg text-[#222] hover:text-[#555] hover:bg-[#181818] opacity-0 group-hover:opacity-100 transition-all"
         >
           <DotsIcon />
         </button>
-        {menuOpen && (
-          <div className="absolute right-0 top-7 z-20 bg-[#111] border border-[#1e1e1e] rounded-xl py-1 w-36 shadow-2xl">
+        {menu && (
+          <div className="dots-menu" onClick={(e) => e.stopPropagation()}>
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setMenuOpen(false);
+              className="dots-menu-item"
+              onClick={() => {
+                setMenu(false);
                 onShare(chat);
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-[12px] text-[#555] hover:text-white hover:bg-[#181818] transition-colors"
             >
-              <ShareIcon /> {chat.isShared ? "Manage share" : "Share"}
+              <Ic.Share /> {chat.isShared ? "Manage share" : "Share"}
             </button>
-            <div className="my-1 border-t border-[#181818]" />
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setMenuOpen(false);
+              className="dots-menu-item red"
+              onClick={() => {
+                setMenu(false);
                 onDelete(chat.id);
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-[12px] text-red-400/50 hover:text-red-400 hover:bg-red-500/5 transition-colors"
             >
-              <TrashIcon /> Delete
+              <Ic.Trash /> Delete
             </button>
           </div>
         )}
@@ -619,7 +1108,7 @@ const ChatItem = ({ chat, isActive, onOpen, onDelete, onShare }) => {
   );
 };
 
-// ─── Empty State ──────────────────────────────────────────────────────────────
+/* ─── EMPTY STATE ────────────────────────────────────────────────────────────── */
 const EmptyState = ({ onPrompt }) => {
   const prompts = [
     "What's happening in tech today?",
@@ -628,25 +1117,17 @@ const EmptyState = ({ onPrompt }) => {
     "Gold price in India today",
   ];
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-8 px-4 py-16">
-      <div className="text-center">
-        <div className="w-12 h-12 rounded-2xl bg-[#20b2aa] flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(32,178,170,0.25)]">
-          <LogoIcon />
-        </div>
-        <h2 className="text-xl font-semibold text-white mb-1.5 tracking-tight">
-          Ask anything
-        </h2>
-        <p className="text-xs text-[#333] leading-relaxed">
-          Powered by Gemini · searches the web when needed
-        </p>
+    <div className="welcome">
+      <div className="welcome-glow">
+        <LogoIcon />
       </div>
-      <div className="grid grid-cols-2 gap-2 w-full max-w-sm">
+      <div className="welcome-title">Ask anything</div>
+      <div className="welcome-sub">
+        Powered by Gemini · searches the web when needed
+      </div>
+      <div className="suggestions">
         {prompts.map((p, i) => (
-          <button
-            key={i}
-            onClick={() => onPrompt(p)}
-            className="text-left text-[12px] px-3.5 py-3 rounded-xl border border-[#141414] text-[#3a3a3a] hover:text-[#777] hover:border-[#202020] hover:bg-[#0c0c0c] transition-all duration-150 leading-relaxed"
-          >
+          <button key={i} className="suggestion" onClick={() => onPrompt(p)}>
             {p}
           </button>
         ))}
@@ -655,35 +1136,7 @@ const EmptyState = ({ onPrompt }) => {
   );
 };
 
-// ─── Topbar Share Button ──────────────────────────────────────────────────────
-const TopbarShareBtn = ({ chat, onClick }) => {
-  if (!chat) return null;
-  const isShared = chat.isShared;
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[12px] font-semibold transition-all duration-200 border ${
-        isShared
-          ? "text-[#20b2aa] bg-[#20b2aa]/8 border-[#20b2aa]/15 hover:bg-[#20b2aa]/14 hover:border-[#20b2aa]/25"
-          : "text-[#444] bg-transparent border-[#1a1a1a] hover:text-[#20b2aa] hover:border-[#20b2aa]/20 hover:bg-[#20b2aa]/5"
-      }`}
-    >
-      <ShareIcon />
-      <span>{isShared ? "Shared" : "Share"}</span>
-      {isShared && (
-        <>
-          <div
-            className="w-1.5 h-1.5 rounded-full bg-[#20b2aa] shadow-[0_0_6px_#20b2aa]"
-            style={{ animation: "pulseDot 2s infinite" }}
-          />
-          <style>{`@keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:0.35} }`}</style>
-        </>
-      )}
-    </button>
-  );
-};
-
-// ─── Dashboard ────────────────────────────────────────────────────────────────
+/* ─── DASHBOARD ──────────────────────────────────────────────────────────────── */
 const Dashboard = () => {
   const {
     initializeSocketConnection,
@@ -702,7 +1155,7 @@ const Dashboard = () => {
   const [shareTarget, setShareTarget] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // ── Real Redux state ──────────────────────────────────────────────────────
+  /* Real Redux state */
   const chats = useSelector((s) => s.chat.chats);
   const currentId = useSelector((s) => s.chat.currentChatId);
   const isLoading = useSelector((s) => s.chat.isLoading);
@@ -710,7 +1163,7 @@ const Dashboard = () => {
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-  const textareaRef = useRef(null);
+  const taRef = useRef(null);
 
   const currentChat = currentId ? chats[currentId] : null;
   const currentMessages = currentChat?.messages || [];
@@ -723,26 +1176,24 @@ const Dashboard = () => {
     initializeSocketConnection();
     handleGetChats();
   }, []);
-
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [currentMessages, isLoading]);
 
-  // Keep share modal in sync if Redux updates (e.g. after share/unshare)
+  /* Keep modal in sync with Redux */
   useEffect(() => {
-    if (shareTarget && chats[shareTarget.id]) {
+    if (shareTarget && chats[shareTarget.id])
       setShareTarget(chats[shareTarget.id]);
-    }
   }, [chats]);
 
   const handleSubmit = useCallback(
     async (e) => {
       e?.preventDefault();
-      const trimmed = chatInput.trim();
-      if (!trimmed || isLoading) return;
+      const t = chatInput.trim();
+      if (!t || isLoading) return;
       setChatInput("");
-      if (textareaRef.current) textareaRef.current.style.height = "24px";
-      await handleSendMessage({ message: trimmed, chatId: currentId });
+      if (taRef.current) taRef.current.style.height = "24px";
+      await handleSendMessage({ message: t, chatId: currentId });
     },
     [chatInput, currentId, isLoading],
   );
@@ -753,213 +1204,205 @@ const Dashboard = () => {
       handleSubmit();
     }
   };
-
-  const handleTextareaChange = (e) => {
+  const handleTaChange = (e) => {
     setChatInput(e.target.value);
     e.target.style.height = "24px";
-    e.target.style.height = Math.min(e.target.scrollHeight, 130) + "px";
+    e.target.style.height = Math.min(e.target.scrollHeight, 140) + "px";
   };
-
   const handleNewChat = () => {
     dispatch(setCurrentChatId(null));
     setSidebarOpen(false);
-    setTimeout(() => inputRef.current?.focus(), 50);
+    setTimeout(() => inputRef.current?.focus(), 60);
   };
-
   const doLogout = async () => {
     await handleLogout();
     navigate("/login");
   };
-
-  const openShareModal = (chat) => {
+  const openShare = (chat) => {
     setShareTarget(chat);
     setSidebarOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-[#080808] flex text-white overflow-hidden">
-      {/* ── Sidebar ────────────────────────────────────────────────────────── */}
-      <aside
-        className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:relative z-30 h-screen w-60 flex-shrink-0 bg-[#080808] border-r border-[#111] flex flex-col transition-transform duration-200`}
-      >
-        {/* Brand */}
-        <div className="flex items-center gap-2.5 px-4 py-[15px] border-b border-[#111]">
-          <div className="w-7 h-7 rounded-xl bg-[#20b2aa] flex items-center justify-center flex-shrink-0 shadow-[0_0_12px_rgba(32,178,170,0.3)]">
-            <LogoIcon />
-          </div>
-          <span className="text-sm font-semibold tracking-tight">
-            Perplexity
-          </span>
-        </div>
+    <>
+      <G />
+      <div className="root">
+        <div className="ambient" />
 
-        {/* New Chat */}
-        <div className="px-2 py-2.5">
-          <button
-            onClick={handleNewChat}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-[#141414] text-[#383838] hover:text-[#666] hover:border-[#1c1c1c] hover:bg-[#0d0d0d] transition-all text-[12px] group"
-          >
-            <span className="text-[#20b2aa]/50 group-hover:text-[#20b2aa]/80 transition-colors">
-              <PlusIcon />
-            </span>
-            New chat
-          </button>
-        </div>
-
-        {/* Chat list */}
-        <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-0.5 [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#181818] [&::-webkit-scrollbar-thumb]:rounded-full">
-          {sortedChats.length === 0 ? (
-            <p className="text-[11px] text-[#202020] text-center mt-10 leading-relaxed">
-              No chats yet.
-              <br />
-              Start a conversation.
-            </p>
-          ) : (
-            sortedChats.map((chat) => (
-              <ChatItem
-                key={chat.id}
-                chat={chat}
-                isActive={chat.id === currentId}
-                onOpen={(id) => {
-                  handleOpenChat(id);
-                  setSidebarOpen(false);
-                }}
-                onDelete={handleDeleteChat}
-                onShare={openShareModal}
-              />
-            ))
-          )}
-        </div>
-
-        {/* User row */}
-        <div className="px-2 py-2.5 border-t border-[#0f0f0f]">
-          <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-[#0d0d0d] transition-colors group cursor-default">
-            <div className="w-6 h-6 rounded-full bg-[#20b2aa]/10 border border-[#20b2aa]/15 flex items-center justify-center flex-shrink-0">
-              <span className="text-[10px] font-bold text-[#20b2aa]">
-                {user?.username?.[0]?.toUpperCase()}
-              </span>
+        {/* ── SIDEBAR ── */}
+        <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+          {/* Brand */}
+          <div className="sidebar-brand">
+            <div className="brand-logo">
+              <LogoIcon />
             </div>
-            <span className="text-[12px] text-[#333] truncate flex-1">
-              {user?.username}
-            </span>
-            <button
-              onClick={doLogout}
-              title="Logout"
-              className="text-[#222] hover:text-[#555] transition-colors opacity-0 group-hover:opacity-100"
-            >
-              <LogoutIcon />
-            </button>
+            <span className="brand-name">Perplexity</span>
           </div>
-        </div>
-      </aside>
 
-      {/* Sidebar backdrop (mobile) */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-20 bg-black/70 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* ── Main ───────────────────────────────────────────────────────────── */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* Topbar */}
-        <header className="flex items-center gap-3 px-4 h-[53px] border-b border-[#0f0f0f] flex-shrink-0 bg-[#080808]">
-          {/* Mobile menu toggle */}
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="md:hidden text-[#333] hover:text-[#666] transition-colors flex-shrink-0"
-          >
-            <MenuIcon />
+          {/* New Chat */}
+          <button className="new-chat" onClick={handleNewChat}>
+            <PlusIcon /> New chat
           </button>
 
-          {/* Title */}
-          <span className="text-[13px] text-[#2e2e2e] truncate flex-1">
-            {currentChat?.title || (currentId ? "Chat" : "New conversation")}
-          </span>
-
-          {/* ── Share button — always visible when a chat is open ── */}
-          {currentChat && (
-            <TopbarShareBtn
-              chat={currentChat}
-              onClick={() => openShareModal(currentChat)}
-            />
-          )}
-        </header>
-
-        {/* Messages area */}
-        <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#181818] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#252525]">
-          <div className="max-w-2xl mx-auto px-4 py-6">
-            {currentMessages.length === 0 && !isLoading ? (
-              <EmptyState
-                onPrompt={(s) => {
-                  setChatInput(s);
-                  setTimeout(() => inputRef.current?.focus(), 50);
+          {/* List */}
+          <div className="chat-section-label">Recent</div>
+          <div className="chat-list">
+            {sortedChats.length === 0 ? (
+              <p
+                style={{
+                  fontSize: 11,
+                  color: "var(--c-text4)",
+                  textAlign: "center",
+                  marginTop: 32,
+                  lineHeight: 1.7,
                 }}
-              />
+              >
+                No chats yet.
+                <br />
+                Start a conversation.
+              </p>
             ) : (
-              <>
-                {currentMessages.map((msg, i) => (
-                  <MessageBubble key={i} msg={msg} />
-                ))}
-                {isLoading && (
-                  <div className="flex gap-3 mb-6">
-                    <div className="flex-shrink-0 w-6 h-6 rounded-lg bg-[#20b2aa] flex items-center justify-center mt-0.5 shadow-[0_0_10px_rgba(32,178,170,0.25)]">
-                      <LogoIcon />
-                    </div>
-                    <div className="bg-[#0d0d0d] border border-[#161616] rounded-2xl px-4 py-3.5">
-                      <TypingDots />
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </>
+              sortedChats.map((chat) => (
+                <ChatItem
+                  key={chat.id}
+                  chat={chat}
+                  isActive={chat.id === currentId}
+                  onOpen={(id) => {
+                    handleOpenChat(id);
+                    setSidebarOpen(false);
+                  }}
+                  onDelete={handleDeleteChat}
+                  onShare={openShare}
+                />
+              ))
             )}
           </div>
-        </div>
 
-        {/* Input */}
-        <div className="border-t border-[#0d0d0d] bg-[#080808] px-4 py-3 flex-shrink-0">
-          <div className="max-w-2xl mx-auto">
-            <div className="flex items-end gap-3 bg-[#0d0d0d] border border-[#181818] rounded-2xl px-4 py-3 focus-within:border-[#20b2aa]/20 focus-within:shadow-[0_0_0_3px_rgba(32,178,170,0.04)] transition-all duration-200">
-              <textarea
-                ref={(el) => {
-                  inputRef.current = el;
-                  textareaRef.current = el;
-                }}
-                value={chatInput}
-                onChange={handleTextareaChange}
-                onKeyDown={handleKeyDown}
-                placeholder="Ask anything…"
-                rows={1}
-                disabled={isLoading}
-                className="flex-1 bg-transparent text-sm text-white placeholder-[#252525] outline-none resize-none leading-relaxed disabled:opacity-40"
-                style={{ minHeight: "24px", maxHeight: "130px" }}
-              />
-              <button
-                onClick={handleSubmit}
-                disabled={!chatInput.trim() || isLoading}
-                className="flex-shrink-0 w-7 h-7 rounded-xl bg-[#20b2aa] hover:bg-[#1aa39b] active:bg-[#178a82] disabled:opacity-20 disabled:cursor-not-allowed text-white flex items-center justify-center transition-all shadow-[0_0_12px_rgba(32,178,170,0.2)] hover:shadow-[0_0_16px_rgba(32,178,170,0.35)]"
-              >
-                {isLoading ? <SpinnerSVG size={13} /> : <SendIcon />}
+          {/* Footer */}
+          <div className="sidebar-footer">
+            <div className="user-row">
+              <div className="user-avatar">
+                {user?.username?.[0]?.toUpperCase()}
+              </div>
+              <span className="user-name">{user?.username}</span>
+              <button className="logout-btn" title="Logout" onClick={doLogout}>
+                <Ic.Logout />
               </button>
             </div>
-            <p className="text-center text-[10px] text-[#1a1a1a] mt-1.5">
-              Enter to send · Shift+Enter for new line
-            </p>
           </div>
-        </div>
-      </main>
+        </aside>
 
-      {/* Share Modal */}
-      {shareTarget && (
-        <ShareModal
-          chat={shareTarget}
-          onShare={handleShareChat}
-          onUnshare={handleUnshareChat}
-          onClose={() => setShareTarget(null)}
+        {/* Backdrop */}
+        <div
+          className={`backdrop ${sidebarOpen ? "show" : ""}`}
+          onClick={() => setSidebarOpen(false)}
         />
-      )}
-    </div>
+
+        {/* ── MAIN ── */}
+        <main className="main">
+          {/* Topbar */}
+          <header className="topbar">
+            <button
+              className="menu-toggle"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Ic.Menu />
+            </button>
+
+            <span className="topbar-title">
+              {currentChat?.title || (currentId ? "Chat" : "New conversation")}
+            </span>
+
+            {/* ── SHARE BUTTON — always visible when chat open ── */}
+            {currentChat && (
+              <button
+                className={`share-btn ${currentChat.isShared ? "is-shared" : ""}`}
+                onClick={() => openShare(currentChat)}
+              >
+                <Ic.Share />
+                <span>{currentChat.isShared ? "Shared" : "Share"}</span>
+                {currentChat.isShared && <div className="share-live-dot" />}
+              </button>
+            )}
+          </header>
+
+          {/* Messages */}
+          <div className="messages-wrap">
+            <div className="messages-inner">
+              {currentMessages.length === 0 && !isLoading ? (
+                <EmptyState
+                  onPrompt={(s) => {
+                    setChatInput(s);
+                    setTimeout(() => inputRef.current?.focus(), 60);
+                  }}
+                />
+              ) : (
+                <>
+                  {currentMessages.map((msg, i) => (
+                    <MessageBubble key={i} msg={msg} />
+                  ))}
+                  {isLoading && (
+                    <div className="typing-wrap">
+                      <div className="ai-avatar">
+                        <LogoIcon />
+                      </div>
+                      <div className="typing-dots">
+                        <div className="typing-dot" />
+                        <div className="typing-dot" />
+                        <div className="typing-dot" />
+                      </div>
+                    </div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Input */}
+          <div className="input-area">
+            <div className="input-wrap">
+              <div className="input-box">
+                <textarea
+                  ref={(el) => {
+                    inputRef.current = el;
+                    taRef.current = el;
+                  }}
+                  className="input-ta"
+                  value={chatInput}
+                  onChange={handleTaChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Ask anything…"
+                  rows={1}
+                  disabled={isLoading}
+                  style={{ minHeight: 24, maxHeight: 140 }}
+                />
+                <button
+                  className="send-btn"
+                  onClick={handleSubmit}
+                  disabled={!chatInput.trim() || isLoading}
+                >
+                  {isLoading ? <Ic.Spin s={14} /> : <SendIcon />}
+                </button>
+              </div>
+              <div className="input-hint">
+                Enter to send · Shift+Enter for new line
+              </div>
+            </div>
+          </div>
+        </main>
+
+        {/* Share Modal */}
+        {shareTarget && (
+          <ShareModal
+            chat={shareTarget}
+            onShare={handleShareChat}
+            onUnshare={handleUnshareChat}
+            onClose={() => setShareTarget(null)}
+          />
+        )}
+      </div>
+    </>
   );
 };
 
