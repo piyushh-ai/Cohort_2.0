@@ -1,12 +1,25 @@
 import { io } from "socket.io-client";
 
+let socket = null;
+
+// Singleton — ek hi connection, bar bar nahi banta
 export const initializeSocketConnection = () => {
-  const socket = io("http://localhost:3000", {
+  if (socket?.connected) return socket;
+
+  socket = io("http://localhost:3000" || "http://localhost:5000", {
     withCredentials: true,
   });
 
-  socket.on("connect", ()=>{
-    console.log("Connected to socket IO server");
-    
-  })
+  socket.on("connect", () => console.log("Socket connected:", socket.id));
+  socket.on("disconnect", () => console.log("Socket disconnected"));
+  socket.on("connect_error", (err) =>
+    console.error("Socket error:", err.message),
+  );
+
+  return socket;
 };
+
+export const getSocket = () => socket;
+
+export const joinChat = (chatId) => socket?.emit("join_chat", chatId);
+export const leaveChat = (chatId) => socket?.emit("leave_chat", chatId);

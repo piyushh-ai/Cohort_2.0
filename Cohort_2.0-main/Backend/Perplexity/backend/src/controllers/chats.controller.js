@@ -1,6 +1,9 @@
 import chatModel from "../models/chat.model.js";
 import messageModel from "../models/message.model.js";
-import { generateMessage, generateTitle } from "../services/ai.service.js";
+import {
+  generateAgentResponse,
+  generateTitle,
+} from "../services/ai.service.js";
 
 export const sendMessage = async (req, res) => {
   const { message, chatId } = req.body;
@@ -9,119 +12,110 @@ export const sendMessage = async (req, res) => {
     let title;
     let chat;
 
-    // 🧠 Step 1: Create new chat if not exists
     if (!chatId) {
       title = await generateTitle(message);
-
-      chat = await chatModel.create({
-        user: req.user.id,
-        title,
-      });
+      chat = await chatModel.create({ user: req.user.id, title });
     }
 
     const currentChatId = chatId || chat._id;
 
-    // 📜 Step 2: Get previous messages
-    const previousMessages = await messageModel.find({
-      chat: currentChatId,
-    });
+    // Security: verify chat belongs to this user
+    if (chatId) {
+      const existingChat = await chatModel.findOne({
+        _id: chatId,
+        user: req.user.id,
+      });
+      if (!existingChat) {
+        return res.status(404).json({ error: "Chat not found" });
+      }
+    }
 
-    // 👤 Step 3: Save user message
-    const humanMessage = await messageModel.create({
+    const previousMessages = await messageModel
+      .find({ chat: currentChatId })
+      .sort({ createdAt: 1 });
+
+    await messageModel.create({
       chat: currentChatId,
       content: message,
       role: "user",
     });
 
-    // 🧠 Step 4: Prepare messages for AI (IMPORTANT)
     const allMessages = [
       ...previousMessages.map((msg) => ({
         role: msg.role,
         content: msg.content,
       })),
-      { role: "user", content: message }, // latest message add
+      { role: "user", content: message },
     ];
 
-    // 🤖 Step 5: Generate AI response
-    const result = await generateMessage(allMessages);
+    // Agent decides: search karna hai ya direct answer
+    const { content, sources, searched } =
+      await generateAgentResponse(allMessages);
 
-    // 🛡️ Step 6: Safe content (avoid array crash)
-    const safeResult = Array.isArray(result) ? result[0]?.text || "" : result;
-
-    // 🤖 Step 7: Save AI message
     const aiMessage = await messageModel.create({
       chat: currentChatId,
-      content: safeResult,
+      content,
       role: "ai",
     });
 
-    // 📤 Step 8: Response
     res.status(201).json({
       title,
-      chat,
-      humanMessage,
+      chat: chat || { _id: currentChatId },
       aiMessage,
+      searched, // frontend ko pata chale ki search hua ya nahi
+      sources, // source links
     });
   } catch (error) {
-    console.log(error);
+    console.error("sendMessage error:", error);
     res.status(500).json({ error: "Something went wrong" });
   }
 };
 
 export async function getChats(req, res) {
-  const user = req.user;
-
-  const chats = await chatModel.find({ user: user.id });
-
-  res.status(200).json({
-    message: "Chats retrieved successfully",
-    chats,
-  });
+  try {
+    const chats = await chatModel
+      .find({ user: req.user.id })
+      .sort({ updatedAt: -1 });
+    res.status(200).json({ message: "Chats retrieved successfully", chats });
+  } catch (err) {
+    console.error("getChats error:", err);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 }
 
 export async function getMessages(req, res) {
-  const { chatId } = req.params;
+  try {
+    const { chatId } = req.params;
 
-  const chat = await chatModel.findOne({
-    _id: chatId,
-    user: req.user.id,
-  });
+    const chat = await chatModel.findOne({ _id: chatId, user: req.user.id });
+    if (!chat) return res.status(404).json({ message: "Chat not found" });
 
-  if (!chat) {
-    return res.status(404).json({
-      message: "Chat not found",
-    });
+    const messages = await messageModel
+      .find({ chat: chatId })
+      .sort({ createdAt: 1 });
+    res
+      .status(200)
+      .json({ message: "Messages retrieved successfully", messages });
+  } catch (err) {
+    console.error("getMessages error:", err);
+    res.status(500).json({ error: "Something went wrong" });
   }
-
-  const messages = await messageModel.find({
-    chat: chatId,
-  });
-
-  res.status(200).json({
-    message: "Messages retrieved successfully",
-    messages,
-  });
 }
 
 export async function deleteChat(req, res) {
-  const { chatId } = req.params;
+  try {
+    const { chatId } = req.params;
 
-  const chat = await chatModel.findOneAndDelete({
-    _id: chatId,
-    user: req.user.id,
-  });
-
-  await messageModel.deleteMany({
-    chat: chatId,
-  });
-
-  if (!chat) {
-    return res.status(404).json({
-      message: "Chat not found",
+    const chat = await chatModel.findOneAndDelete({
+      _id: chatId,
+      user: req.user.id,
     });
-  }
+    if (!chat) return res.status(404).json({ message: "Chat not found" });
 
-  res.status(200).json({
-    message: "Chat deleted successfully",
-  });
+    await messageModel.deleteMany({ chat: chatId });
+    res.status(200).json({ message: "Chat deleted successfully" });
+  } catch (err) {
+    console.error("deleteChat error:", err);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 }
