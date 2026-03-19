@@ -2,7 +2,6 @@ import userModel from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "../services/mail.service.js";
 import dotenv from "dotenv";
-
 dotenv.config();
 
 /**
@@ -32,11 +31,15 @@ export async function register(req, res) {
       { expiresIn: "1d" },
     );
 
-    await sendEmail({
-      to: email,
-      subject: "Welcome to Perplexity!",
-      html: getVerificationEmailHtml(username, emailVerificationToken),
-    });
+    try {
+      await sendEmail({
+        to: email,
+        subject: "Welcome to Perplexity!",
+        html: getVerificationEmailHtml(username, emailVerificationToken),
+      });
+    } catch (emailErr) {
+      console.error("EMAIL ERROR:", emailErr);
+    }
 
     res.status(201).json({
       message: "User registered successfully. Please verify your email.",

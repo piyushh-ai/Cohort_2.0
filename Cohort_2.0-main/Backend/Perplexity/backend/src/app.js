@@ -43,12 +43,9 @@ app.use("/api", shareRouter);
 
 const distPath = path.join(__dirname, "../dist");
 
-/**
- * frontend linking
- */
 app.use(express.static(distPath));
 
-app.get("/{*any}", (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(distPath, "index.html"));
 });
 
