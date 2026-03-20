@@ -7,7 +7,12 @@ let io;
 export function initSocket(httpServer) {
   io = new Server(httpServer, {
     cors: {
-      origin: process.env.FRONTEND_URL || "http://localhost:5173",
+      origin: [
+        "https://www.perplexity-piyush.in",
+        "https://perplexity-piyush.in",
+        "http://localhost:5173",
+        "http://localhost:3000",
+      ],
       credentials: true,
     },
   });

@@ -25,7 +25,12 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: true,
+    origin: [
+      "https://www.perplexity-piyush.in",
+      "https://perplexity-piyush.in",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   }),
