@@ -1,0 +1,404 @@
+@import '../../styles/variables';
+
+// ─── Section ──────────────────────────────────────────────
+.builder-section {
+  position: relative;
+  padding: $space-3xl $space-xl;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: $space-2xl $space-lg;
+  }
+}
+
+// Top separator line
+.builder-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(129, 140, 248, 0.4),
+    transparent
+  );
+}
+
+// Ambient glow
+.builder-section::after {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 500px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(129, 140, 248, 0.05) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+// ─── Inner Wrapper ────────────────────────────────────────
+.builder-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+}
+
+// ─── Section Label ────────────────────────────────────────
+.builder-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: $font-mono;
+  font-size: 11px;
+  font-weight: 500;
+  color: $violet;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+    content: '';
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    background: $violet;
+    opacity: 0.45;
+  }
+}
+
+// ─── Card ─────────────────────────────────────────────────
+.builder-card {
+  width: 100%;
+  background: $bg-card;
+  border: 1px solid $border-subtle;
+  border-radius: 24px;
+  padding: 52px 56px;
+  display: flex;
+  align-items: center;
+  gap: 52px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+  // Top-left violet accent line
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      $violet 40%,
+      $accent 70%,
+      transparent 100%
+    );
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+  }
+
+  // Radial glow top-left corner
+  &::after {
+    content: '';
+    position: absolute;
+    top: -60px;
+    left: -60px;
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(
+      circle,
+      rgba(129, 140, 248, 0.08) 0%,
+      transparent 65%
+    );
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover {
+    border-color: rgba(129, 140, 248, 0.25);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(129, 140, 248, 0.1);
+
+    &::before { opacity: 0.9; }
+  }
+
+  @media (max-width: 700px) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 28px;
+    gap: 32px;
+    border-radius: 20px;
+  }
+}
+
+// ─── Avatar ───────────────────────────────────────────────
+.builder-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.builder-avatar {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $violet 0%, $accent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-display;
+  font-size: 36px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -1px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 4px $bg-card,
+              0 0 0 5px rgba(129, 140, 248, 0.25),
+              0 12px 32px rgba(129, 140, 248, 0.2);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s ease;
+
+  .builder-card:hover & {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 4px $bg-card,
+                0 0 0 5px rgba(129, 140, 248, 0.4),
+                0 16px 40px rgba(129, 140, 248, 0.3);
+  }
+
+  @media (max-width: 700px) {
+    width: 90px;
+    height: 90px;
+    font-size: 30px;
+  }
+}
+
+// Ping animation ring around avatar
+.builder-avatar-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  animation: ping-slow 3s ease-in-out infinite;
+}
+
+.builder-avatar-ring-2 {
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  border: 1px solid rgba(129, 140, 248, 0.1);
+  animation: ping-slow 3s ease-in-out infinite 0.6s;
+}
+
+@keyframes ping-slow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 0.2; transform: scale(1.05); }
+}
+
+// Available dot
+.builder-available-dot {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 14px;
+  height: 14px;
+  background: $emerald;
+  border-radius: 50%;
+  border: 2px solid $bg-card;
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
+  z-index: 2;
+  animation: pulse-glow 2s ease-in-out infinite;
+
+  @media (max-width: 700px) {
+    width: 12px;
+    height: 12px;
+    bottom: 4px;
+    right: 4px;
+  }
+}
+
+// ─── Info ─────────────────────────────────────────────────
+.builder-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.builder-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(129, 140, 248, 0.1);
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  border-radius: 999px;
+  font-family: $font-mono;
+  font-size: 10px;
+  color: $violet;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  width: fit-content;
+
+  @media (max-width: 700px) {
+    margin: 0 auto;
+  }
+}
+
+.builder-tag-dot {
+  width: 5px;
+  height: 5px;
+  background: $violet;
+  border-radius: 50%;
+  box-shadow: 0 0 6px $violet;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.builder-name {
+  font-family: $font-display;
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 800;
+  color: $text-primary;
+  letter-spacing: -1.2px;
+  line-height: 1.05;
+  margin: 0;
+
+  span {
+    background: linear-gradient(135deg, $violet 0%, $accent 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.builder-role {
+  font-size: 15px;
+  color: $text-secondary;
+  font-weight: 400;
+  line-height: 1.6;
+  margin: 0;
+
+  strong {
+    color: $text-primary;
+    font-weight: 500;
+  }
+}
+
+// ─── Tech Stack Pills ─────────────────────────────────────
+.builder-stack {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+
+  @media (max-width: 700px) {
+    justify-content: center;
+  }
+}
+
+.stack-pill {
+  padding: 3px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid $border-subtle;
+  border-radius: 999px;
+  font-family: $font-mono;
+  font-size: 10px;
+  color: $text-muted;
+  letter-spacing: 0.04em;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: rgba(129, 140, 248, 0.08);
+    border-color: rgba(129, 140, 248, 0.2);
+    color: $violet;
+  }
+}
+
+// ─── Social Links ─────────────────────────────────────────
+.builder-socials {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  @media (max-width: 700px) {
+    justify-content: center;
+  }
+}
+
+.builder-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  background: $bg-surface;
+  border: 1px solid $border-subtle;
+  border-radius: 10px;
+  font-family: $font-body;
+  font-size: 13px;
+  font-weight: 500;
+  color: $text-secondary;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  svg {
+    flex-shrink: 0;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  &:hover {
+    color: $text-primary;
+    transform: translateY(-2px);
+
+    svg { transform: scale(1.15); }
+  }
+
+  // Individual hover colors
+  &--github:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  &--linkedin:hover {
+    border-color: rgba(10, 102, 194, 0.4);
+    background: rgba(10, 102, 194, 0.08);
+    color: #0a66c2;
+    box-shadow: 0 6px 20px rgba(10, 102, 194, 0.15);
+
+    svg { color: #0a66c2; }
+  }
+
+  &--instagram:hover {
+    border-color: rgba(225, 48, 108, 0.35);
+    background: rgba(225, 48, 108, 0.07);
+    color: #e1306c;
+    box-shadow: 0 6px 20px rgba(225, 48, 108, 0.15);
+
+    svg { color: #e1306c; }
+  }
+
+  @media (max-width: 400px) {
+    padding: 9px 13px;
+    font-size: 12px;
+  }
+}
