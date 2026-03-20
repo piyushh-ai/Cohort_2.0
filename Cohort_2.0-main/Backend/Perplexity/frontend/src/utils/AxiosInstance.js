@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://perplexity-eeii.onrender.com/api",
+  baseURL: import.meta.env.DEV
+    ? "http://localhost:3000/api" // local development
+    : "https://perplexity-piyush.in/api", // production
   withCredentials: true,
 });
 

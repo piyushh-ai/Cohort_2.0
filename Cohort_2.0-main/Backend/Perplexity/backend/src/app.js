@@ -7,14 +7,13 @@ import morgan from "morgan";
 import shareRouter from "./routes/share.route.js";
 import dotend from "dotenv";
 import path from "path";
-import { fileURLToPath } from "url";   // 👈 add this
+import { fileURLToPath } from "url"; // 👈 add this
 
 /**
  * ES module me __dirname create karna
  */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 
 dotend.config();
 
@@ -32,8 +31,6 @@ app.use(
   }),
 );
 
-
-
 // Auth routes — stricter limit
 app.use("/api/auth", authRouter);
 
@@ -45,7 +42,7 @@ const distPath = path.join(__dirname, "../dist");
 
 app.use(express.static(distPath));
 
-app.use((req, res) => {
+app.use("/{*splat}", (req, res) => {
   res.sendFile(path.join(distPath, "index.html"));
 });
 
