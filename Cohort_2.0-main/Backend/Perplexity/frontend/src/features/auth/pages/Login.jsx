@@ -3,6 +3,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router";
 import { LogoIcon } from "../../shared/icons";
+import useFahhSound from "../../shared/useFahhSound ";
 
 const EyeIcon = ({ open }) =>
   open ? (
@@ -52,6 +53,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const playFahh = useFahhSound();
 
   const navigate = useNavigate();
   const loading = useSelector((state) => state.auth.loading);
@@ -60,8 +62,10 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const result = await handleLogin({ email, password });
-    // ✅ Fixed: only navigate on success
-    if (result) navigate("/");
+    if (result) {
+      playFahh();
+      navigate("/");
+    }
   };
 
   const inputClass =
