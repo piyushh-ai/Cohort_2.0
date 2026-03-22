@@ -1,35 +1,21 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { config } from "../config/config.js";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    type: "OAuth2",
-    user: config.googleUser,
-    clientId: config.googleClientId,
-    clientSecret: config.googleClientSecret,
-    refreshToken: config.googleRefreshToken,
-  },
-});
-
-transporter
-  .verify()
-  .then(() => {
-    console.log("Email transporter is ready to send emails");
-  })
-  .catch((err) => {
-    console.error("Email transporter verification failed:", err);
-  });
+const resend = new Resend(config.resendApiKey);
 
 export async function sendEmail({ to, subject, html, text }) {
-  const mailOptions = {
-    from: config.googleUser,
-    to,
-    subject,
-    html,
-    text,
-  };
+  try {
+    const data = await resend.emails.send({
+      from: "Collectra <onboarding@resend.dev>", // 👈 branding add
+      to,
+      subject,
+      html: html || `<p>${text}</p>`,
+    });
 
-  const details = await transporter.sendMail(mailOptions);
-  console.log("Email sent:", details);
+    console.log("✅ Email sent:", data);
+    return data; // 👈 return karna important hai
+  } catch (err) {
+    console.error("❌ Email error:", err);
+    throw err; // 👈 error propagate karo
+  }
 }

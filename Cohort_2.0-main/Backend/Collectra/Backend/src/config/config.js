@@ -49,6 +49,9 @@ if (!process.env.GROQ_API_KEY) {
 if (!process.env.FRONTEND_URL) {
   throw new Error("FRONTEND_URL is not defined");
 }
+if (!process.env.RESEND_API_KEY) {
+  throw new Error("RESEND_API_KEY is not defined");
+}
 
 export const config = {
   mongoUri: process.env.MONGO_URI,
@@ -63,4 +66,5 @@ export const config = {
   cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
   groqApiKey: process.env.GROQ_API_KEY,
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
+  resendApiKey: process.env.RESEND_API_KEY,
 };
