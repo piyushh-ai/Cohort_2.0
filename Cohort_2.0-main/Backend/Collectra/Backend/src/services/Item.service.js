@@ -69,11 +69,16 @@ export const createItemFromFile = async (userId, file, collectionId) => {
 export const saveItem = async (itemData) => {
   const item = await ItemModel.create(itemData);
 
-  // AI aur embedding parallel mein chalao — dono ka wait karo
-  await Promise.allSettled([
-    runBackgroundJobs(item),
-    generateAndSaveEmbedding(item._id),
-  ]);
+  // ✅ Embedding bilkul mat karo production par — bahut slow hai
+  // ✅ Sirf AI tagging await karo — Groq fast hai (2-3 sec)
+  await runBackgroundJobs(item).catch((err) =>
+    console.error("runBackgroundJobs:", err.message),
+  );
+
+  // Embedding fire-and-forget — slow hai, await mat karo
+  generateAndSaveEmbedding(item._id).catch((err) =>
+    console.error("Embedding error:", err.message),
+  );
 
   return item;
 };

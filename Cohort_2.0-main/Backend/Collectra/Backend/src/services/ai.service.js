@@ -10,6 +10,7 @@ const model = new ChatGroq({
   model: "llama-3.1-8b-instant", // fast + free
   apiKey: config.groqApiKey, // ← change
   temperature: 0.3,
+  timeout: 10000, // ← 10 sec max — Render timeout se pehle fail ho
 });
 
 const parser = StructuredOutputParser.fromZodSchema(
