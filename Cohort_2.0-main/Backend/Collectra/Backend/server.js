@@ -1,8 +1,13 @@
 import app from "./src/app.js";
 import { connectToDb } from "./src/config/database.js";
+import dotenv from "dotenv";
 
-connectToDb()
+dotenv.config();
 
-app.listen(3000, () => {
-    console.log("Server is running on port 3000");
+connectToDb();
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
