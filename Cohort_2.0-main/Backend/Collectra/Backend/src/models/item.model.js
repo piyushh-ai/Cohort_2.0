@@ -142,7 +142,7 @@ const itemSchema = new mongoose.Schema(
 // Search fast karne ke liye
 itemSchema.index({ userId: 1, createdAt: -1 });
 itemSchema.index({ userId: 1, type: 1 });
-itemSchema.index({ userId: 1, collection: 1 });
+itemSchema.index({ userId: 1, collectionId: 1 });
 itemSchema.index({ userId: 1, isFavorite: 1 });
 itemSchema.index({ title: "text", description: "text" }); // Text search
 

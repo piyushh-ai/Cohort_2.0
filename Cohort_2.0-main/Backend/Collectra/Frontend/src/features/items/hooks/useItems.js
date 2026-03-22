@@ -13,6 +13,7 @@ import {
   generateAIHighlightsAPI,
   getRelatedItemsAPI,
   resurfaceItemsAPI,
+  semanticSearchAPI,
 } from "../api/items.api";
 
 const useItems = () => {
@@ -65,7 +66,7 @@ const useItems = () => {
     try {
       const response = await updateItemAPI(id, data);
       setItems((prev) =>
-        prev.map((item) => (item._id === id ? response.data : item))
+        prev.map((item) => (item._id === id ? response.data : item)),
       );
       return response.data;
     } catch (err) {
@@ -92,11 +93,13 @@ const useItems = () => {
         prev.map((item) =>
           item._id === id
             ? { ...item, isFavorite: response.data.isFavorite }
-            : item
-        )
+            : item,
+        ),
       );
+      return response.data; // ✅ Return karo taaki ItemDetail use kar sake
     } catch (err) {
       setError(err.response?.data?.message || "Failed to update favorite");
+      return null;
     }
   };
 
@@ -105,7 +108,7 @@ const useItems = () => {
     try {
       const response = await addToCollectionAPI(id, collectionId);
       setItems((prev) =>
-        prev.map((item) => (item._id === id ? response.data : item))
+        prev.map((item) => (item._id === id ? response.data : item)),
       );
     } catch (err) {
       setError(err.response?.data?.message || "Failed to add to collection");
@@ -117,11 +120,13 @@ const useItems = () => {
     try {
       const response = await removeFromCollectionAPI(id);
       setItems((prev) =>
-        prev.map((item) => (item._id === id ? response.data : item))
+        prev.map((item) => (item._id === id ? response.data : item)),
       );
       return response.data;
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to remove from collection");
+      setError(
+        err.response?.data?.message || "Failed to remove from collection",
+      );
       return null;
     }
   };
@@ -132,8 +137,8 @@ const useItems = () => {
       const response = await addHighlightAPI(id, data);
       setItems((prev) =>
         prev.map((item) =>
-          item._id === id ? { ...item, highlights: response.data } : item
-        )
+          item._id === id ? { ...item, highlights: response.data } : item,
+        ),
       );
       return response.data;
     } catch (err) {
@@ -148,8 +153,8 @@ const useItems = () => {
       const response = await deleteHighlightAPI(id, highlightId);
       setItems((prev) =>
         prev.map((item) =>
-          item._id === id ? { ...item, highlights: response.data } : item
-        )
+          item._id === id ? { ...item, highlights: response.data } : item,
+        ),
       );
     } catch (err) {
       setError(err.response?.data?.message || "Failed to delete highlight");
@@ -188,6 +193,29 @@ const useItems = () => {
     }
   };
 
+  const semanticSearch = async (query) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await semanticSearchAPI(query);
+      setItems(response.data);
+      // Pagination reset karo
+      setPagination({
+        total: response.count,
+        page: 1,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPrevPage: false,
+      });
+      return response.data;
+    } catch (err) {
+      setError(err.response?.data?.message || "Semantic search failed");
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // ─── Clear Error ──────────────────────────────────────
   const clearError = () => setError(null);
 
@@ -211,6 +239,7 @@ const useItems = () => {
     generateAIHighlights,
     getRelatedItems,
     fetchResurfaceItems,
+    semanticSearch,
     clearError,
   };
 };

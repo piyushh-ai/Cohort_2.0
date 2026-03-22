@@ -1,41 +1,61 @@
-import { ChatGroq } from "@langchain/groq";  // ← change
+import { ChatGroq } from "@langchain/groq"; // ← change
 import { PromptTemplate } from "@langchain/core/prompts";
 import { StructuredOutputParser } from "@langchain/core/output_parsers";
 import { z } from "zod";
 import { config } from "../config/config.js";
 import ItemModel from "../models/item.model.js";
 
-const model = new ChatGroq({          // ← change
-  model: "llama-3.1-8b-instant",     // fast + free
-  apiKey: config.groqApiKey,         // ← change
+const model = new ChatGroq({
+  // ← change
+  model: "llama-3.1-8b-instant", // fast + free
+  apiKey: config.groqApiKey, // ← change
   temperature: 0.3,
 });
 
 const parser = StructuredOutputParser.fromZodSchema(
   z.object({
-    tags: z.array(z.string()).describe("4-5 short relevant tags"),
+    tags: z.array(z.string()).describe("5-7 canonical topic tags"),
     summary: z.string().describe("2-3 line summary of the content"),
     category: z.string().describe("Single main topic category"),
   }),
 );
 
 const taggingPrompt = PromptTemplate.fromTemplate(`
-You are a smart content organizer.
-Analyze this saved item and return structured data.
+You are a smart content tagger. Your ONLY job is to identify what this content is ACTUALLY ABOUT, not what format it is.
 
 Title: {title}
 Description: {description}
-Type: {type}
+
+Generate 3-5 tags that describe the REAL SUBJECT MATTER. 
+
+RULES:
+1. Lowercase only
+2. NO format/type words: never use "video", "article", "pdf", "song", "music video", "tutorial", "guide", "course", "notes", "document"
+3. NO quality words: "best", "top", "amazing", "official", "full", "new", "free"
+4. NO action words: "watch", "subscribe", "download", "learn", "read"
+5. Tags must answer: "What is this content ABOUT?" not "What type is it?"
+6. Be specific enough to group related items: use "bollywood" not "indian", use "minecraft" not "gaming-content"
+7. 1-3 words max per tag
+
+EXAMPLES:
+- "Kesariya - Arijit Singh | Brahmaastra" → ["bollywood", "arijit singh", "brahmaastra"]
+- "Ramaiya Vastavaiya song" → ["bollywood", "ramaiya vastavaiya", "romantic"]  
+- "Discord - Group Chat" → ["discord", "communication", "gaming"]
+- "REST API Notes PDF" → ["rest api", "web development", "backend"]
+- "Minecraft survival video" → ["minecraft", "gaming", "survival"]
+- "ChatGPT image" → ["artificial intelligence", "chatgpt"]
+- "One Direction - Best Song Ever" → ["one direction", "pop music", "english music"]
+- "Indian Street Food tour" → ["street food", "food", "india"]
+- "Ninja Hattori cartoon" → ["cartoon", "anime", "ninja hattori"]
+- "WorkDir productivity app" → ["productivity", "developer tools"]
 
 {format_instructions}
 
-Return only valid JSON, nothing else.
+Return ONLY valid JSON, nothing else.
 `);
 
 export const generateTagsAndSummary = async (title, description, type) => {
   try {
-    console.log("AI tagging started for:", title);
-
     // Prompt ko format karo
     const prompt = await taggingPrompt.format({
       title,
@@ -58,7 +78,9 @@ export const generateTagsAndSummary = async (title, description, type) => {
     const end = rawText.lastIndexOf("}");
 
     if (start === -1 || end === -1 || end <= start) {
-      throw new Error(`No JSON object found in LLM output: ${rawText.slice(0, 200)}...`);
+      throw new Error(
+        `No JSON object found in LLM output: ${rawText.slice(0, 200)}...`,
+      );
     }
 
     const cleaned = rawText.slice(start, end + 1).trim();
@@ -67,35 +89,89 @@ export const generateTagsAndSummary = async (title, description, type) => {
     try {
       parsed = JSON.parse(cleaned);
     } catch (e) {
-      throw new Error(`Failed to parse tagging JSON. Snippet: ${cleaned.slice(0, 200)}...`);
+      throw new Error(
+        `Failed to parse tagging JSON. Snippet: ${cleaned.slice(0, 200)}...`,
+      );
     }
 
     const tags = Array.isArray(parsed.tags) ? parsed.tags : [];
     const summary = typeof parsed.summary === "string" ? parsed.summary : "";
     const category = typeof parsed.category === "string" ? parsed.category : "";
 
-    console.log("AI result (parsed):", { tags, summary, category });
-
     return { tags, summary, category };
   } catch (error) {
-    console.error("AI tagging error:", error);
-
-    // Fallback: simple heuristic tags/summary so user still gets value
+    // Fallback: meaningful word extraction — title ko pura tag mat banao
     const safeDescription = description || "";
     const fallbackSummary =
-      safeDescription.slice(0, 240) ||
-      `Quick summary for ${title}`;
+      safeDescription.slice(0, 240) || `Saved item: ${title}`;
 
-    const baseTags = [title, type]
-      .filter(Boolean)
-      .map((v) => String(v));
+    const stopWords = new Set([
+      "the",
+      "a",
+      "an",
+      "is",
+      "in",
+      "on",
+      "at",
+      "to",
+      "for",
+      "of",
+      "and",
+      "or",
+      "but",
+      "with",
+      "how",
+      "what",
+      "why",
+      "when",
+      "where",
+      "this",
+      "that",
+      "from",
+      "are",
+      "was",
+      "were",
+      "have",
+      "has",
+      "had",
+      "will",
+      "would",
+      "could",
+      "should",
+      "its",
+      "your",
+      "their",
+      "about",
+      "into",
+      "over",
+      "after",
+      "before",
+      "between",
+      "just",
+    ]);
 
-    const extraTags = safeDescription
+    // Title se meaningful words nikalo (4+ letters, no stop words)
+    const titleWords = title
+      .toLowerCase()
       .split(/\W+/)
-      .filter((w) => w.length > 4)
+      .filter((w) => w.length >= 5 && !stopWords.has(w))
       .slice(0, 3);
 
-    const tags = [...new Set([...baseTags, ...extraTags])];
+    // Description se meaningful words nikalo
+    const descWords = safeDescription
+      .toLowerCase()
+      .split(/\W+/)
+      .filter((w) => w.length >= 5 && !stopWords.has(w))
+      .slice(0, 4);
+
+    // type ko tag mat banao agar generic hai
+    const typeTag = ["article", "video", "document"].includes(type)
+      ? null
+      : type;
+
+    const tags = [
+      ...new Set([typeTag, ...titleWords, ...descWords].filter(Boolean)),
+    ];
 
     return {
       tags,
@@ -119,8 +195,6 @@ export const runBackgroundJobs = async (item) => {
       summary: aiResult.summary,
       aiProcessed: true,
     });
-
-    console.log("AI done:", item.title, "→", aiResult.tags);
   } catch (err) {
     console.error("Background job error:", err.message);
   }
@@ -128,8 +202,6 @@ export const runBackgroundJobs = async (item) => {
 
 export const generateHighlights = async (title, description, summary) => {
   try {
-    console.log("Generating highlights for:", title);
-
     const prompt = `
 You are a smart content analyzer.
 Extract the 3-5 most important and insightful sentences from this content.
@@ -157,7 +229,9 @@ Return ONLY the JSON array, no other text.
     const end = rawText.lastIndexOf("]");
 
     if (start === -1 || end === -1 || end <= start) {
-      throw new Error(`No JSON array found in LLM output: ${rawText.slice(0, 200)}...`);
+      throw new Error(
+        `No JSON array found in LLM output: ${rawText.slice(0, 200)}...`,
+      );
     }
 
     const cleaned = rawText.slice(start, end + 1).trim();
@@ -166,10 +240,11 @@ Return ONLY the JSON array, no other text.
     try {
       highlights = JSON.parse(cleaned);
     } catch (e) {
-      throw new Error(`Failed to parse highlights JSON. Snippet: ${cleaned.slice(0, 200)}...`);
+      throw new Error(
+        `Failed to parse highlights JSON. Snippet: ${cleaned.slice(0, 200)}...`,
+      );
     }
 
-    console.log("Highlights generated:", highlights);
     return Array.isArray(highlights) ? highlights : [];
   } catch (error) {
     console.error("Highlight generation error:", error);

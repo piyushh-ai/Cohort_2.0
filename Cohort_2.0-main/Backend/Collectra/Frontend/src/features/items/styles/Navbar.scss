@@ -1,358 +1,302 @@
-@import './variables';
+@import "./variables";
 
-// ─── Navbar ───────────────────────────────────────────────
 .navbar {
+  // desktop: hamburger(hidden) | logo | search | actions
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 0 auto 1fr auto;  // hamburger = 0 width on desktop
   align-items: center;
   gap: 16px;
-  padding: 0 20px;
-  height: 60px;
-  background: rgba(8,11,24,0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  padding: 0 24px;
+  height: 54px;
+  background: rgba(2, 5, 9, 0.9);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   z-index: 50;
   position: relative;
+  animation: fade-down 0.5s var(--snap) both;
 
-  // Subtle top glow line
-  &::after {
-    content: '';
+  &::before {
+    content: "";
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(56,189,248,0.2) 30%, rgba(167,139,250,0.2) 70%, transparent 100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(14, 165, 233, 0.65) 30%,
+      rgba(245, 158, 11, 0.45) 65%,
+      transparent 100%
+    );
   }
 }
 
-// ─── Logo ─────────────────────────────────────────────────
-.navbar-logo {
+// ── Hamburger ─────────────────────────────────────────────
+// Desktop pe width 0 aur overflow hidden se completely hidden
+// Mobile pe display flex aur normal width
+.hamburger-btn {
+  overflow: hidden;
+  width: 0;
+  height: 38px;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 10px;
-  text-decoration: none;
+  gap: 5px;
+  background: rgba(14, 165, 233, 0.06);
+  border: 1px solid transparent;
+  border-radius: 9px;
+  cursor: pointer;
+  padding: 0;
   flex-shrink: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.15s;
+
+  span {
+    display: block;
+    width: 16px; height: 1.5px;
+    background: var(--text-2);
+    border-radius: 2px;
+    transition: transform 0.25s var(--spring), opacity 0.2s;
+    transform-origin: center;
+  }
+
+  &.is-open {
+    border-color: rgba(14, 165, 233, 0.4);
+    background: rgba(14, 165, 233, 0.1);
+    span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); background: var(--blue); }
+    span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); background: var(--blue); }
+  }
+}
+
+// ── Logo ──────────────────────────────────────────────────
+.navbar-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; flex-shrink: 0;
 }
 
 .navbar-logo-icon {
   position: relative;
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, var(--cyan-strong), var(--violet));
-  border-radius: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--blue-strong), var(--blue));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 800;
-  color: #fff;
-  box-shadow: 0 0 16px rgba(56,189,248,0.25);
+  font-size: 11px; font-weight: 800; color: #fff;
+  box-shadow: 0 0 24px rgba(14, 165, 233, 0.5);
+  overflow: hidden;
   transition: transform 0.3s var(--spring), box-shadow 0.2s;
 
+  &::after {
+    content: "";
+    position: absolute; inset: 0;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.22), transparent 60%);
+  }
   .navbar-logo:hover & {
-    transform: scale(1.1) rotate(-4deg);
-    box-shadow: 0 0 24px rgba(56,189,248,0.4);
+    transform: rotate(-6deg) scale(1.1);
+    box-shadow: 0 0 36px rgba(14, 165, 233, 0.7);
   }
 }
 
 .navbar-logo-text {
   font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-1);
-  letter-spacing: -0.4px;
+  font-size: 16px; font-weight: 700;
+  color: var(--text-1); letter-spacing: -0.5px;
   transition: color 0.15s;
-
-  .navbar-logo:hover & { color: var(--cyan); }
+  .navbar-logo:hover & { color: var(--blue); }
 }
 
-// ─── Search ───────────────────────────────────────────────
+// ── Search ────────────────────────────────────────────────
 .navbar-search {
   position: relative;
-  max-width: 440px;
-  width: 100%;
+  max-width: 460px; width: 100%;
   justify-self: center;
 
-  svg {
-    position: absolute;
-    left: 12px;
-    top: 50%;
+  > svg, > .search-spinner {
+    position: absolute; left: 13px; top: 50%;
     transform: translateY(-50%);
-    color: var(--text-3);
-    pointer-events: none;
-    transition: color 0.2s;
+    pointer-events: none; color: var(--text-3);
+    transition: color 0.2s; flex-shrink: 0;
   }
-
-  &:focus-within svg { color: var(--cyan); }
+  &:focus-within > svg { color: var(--blue); }
 
   input {
     width: 100%;
-    background: var(--bg-surface);
+    background: rgba(4, 10, 18, 0.85);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 9px 14px 9px 36px;
-    font-family: var(--font-body);
-    font-size: 13px;
-    color: var(--text-1);
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-
+    border-radius: 12px;
+    padding: 9px 46px 9px 38px;
+    font-family: var(--font-body); font-size: 13px;
+    color: var(--text-1); outline: none;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s;
     &::placeholder { color: var(--text-3); }
-
     &:focus {
-      border-color: var(--border-cyan);
-      background: rgba(56,189,248,0.03);
-      box-shadow: 0 0 0 3px rgba(56,189,248,0.07);
+      border-color: var(--border-blue);
+      background: rgba(14, 165, 233, 0.04);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
     }
   }
+
+  &--semantic input {
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.09);
+    &::placeholder { color: rgba(139, 92, 246, 0.5); }
+  }
+  &--semantic > svg { color: var(--purple); }
 }
 
-// ─── Actions ──────────────────────────────────────────────
+.semantic-toggle {
+  position: absolute; right: 10px; top: 50%;
+  transform: translateY(-50%);
+  display: flex; align-items: center; gap: 3px;
+  background: transparent; border: none;
+  color: var(--text-3); cursor: pointer;
+  padding: 4px 7px; border-radius: 6px;
+  transition: all 0.15s;
+  &:hover { color: var(--purple); background: rgba(139, 92, 246, 0.1); }
+  &--active {
+    color: var(--purple);
+    background: rgba(139, 92, 246, 0.14);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+  }
+}
+.semantic-toggle-label {
+  font-size: 10px; font-weight: 700;
+  font-family: var(--font-mono); letter-spacing: 0.06em;
+}
+
+.search-spinner {
+  width: 14px; height: 14px;
+  border: 1.5px solid var(--border-mid);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite; flex-shrink: 0;
+}
+
+// ── Actions ───────────────────────────────────────────────
 .navbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  display: flex; align-items: center; gap: 10px;
   justify-self: end;
 }
 
-// ─── Add Button ───────────────────────────────────────────
+.graph-btn {
+  display: flex; align-items: center; gap: 7px;
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text-2);
+  padding: 7px 13px;
+  font-family: var(--font-body); font-size: 12.5px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s var(--spring);
+  svg { flex-shrink: 0; }
+  &:hover {
+    border-color: rgba(6, 182, 212, 0.4); color: var(--teal);
+    background: rgba(6, 182, 212, 0.07);
+    transform: translateY(-1px); box-shadow: 0 4px 16px rgba(6, 182, 212, 0.12);
+  }
+}
+.graph-btn-label {
+  @media (max-width: 680px) { display: none; }
+}
+
 .add-btn {
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--cyan);
-  color: var(--bg-void);
-  border: none;
-  border-radius: 10px;
-  padding: 8px 16px;
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  overflow: hidden;
-  white-space: nowrap;
+  display: flex; align-items: center; gap: 7px;
+  background: linear-gradient(135deg, var(--gold-strong), var(--gold));
+  color: #000; border: none; border-radius: 10px;
+  padding: 8px 18px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 700;
+  cursor: pointer; overflow: hidden;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
   transition: transform 0.3s var(--spring), box-shadow 0.2s;
-
+  white-space: nowrap;
   svg { flex-shrink: 0; }
-
-  // Shimmer
   &::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -120%;
+    content: ""; position: absolute; top: 0; left: -120%;
     width: 80%; height: 100%;
     background: linear-gradient(100deg, transparent, rgba(255,255,255,0.3), transparent);
     transition: left 0.5s ease;
   }
-
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(56,189,248,0.38);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 28px rgba(245, 158, 11, 0.55);
     &::before { left: 120%; }
   }
-
   &:active { transform: translateY(0); }
 }
 
-// ─── Avatar Button ────────────────────────────────────────
 .avatar-btn {
-  width: 34px;
-  height: 34px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--text-2);
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 700;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-  overflow: hidden;
-  flex-shrink: 0;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-  }
-
-  .avatar-initials {
-    font-family: var(--font-display);
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--text-2);
-    letter-spacing: 0.3px;
-  }
-
-  &:hover {
-    border-color: rgba(56,189,248,0.35);
-    box-shadow: 0 0 0 3px rgba(56,189,248,0.1);
-    transform: scale(1.06);
-  }
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-strong), var(--blue));
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 0 16px rgba(14, 165, 233, 0.3);
+  overflow: hidden; flex-shrink: 0;
+  transition: transform 0.25s var(--spring), box-shadow 0.2s;
+  img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .avatar-initials { font-family: var(--font-display); font-size: 11px; font-weight: 800; color: #fff; }
+  &:hover { transform: scale(1.1); box-shadow: 0 0 28px rgba(14, 165, 233, 0.55); }
 }
 
-// ─── Avatar Dropdown ──────────────────────────────────────
 .avatar-dropdown {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 6px;
-  min-width: 210px;
-  z-index: 100;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.04),
-    0 16px 40px rgba(0,0,0,0.5);
+  position: absolute; top: calc(100% + 10px); right: 0;
+  background: rgba(7, 16, 24, 0.98);
+  border: 1px solid var(--border); border-radius: 16px; padding: 6px;
+  min-width: 210px; z-index: 100;
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 0 0 1px rgba(14, 165, 233, 0.05), 0 20px 48px rgba(0,0,0,0.7);
   animation: scale-in 0.2s var(--spring) both;
 }
-
-// ─── User info block ──────────────────────────────────────
-.avatar-user-info {
-  padding: 10px 12px 14px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 6px;
-}
-
-.avatar-user-info-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
+.avatar-user-info { padding: 10px 12px 14px; border-bottom: 1px solid var(--border); margin-bottom: 6px; }
+.avatar-user-info-top { display: flex; align-items: center; gap: 10px; }
 .avatar-preview {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--cyan-strong), var(--violet));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 800;
-  color: #fff;
-  flex-shrink: 0;
-  overflow: hidden;
-
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-strong), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 13px; font-weight: 800;
+  color: #fff; flex-shrink: 0; overflow: hidden;
   img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 }
+.avatar-username { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--text-1); letter-spacing: -0.2px; }
+.avatar-email { font-size: 11px; color: var(--text-3); margin-top: 2px; font-family: var(--font-mono); letter-spacing: 0.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }
 
-.avatar-username {
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-1);
-  letter-spacing: -0.2px;
-}
-
-.avatar-email {
-  font-size: 11px;
-  color: var(--text-3);
-  margin-top: 1px;
-  font-family: var(--font-mono);
-  letter-spacing: 0.02em;
-}
-// ═══════════════════════════════════════════════════════════
-// RESPONSIVE
-// ═══════════════════════════════════════════════════════════
-
-// ─── Hamburger button — hidden on desktop ─────────────────
-.hamburger-btn {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-  width: 38px;
-  height: 38px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  cursor: pointer;
-  padding: 0;
-  flex-shrink: 0;
-  transition: background 0.15s, border-color 0.15s;
-
-  span {
-    display: block;
-    width: 16px;
-    height: 1.5px;
-    background: var(--text-2);
-    border-radius: 2px;
-    transition: transform 0.25s var(--spring), opacity 0.2s, background 0.15s;
-    transform-origin: center;
-  }
-
-  &:hover {
-    background: rgba(255,255,255,0.07);
-    border-color: var(--border-mid);
-    span { background: var(--text-1); }
-  }
-
-  // X animation when open
-  &.is-open {
-    border-color: rgba(56,189,248,0.3);
-    background: rgba(56,189,248,0.06);
-
-    span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); background: var(--cyan); }
-    span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-    span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); background: var(--cyan); }
-  }
-}
-
-// ─── Tablet (≤ 768px) ─────────────────────────────────────
+// ── RESPONSIVE ────────────────────────────────────────────
 @media (max-width: 768px) {
   .navbar {
-    grid-template-columns: auto auto 1fr auto;
+    // hamburger | search | actions  (logo hidden)
+    grid-template-columns: 38px 1fr auto;
     padding: 0 14px;
-    height: 56px;
+    height: 54px;
     gap: 10px;
   }
 
-  .hamburger-btn { display: flex; }
+  // Hamburger SHOW
+  .hamburger-btn {
+    width: 38px;
+    border: 1px solid var(--border);
+    opacity: 1;
+    pointer-events: all;
+  }
 
-  .navbar-logo-text { display: none; }
+  // Logo hide
+  .navbar-logo { display: none; }
+
+  // Desktop-only buttons hide
+  .graph-btn { display: none; }
+  .add-btn   { display: none; }
 
   .navbar-search {
     max-width: 100%;
-    input { font-size: 16px; } // prevent iOS zoom
+    input { font-size: 16px; } // iOS zoom prevent
   }
 
-  .add-btn-label { display: none; }
-
-  .add-btn {
-    width: 38px;
-    height: 38px;
-    padding: 0;
-    justify-content: center;
-    border-radius: 9px;
-    svg { margin: 0; }
-  }
+  .navbar-actions { gap: 6px; }
 }
 
-// ─── Mobile (≤ 480px) ─────────────────────────────────────
 @media (max-width: 480px) {
-  .navbar {
-    padding: 0 12px;
-    height: 52px;
-    gap: 8px;
-  }
-
-  .navbar-search input {
-    padding: 8px 12px 8px 34px;
-  }
-
-  .avatar-dropdown {
-    right: -4px;
-    min-width: 188px;
-  }
+  .navbar { padding: 0 12px; height: 52px; }
+  .avatar-dropdown { right: -4px; min-width: 188px; }
 }

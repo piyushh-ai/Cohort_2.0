@@ -46,6 +46,10 @@ if (!process.env.GROQ_API_KEY) {
   throw new Error("GROQ_API_KEY is not defined");
 }
 
+if (!process.env.FRONTEND_URL) {
+  throw new Error("FRONTEND_URL is not defined");
+}
+
 export const config = {
   mongoUri: process.env.MONGO_URI,
   jwtSecret: process.env.JWT_SECRET,
@@ -58,5 +62,5 @@ export const config = {
   cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
   cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
   groqApiKey: process.env.GROQ_API_KEY,
-
+  frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
 };

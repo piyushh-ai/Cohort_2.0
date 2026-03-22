@@ -70,3 +70,20 @@ export const resurfaceItemsAPI = async () => {
   const response = await axiosInstance.get("/items/resurface");
   return response.data;
 };
+
+export const getGraphDataAPI = async () => {
+  const response = await axiosInstance.get("/items/graph");
+  return response.data;
+};
+
+export const semanticSearchAPI = async (query, limit = 10) => {
+  const response = await axiosInstance.get("/items/semantic-search", {
+    params: { query, limit },
+  });
+  return response.data;
+};
+
+export const getTopicClustersAPI = async () => {
+  const response = await axiosInstance.get("/items/topics");
+  return response.data;
+};

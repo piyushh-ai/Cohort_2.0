@@ -4,7 +4,7 @@ import "../styles/AddItemModal.scss";
 import "../styles/_variables.scss";
 import useCollections from "../../collections/hooks/useCollections";
 
-const AddItemModal = ({ isOpen, onClose }) => {
+const AddItemModal = ({ isOpen, onClose, onSuccess }) => {
   const { createItem, loading } = useItems();
   const { collections }         = useCollections();
 
@@ -64,7 +64,16 @@ const AddItemModal = ({ isOpen, onClose }) => {
     if (collectionId) formData.append("collectionId", collectionId);
 
     const result = await createItem(formData);
-    if (result) handleClose();
+    if (result) {
+      handleClose();
+      // ✅ AI background mein ~3-5 sec mein tags banata hai
+      // Isliye 3 baar refresh karo — turant, 4 sec baad, 8 sec baad
+      if (onSuccess) {
+        onSuccess(result);                          // turant
+        setTimeout(() => onSuccess(result), 4000); // 4 sec baad
+        setTimeout(() => onSuccess(result), 8000); // 8 sec baad (fallback)
+      }
+    }
   };
 
   const handleClose = () => {

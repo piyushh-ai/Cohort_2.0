@@ -27,6 +27,26 @@ const userSchema = new mongoose.Schema(
 
     googleProfilePicture: {
       type: String,
+      default: null,
+    },
+
+    // ─── Profile fields ───────────────────────────────
+    profilePicture: {
+      type: String,
+      default: null, // Custom uploaded picture (Cloudinary)
+    },
+
+    displayName: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    bio: {
+      type: String,
+      default: null,
+      maxlength: 160,
+      trim: true,
     },
 
     provider: {

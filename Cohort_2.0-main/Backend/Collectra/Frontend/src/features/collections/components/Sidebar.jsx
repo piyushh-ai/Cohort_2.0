@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import useCollections from "../hooks/useCollections";
 import "../../items/styles/Sidebar.scss";
 import "../../items/styles/_variables.scss";
+import { getTopicClustersAPI } from "../../items/api/items.api";
 
 const NAV_ITEMS = [
   {
@@ -26,23 +27,28 @@ const NAV_ITEMS = [
 
 const TYPE_ITEMS = [
   { id: "article", label: "Articles" },
-  { id: "video",   label: "Videos" },
-  { id: "pdf",     label: "PDFs" },
-  { id: "image",   label: "Images" },
-  { id: "tweet",   label: "Tweets" },
-  { id: "document",label: "Documents" },
+  { id: "video", label: "Videos" },
+  { id: "pdf", label: "PDFs" },
+  { id: "image", label: "Images" },
+  { id: "tweet", label: "Tweets" },
+  { id: "document", label: "Documents" },
 ];
 
 const COLLECTION_COLORS = [
-  "#6366f1","#f59e0b","#10b981",
-  "#ec4899","#ef4444","#3b82f6",
-  "#8b5cf6","#14b8a6","#f97316",
+  "#6366f1",
+  "#f59e0b",
+  "#10b981",
+  "#ec4899",
+  "#ef4444",
+  "#3b82f6",
+  "#8b5cf6",
+  "#14b8a6",
+  "#f97316",
 ];
 
-// ─── Collection Create/Edit Modal ─────────────────────────
 const CollectionModal = ({ onClose, onSubmit, initial = null }) => {
   const isEdit = !!initial;
-  const [name, setName]   = useState(initial?.name  || "");
+  const [name, setName] = useState(initial?.name || "");
   const [color, setColor] = useState(initial?.color || COLLECTION_COLORS[0]);
   const [loading, setLoading] = useState(false);
 
@@ -57,7 +63,11 @@ const CollectionModal = ({ onClose, onSubmit, initial = null }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" style={{ maxWidth: "360px" }} onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal"
+        style={{ maxWidth: "360px" }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-header">
           <h2 className="modal-title">
             {isEdit ? "Edit Collection" : "New Collection"}
@@ -68,7 +78,6 @@ const CollectionModal = ({ onClose, onSubmit, initial = null }) => {
             </svg>
           </button>
         </div>
-
         <form className="modal-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Name</label>
@@ -81,7 +90,6 @@ const CollectionModal = ({ onClose, onSubmit, initial = null }) => {
               required
             />
           </div>
-
           <div className="form-group">
             <label>Color</label>
             <div className="color-picker">
@@ -96,9 +104,12 @@ const CollectionModal = ({ onClose, onSubmit, initial = null }) => {
               ))}
             </div>
           </div>
-
           <div className="modal-footer">
-            <button type="button" className="modal-cancel-btn" onClick={onClose}>
+            <button
+              type="button"
+              className="modal-cancel-btn"
+              onClick={onClose}
+            >
               Cancel
             </button>
             <button
@@ -106,7 +117,13 @@ const CollectionModal = ({ onClose, onSubmit, initial = null }) => {
               className="modal-submit-btn"
               disabled={loading || !name.trim()}
             >
-              {loading ? <span className="spinner" /> : isEdit ? "Save changes" : "Create"}
+              {loading ? (
+                <span className="spinner" />
+              ) : isEdit ? (
+                "Save changes"
+              ) : (
+                "Create"
+              )}
             </button>
           </div>
         </form>
@@ -115,16 +132,20 @@ const CollectionModal = ({ onClose, onSubmit, initial = null }) => {
   );
 };
 
-// ─── Single Collection Row ────────────────────────────────
-const CollectionItem = ({ col, isActive, onFilterChange, onEdit, onDelete }) => {
+const CollectionItem = ({
+  col,
+  isActive,
+  onFilterChange,
+  onEdit,
+  onDelete,
+}) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
     const handler = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
+      if (menuRef.current && !menuRef.current.contains(e.target))
         setMenuOpen(false);
-      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -132,43 +153,70 @@ const CollectionItem = ({ col, isActive, onFilterChange, onEdit, onDelete }) => 
 
   return (
     <div className={`sidebar-item-row ${isActive ? "active" : ""}`}>
-      <button className="sidebar-item-main" onClick={() => onFilterChange(col._id)}>
-        <span className="collection-dot" style={{ background: col.color || "#6366f1" }} />
+      <button
+        className="sidebar-item-main"
+        onClick={() => onFilterChange(col._id)}
+      >
+        <span
+          className="collection-dot"
+          style={{ background: col.color || "#6366f1" }}
+        />
         <span className="sidebar-item-name">{col.name}</span>
         {col.itemCount !== undefined && (
           <span className="item-count">{col.itemCount}</span>
         )}
       </button>
-
       <div className="col-menu-wrap" ref={menuRef}>
         <button
           className="col-menu-btn"
-          onClick={(e) => { e.stopPropagation(); setMenuOpen((p) => !p); }}
-          title="Options"
+          onClick={(e) => {
+            e.stopPropagation();
+            setMenuOpen((p) => !p);
+          }}
         >
           <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
             <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
           </svg>
         </button>
-
         {menuOpen && (
           <div className="col-dropdown">
             <button
               className="col-dropdown-item"
-              onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onEdit(col); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setMenuOpen(false);
+                onEdit(col);
+              }}
             >
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+              >
                 <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
               </svg>
               Edit
             </button>
             <button
               className="col-dropdown-item danger"
-              onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onDelete(col._id); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setMenuOpen(false);
+                onDelete(col._id);
+              }}
             >
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+              >
                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                <path
+                  fillRule="evenodd"
+                  d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+                />
               </svg>
               Delete
             </button>
@@ -179,19 +227,44 @@ const CollectionItem = ({ col, isActive, onFilterChange, onEdit, onDelete }) => 
   );
 };
 
-// ─── Sidebar ──────────────────────────────────────────────
-const Sidebar = ({ activeFilter, onFilterChange, isOpen }) => {
-  const { collections, createCollection, updateCollection, deleteCollection } = useCollections();
-  const [showTypes,         setShowTypes]         = useState(false);
+const Sidebar = ({ activeFilter, onFilterChange, isOpen, onTopicsRefresh }) => {
+  const { collections, createCollection, updateCollection, deleteCollection } =
+    useCollections();
+  const [showTypes, setShowTypes] = useState(false);
+  const [showTopics, setShowTopics] = useState(true);
   const [showNewCollection, setShowNewCollection] = useState(false);
   const [editingCollection, setEditingCollection] = useState(null);
+  const [topics, setTopics] = useState([]);
+  const [topicsLoaded, setTopicsLoaded] = useState(false);
+
+  const refreshTopics = async () => {
+    try {
+      const res = await getTopicClustersAPI();
+      setTopics(res.data || []);
+    } catch {}
+    setTopicsLoaded(true);
+  };
+
+  useEffect(() => {
+    // ✅ Mount pe fetch karo
+    refreshTopics();
+
+    // ✅ Har 30 seconds mein refresh — extension se add hone pe bhi topics update honge
+    const interval = setInterval(refreshTopics, 10000); // 10s — naye items ke topics jaldi dikhein
+    return () => clearInterval(interval);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ✅ Parent ko refreshTopics expose karo (AddItemModal ke baad instant refresh)
+  useEffect(() => {
+    if (onTopicsRefresh) onTopicsRefresh(refreshTopics);
+  }, [onTopicsRefresh]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleEdit = async (data) => {
     await updateCollection(editingCollection._id, data);
   };
-
   const handleDelete = async (id) => {
-    if (!confirm("Delete this collection? Items will move to uncategorized.")) return;
+    if (!confirm("Delete this collection? Items will move to uncategorized."))
+      return;
     await deleteCollection(id);
     if (activeFilter === id) onFilterChange("all");
   };
@@ -213,7 +286,7 @@ const Sidebar = ({ activeFilter, onFilterChange, isOpen }) => {
           ))}
         </div>
 
-        {/* Types Filter */}
+        {/* Types */}
         <div className="sidebar-section">
           <button
             className="sidebar-label-btn"
@@ -221,7 +294,10 @@ const Sidebar = ({ activeFilter, onFilterChange, isOpen }) => {
           >
             Types
             <svg
-              width="10" height="10" viewBox="0 0 16 16" fill="currentColor"
+              width="10"
+              height="10"
+              viewBox="0 0 16 16"
+              fill="currentColor"
               style={{
                 transform: showTypes ? "rotate(180deg)" : "rotate(0deg)",
                 transition: "transform 0.2s",
@@ -231,23 +307,91 @@ const Sidebar = ({ activeFilter, onFilterChange, isOpen }) => {
               <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
             </svg>
           </button>
+          {showTypes &&
+            TYPE_ITEMS.map((item) => (
+              <button
+                key={item.id}
+                className={`sidebar-item ${activeFilter === item.id ? "active" : ""}`}
+                onClick={() => onFilterChange(item.id)}
+              >
+                <span style={{ width: 14 }} />
+                {item.label}
+              </button>
+            ))}
+        </div>
 
-          {showTypes && TYPE_ITEMS.map((item) => (
-            <button
-              key={item.id}
-              className={`sidebar-item ${activeFilter === item.id ? "active" : ""}`}
-              onClick={() => onFilterChange(item.id)}
+        {/* Topics */}
+        <div className="sidebar-section">
+          <button
+            className="sidebar-label-btn"
+            onClick={() => setShowTopics((p) => !p)}
+          >
+            Topics
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              style={{
+                transform: showTopics ? "rotate(180deg)" : "rotate(0deg)",
+                transition: "transform 0.2s",
+                marginLeft: "auto",
+              }}
             >
-              <span style={{ width: 14 }} />
-              {item.label}
-            </button>
-          ))}
+              <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+            </svg>
+          </button>
+          {showTopics && (
+            <>
+              {!topicsLoaded ? (
+                <p className="sidebar-empty">Loading...</p>
+              ) : topics.length === 0 ? (
+                <p className="sidebar-empty">No topics yet</p>
+              ) : (
+                topics.map((cluster) => (
+                  <button
+                    key={cluster.topic}
+                    className={`sidebar-item ${
+                      // ✅ Fix: dono jagah cluster.topic (lowercase) use karo
+                      activeFilter === `topic:${cluster.topic}` ? "active" : ""
+                    }`}
+                    onClick={() =>
+                      // ✅ Fix: originalTag ki jagah topic (lowercase) pass karo
+                      // Backend ab case-insensitive regex se match karega
+                      onFilterChange(`topic:${cluster.topic}`)
+                    }
+                  >
+                    <span
+                      style={{
+                        width: 14,
+                        height: 14,
+                        borderRadius: "50%",
+                        background: "#a78bfa20",
+                        border: "1px solid #a78bfa60",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "7px",
+                        color: "#a78bfa",
+                        fontWeight: 700,
+                        fontFamily: "monospace",
+                        flexShrink: 0,
+                      }}
+                    >
+                      #
+                    </span>
+                    {cluster.topic}
+                    <span className="item-count">{cluster.count}</span>
+                  </button>
+                ))
+              )}
+            </>
+          )}
         </div>
 
         {/* Collections */}
         <div className="sidebar-section">
           <div className="sidebar-label">Collections</div>
-
           {collections.length === 0 ? (
             <p className="sidebar-empty">No collections yet</p>
           ) : (
@@ -262,7 +406,6 @@ const Sidebar = ({ activeFilter, onFilterChange, isOpen }) => {
               />
             ))
           )}
-
           <button
             className="sidebar-add-collection"
             onClick={() => setShowNewCollection(true)}
@@ -281,7 +424,6 @@ const Sidebar = ({ activeFilter, onFilterChange, isOpen }) => {
           onSubmit={createCollection}
         />
       )}
-
       {editingCollection && (
         <CollectionModal
           initial={editingCollection}

@@ -37,8 +37,12 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser(async (id, done) => {
-  const user = await userModel.findById(id);
-  done(null, user._id);
+  try {
+    const user = await userModel.findById(id).select("-password");
+    done(null, user); // ✅ pura user object chahiye, sirf _id nahi
+  } catch (err) {
+    done(err, null);
+  }
 });
 
 export default passport;

@@ -12,7 +12,6 @@ import authRouter from "./routes/auth.routes.js";
 import itemRouter from "./routes/item.routes.js";
 import collectionRouter from "./routes/collection.routes.js";
 
-
 const app = express();
 
 app.use(express.json());
@@ -21,14 +20,31 @@ app.use(
   session({
     secret: config.jwtSecret,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false, // ✅ unnecessary sessions avoid karo
   }),
 );
-app.use(cors({
-  origin: true, // Frontend URL
-  credentials: true,               // ✅ Cookies allow karo
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      const allowed = [
+        "http://localhost:5173",
+        "https://your-production-frontend.com", // <- apna domain daalo
+      ];
 
+      // No origin (curl/Postman) ya allowed origins ya Chrome extension
+      if (
+        !origin ||
+        allowed.includes(origin) ||
+        origin.startsWith("chrome-extension://")
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  }),
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -46,5 +62,14 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/items", itemRouter);
 app.use("/api/collections", collectionRouter);
+
+// ✅ Global error handler — unhandled errors ko catch karo
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err.message);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+});
 
 export default app;

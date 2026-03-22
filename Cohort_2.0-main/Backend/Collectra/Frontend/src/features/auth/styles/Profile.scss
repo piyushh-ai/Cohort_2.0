@@ -1,0 +1,665 @@
+@import "../../items/styles/variables";
+
+// ═══════════════════════════════════════════════════════════
+// PROFILE PAGE — matches Collectra dashboard theme exactly
+// ═══════════════════════════════════════════════════════════
+
+.profile-page {
+  min-height: 100vh;
+  background: var(--bg-void);
+  color: var(--text-1);
+  font-family: var(--font-body);
+  position: relative;
+  overflow-x: hidden;
+
+  // Same ambient orbs as dashboard
+  &::before {
+    content: "";
+    position: fixed;
+    top: -250px; left: -200px;
+    width: 650px; height: 650px;
+    background: radial-gradient(circle, rgba(14,165,233,0.08), transparent 70%);
+    pointer-events: none; z-index: 0; filter: blur(40px);
+  }
+  &::after {
+    content: "";
+    position: fixed;
+    bottom: -150px; right: -150px;
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, rgba(139,92,246,0.06), transparent 70%);
+    pointer-events: none; z-index: 0; filter: blur(40px);
+  }
+}
+
+// ─── Toast ─────────────────────────────────────────────────
+.profile-toast {
+  position: fixed;
+  top: 20px; right: 20px;
+  z-index: 1000;
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  display: flex; align-items: center; gap: 8px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: scale-in 0.22s var(--spring) both;
+
+  &--success {
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.28);
+    color: var(--emerald);
+    box-shadow: 0 8px 28px rgba(16,185,129,0.1);
+  }
+  &--error {
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    color: var(--danger);
+    box-shadow: 0 8px 28px rgba(244,63,94,0.1);
+  }
+}
+
+// ─── Header — exact same as Navbar ─────────────────────────
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 62px;
+  background: rgba(2, 5, 9, 0.85);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0; z-index: 50;
+  flex-shrink: 0;
+  animation: fade-down 0.5s var(--snap) both;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(14,165,233,0.0) 10%,
+      rgba(14,165,233,1.0) 35%,
+      rgba(245,158,11,0.85) 65%,
+      rgba(139,92,246,0.6) 85%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: navLineShimmer 4s ease-in-out infinite;
+  }
+}
+
+@keyframes navLineShimmer {
+  0%, 100% { background-position: 0% center; }
+  50%       { background-position: 100% center; }
+}
+
+.profile-back {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 7px 13px;
+  border-radius: 10px;
+  transition: all 0.2s var(--spring);
+
+  &:hover {
+    border-color: rgba(6,182,212,0.45);
+    color: var(--teal);
+    background: rgba(6,182,212,0.07);
+    transform: translateX(-2px);
+  }
+}
+
+.profile-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-logo-mark {
+  position: relative;
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--blue-strong), var(--blue));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+  box-shadow: 0 0 20px rgba(14,165,233,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
+  flex-shrink: 0;
+
+  &::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, transparent 55%);
+    border-radius: 10px;
+  }
+}
+
+.profile-logo-name {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.6px;
+}
+
+// ─── Body Layout ───────────────────────────────────────────
+.profile-body {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  max-width: 980px;
+  margin: 32px auto;
+  padding: 0 24px 60px;
+  position: relative; z-index: 1;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    margin: 18px auto;
+    gap: 16px;
+  }
+}
+
+// ─── Aside ─────────────────────────────────────────────────
+.profile-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+// ─── Avatar Card — same as .item-card glass style ──────────
+.profile-avatar-card {
+  background: rgba(10, 14, 28, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 26px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  // Same top glow line as item-card
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--blue), var(--teal), transparent);
+    opacity: 0.5;
+  }
+
+  // Inner radial top glow
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0; border-radius: 18px;
+    background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(14,165,233,0.07), transparent 70%);
+    pointer-events: none;
+  }
+}
+
+// ─── Avatar ────────────────────────────────────────────────
+.profile-avatar-wrap {
+  position: relative; z-index: 1;
+}
+
+.profile-avatar {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(14,165,233,0.35);
+  background: var(--bg-surface);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  box-shadow: 0 0 24px rgba(14,165,233,0.2);
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+
+  &--loading {
+    border-color: var(--blue);
+    box-shadow: 0 0 28px rgba(14,165,233,0.45);
+  }
+}
+
+.profile-avatar-initials {
+  font-family: var(--font-display);
+  font-size: 26px; font-weight: 800;
+  color: var(--blue);
+  letter-spacing: -1px;
+}
+
+.profile-avatar-overlay {
+  position: absolute; inset: 0;
+  background: rgba(2,5,9,0.6);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+}
+
+.profile-avatar-edit-btn {
+  position: absolute;
+  bottom: 2px; right: 2px;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-strong), var(--gold));
+  border: 2px solid var(--bg-void);
+  color: #000;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(245,158,11,0.4);
+  transition: transform 0.25s var(--spring), box-shadow 0.2s;
+
+  &:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 20px rgba(245,158,11,0.65);
+  }
+  &:disabled {
+    background: var(--bg-surface);
+    color: var(--text-3);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+}
+
+.profile-aside-info { width: 100%; z-index: 1; }
+
+.profile-aside-name {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 700;
+  color: var(--text-1);
+  margin: 0 0 4px;
+  letter-spacing: -0.3px;
+}
+
+.profile-aside-email {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-3);
+  margin: 0 0 6px;
+  word-break: break-all;
+  letter-spacing: 0.02em;
+}
+
+.profile-aside-bio {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.55; margin: 0;
+}
+
+.profile-provider-badge {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+  background: rgba(14,165,233,0.06);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  z-index: 1;
+  letter-spacing: 0.04em;
+}
+
+.profile-remove-photo-btn {
+  width: 100%;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-3);
+  font-family: var(--font-body);
+  font-size: 12px;
+  padding: 7px;
+  cursor: pointer;
+  transition: all 0.15s;
+  z-index: 1;
+
+  &:hover {
+    border-color: var(--danger-border);
+    color: var(--danger);
+    background: var(--danger-bg);
+  }
+}
+
+// ─── Stats Card ────────────────────────────────────────────
+.profile-stats-card {
+  background: rgba(10, 14, 28, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  backdrop-filter: blur(14px);
+}
+
+.profile-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+}
+
+.profile-stat-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+}
+
+.profile-stat-value {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--blue);
+  font-weight: 500;
+}
+
+// ─── Main ──────────────────────────────────────────────────
+.profile-main {
+  display: flex;
+  flex-direction: column;
+}
+
+// ─── Tabs — same as .view-toggle ───────────────────────────
+.profile-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 2px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg,
+      transparent,
+      rgba(14,165,233,0.2) 40%,
+      rgba(245,158,11,0.1) 70%,
+      transparent
+    );
+  }
+}
+
+.profile-tab {
+  display: flex; align-items: center; gap: 6px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-3);
+  font-family: var(--font-body);
+  font-size: 12.5px; font-weight: 500;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: -1px;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+
+  &:hover {
+    background: rgba(14,165,233,0.06);
+    color: var(--text-2);
+  }
+  &.active {
+    color: var(--text-1);
+    background: rgba(14,165,233,0.07);
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -2px; left: 12px; right: 12px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue), var(--teal));
+      border-radius: 999px;
+      box-shadow: 0 0 10px rgba(14,165,233,0.6);
+    }
+  }
+}
+
+// ─── Section ────────────────────────────────────────────────
+.profile-section {
+  animation: fade-up 0.22s var(--ease) both;
+}
+
+.profile-section-header {
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: 16px; font-weight: 700;
+    color: var(--text-1);
+    margin: 0 0 5px;
+    letter-spacing: -0.3px;
+  }
+  p {
+    font-size: 12.5px;
+    color: var(--text-3);
+    margin: 0;
+  }
+}
+
+// ─── Form — same as modal-form ──────────────────────────────
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.profile-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.profile-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  label {
+    font-family: var(--font-mono);
+    font-size: 10.5px; font-weight: 500;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  input, textarea {
+    background: rgba(4,10,18,0.9);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-1);
+    font-size: 13.5px;
+    padding: 10px 13px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    font-family: var(--font-body);
+    resize: vertical;
+    width: 100%;
+
+    &::placeholder { color: var(--text-3); font-weight: 300; }
+    &:focus {
+      border-color: var(--border-blue);
+      background: rgba(14,165,233,0.04);
+      box-shadow: 0 0 0 3px rgba(14,165,233,0.1);
+    }
+    &:disabled { opacity: 0.35; cursor: not-allowed; }
+  }
+}
+
+.profile-form-hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+
+  &--right { text-align: right; }
+}
+
+// Prefix input — same glass look
+.profile-input-prefix {
+  display: flex; align-items: center;
+  background: rgba(4,10,18,0.9);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus-within {
+    border-color: var(--border-blue);
+    box-shadow: 0 0 0 3px rgba(14,165,233,0.1);
+  }
+
+  .prefix {
+    padding: 10px 12px;
+    color: var(--text-3);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    border-right: 1px solid var(--border);
+    background: rgba(14,165,233,0.04);
+    flex-shrink: 0;
+  }
+
+  input {
+    border: none !important;
+    border-radius: 0 !important;
+    flex: 1;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+}
+
+.profile-input-eye {
+  position: relative;
+  input { padding-right: 42px !important; }
+
+  .eye-btn {
+    position: absolute;
+    right: 10px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none;
+    color: var(--text-3);
+    cursor: pointer; padding: 4px;
+    display: flex; align-items: center;
+    transition: color 0.15s;
+    &:hover { color: var(--blue); }
+  }
+}
+
+// Save — gold CTA, same as modal-submit-btn
+.profile-save-btn {
+  position: relative;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: linear-gradient(135deg, var(--gold-strong), var(--gold));
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 24px;
+  font-family: var(--font-body);
+  font-size: 13px; font-weight: 700;
+  cursor: pointer;
+  align-self: flex-start;
+  overflow: hidden;
+  box-shadow: 0 0 22px rgba(245,158,11,0.35);
+  transition: transform 0.3s var(--spring), box-shadow 0.25s;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -120%; width: 80%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s ease;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(245,158,11,0.55);
+    &::before { left: 120%; }
+  }
+  &:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+  &:disabled {
+    background: var(--bg-surface);
+    color: var(--text-3);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+}
+
+// ─── Danger / Account Card ─────────────────────────────────
+.profile-danger-card {
+  background: rgba(10,14,28,0.85);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(14px);
+}
+
+.profile-danger-item {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px; gap: 20px;
+
+  & + & { border-top: 1px solid var(--border); }
+
+  h4 {
+    font-family: var(--font-display);
+    font-size: 14px; font-weight: 700;
+    color: var(--text-1); margin: 0 0 4px;
+    letter-spacing: -0.2px;
+  }
+  p {
+    font-size: 12px; color: var(--text-3); margin: 0;
+  }
+}
+
+.profile-danger-btn {
+  flex-shrink: 0;
+  border-radius: 9px;
+  padding: 8px 16px;
+  font-family: var(--font-body);
+  font-size: 12.5px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--spring);
+  white-space: nowrap;
+
+  &--outline {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-2);
+
+    &:hover {
+      border-color: var(--danger-border);
+      color: var(--danger);
+      background: var(--danger-bg);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// ─── Spinner — override with blue ──────────────────────────
+.profile-page .spinner {
+  border-color: rgba(14,165,233,0.15);
+  border-top-color: var(--blue);
+}
+
+// ─── Responsive ────────────────────────────────────────────
+@media (max-width: 768px) {
+  .profile-header { padding: 0 14px; height: 54px; }
+  .profile-body   { padding: 0 12px 48px; }
+  .profile-avatar-card { padding: 20px 14px 16px; }
+}

@@ -6,64 +6,58 @@ import {
 } from "../validators/auth.validator.js";
 import {
   forgotPasswordController,
-  getMeController,
   googleSuccess,
   loginUserController,
   logoutUserController,
   registerUserController,
   resetPasswordController,
 } from "../controllers/auth.controller.js";
+import {
+  getMeController,
+  updateProfileController,
+  updateProfilePictureController,
+  removeProfilePictureController,
+  changePasswordController,
+} from "../controllers/Profile.controller.js";
 import { userMiddleware } from "../middlewares/user.middleware.js";
+import { upload } from "../middlewares/upload.middleware.js";
 import passport from "passport";
 
 const authRouter = Router();
 
-/**
- * POST - /api/auth/register to register a user
- */
-
 authRouter.post("/register", registerValidator, registerUserController);
-
-/**
- * POST - /api/auth/login to login a user
- */
 authRouter.post("/login", loginValidator, loginUserController);
-
-/**
- * GET - /api/auth/me to get the current user
- */
 authRouter.get("/me", userMiddleware, getMeController);
-
-/**
- * POST - /api/auth/logout to logout a user
- */
 authRouter.post("/logout", userMiddleware, logoutUserController);
 
-/**
- * GET - /api/auth/google to login with google
- */
+// ─── Profile routes ───────────────────────────────────
+authRouter.put("/profile", userMiddleware, updateProfileController);
+authRouter.post(
+  "/profile/picture",
+  userMiddleware,
+  upload.single("picture"),
+  updateProfilePictureController,
+);
+authRouter.delete(
+  "/profile/picture",
+  userMiddleware,
+  removeProfilePictureController,
+);
+authRouter.put("/profile/password", userMiddleware, changePasswordController);
+
+// ─── Google OAuth ─────────────────────────────────────
 authRouter.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] }),
 );
-
-/**
- * GET - /api/auth/google/callback to handle the callback from google
- */
 authRouter.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   googleSuccess,
 );
 
-/**
- * POST - /api/auth/forgot-password to forgot password
- */
+// ─── Password reset ───────────────────────────────────
 authRouter.post("/forgot-password", forgotPasswordController);
-
-/**
- * POST - /api/auth/reset-password to reset password
- */
 authRouter.post(
   "/reset-password/:id/:token",
   resetPasswordValidator,

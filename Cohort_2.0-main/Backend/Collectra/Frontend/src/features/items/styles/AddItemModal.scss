@@ -1,4 +1,7 @@
-@import './variables';
+@import "./variables";
+
+// ─── Modal Overlay ────────────────────────────────────────
+// (shared base is in _variables.scss — these are modal-specific additions)
 
 // ─── Modal Tabs ───────────────────────────────────────────
 .modal-tabs {
@@ -22,17 +25,19 @@
   cursor: pointer;
   transition: all 0.2s ease;
 
-  svg { flex-shrink: 0; }
+  svg {
+    flex-shrink: 0;
+  }
 
   &:hover {
     color: var(--text-1);
-    background: rgba(255,255,255,0.04);
+    background: rgba(255, 255, 255, 0.04);
     border-color: var(--border);
   }
 
   &.active {
-    background: rgba(56,189,248,0.1);
-    border-color: rgba(56,189,248,0.25);
+    background: rgba(56, 189, 248, 0.1);
+    border-color: rgba(56, 189, 248, 0.25);
     color: var(--cyan);
     font-weight: 600;
   }
@@ -40,42 +45,50 @@
 
 // ─── File Dropzone ────────────────────────────────────────
 .file-dropzone {
-  border: 1.5px dashed rgba(255,255,255,0.1);
+  border: 1.5px dashed rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s, transform 0.2s var(--spring);
   min-height: 130px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.01);
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.2s var(--spring);
 
-  // Subtle inner gradient
-  background: rgba(255,255,255,0.01);
-
+  // Inner radial glow
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 50% 50%, rgba(56,189,248,0.04), transparent 60%);
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(56, 189, 248, 0.05),
+      transparent 60%
+    );
     opacity: 0;
     transition: opacity 0.2s;
   }
 
-  &:hover:not(.has-file), &.drag-over {
-    border-color: rgba(56,189,248,0.4);
-    background: rgba(56,189,248,0.04);
+  &:hover:not(.has-file),
+  &.drag-over {
+    border-color: rgba(56, 189, 248, 0.45);
+    background: rgba(56, 189, 248, 0.04);
     transform: scale(1.005);
-
-    &::before { opacity: 1; }
+    &::before {
+      opacity: 1;
+    }
   }
 
   &.has-file {
     cursor: default;
     border-style: solid;
-    border-color: rgba(56,189,248,0.2);
-    background: rgba(56,189,248,0.04);
+    border-color: rgba(56, 189, 248, 0.22);
+    background: rgba(56, 189, 248, 0.04);
   }
 }
 
@@ -89,7 +102,9 @@
   position: relative;
   z-index: 1;
 
-  svg { color: var(--text-3); }
+  svg {
+    color: var(--text-3);
+  }
 
   p {
     margin: 0;
@@ -114,6 +129,7 @@
   text-transform: uppercase;
 }
 
+// ─── File Selected State ──────────────────────────────────
 .file-selected {
   display: flex;
   align-items: center;
@@ -144,7 +160,9 @@
 .file-info {
   flex: 1;
   min-width: 0;
-  p { margin: 0; }
+  p {
+    margin: 0;
+  }
 }
 
 .file-name {
@@ -185,12 +203,13 @@
     background: var(--danger-bg);
   }
 }
+
 // ═══════════════════════════════════════════════════════════
 // RESPONSIVE
 // ═══════════════════════════════════════════════════════════
 
+// Bottom sheet on mobile
 @media (max-width: 768px) {
-  // Bottom sheet on mobile
   .modal-overlay {
     padding: 0;
     align-items: flex-end;
@@ -199,22 +218,23 @@
   .modal {
     max-width: 100%;
     width: 100%;
-    border-radius: 20px 20px 0 0;
-    max-height: 90vh;
+    border-radius: 22px 22px 0 0;
+    max-height: 92vh;
     padding-bottom: env(safe-area-inset-bottom, 0px);
+    animation: slide-up-sheet 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 
-    // Pull handle
+    // Pull handle indicator
     &::before {
-      content: '';
+      content: "";
       display: block;
       width: 40px;
       height: 4px;
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.14);
       border-radius: 999px;
       margin: 12px auto 0;
     }
 
-    // Override the gradient line from variables
+    // Override the gradient line
     &::after {
       content: none;
     }
@@ -226,6 +246,17 @@
 
   .modal-form {
     padding: 4px 20px 24px;
+  }
+}
+
+@keyframes slide-up-sheet {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
@@ -245,7 +276,6 @@
     min-height: 120px;
   }
 
-  // Stack footer buttons vertically
   .modal-footer {
     flex-direction: column-reverse;
     gap: 8px;
@@ -260,11 +290,11 @@
     border-radius: 10px;
   }
 
-  // Bigger input for touch
   .form-group {
-    input, select {
+    input,
+    select {
       padding: 13px 14px;
-      font-size: 16px; // prevent iOS zoom
+      font-size: 16px; // Prevent iOS zoom
     }
   }
 }

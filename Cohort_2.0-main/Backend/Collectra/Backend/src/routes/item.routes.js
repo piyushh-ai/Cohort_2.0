@@ -14,10 +14,18 @@ import {
   generateAIHighlights,
   removeFromCollection,
   addToCollection,
+  getGraphData,
+  semanticSearchItems,
+  backfillEmbeddingsController,
+  getTopicClusters,
+  retagAllItemsController,
 } from "../controllers/item.controller.js";
 import { Router } from "express";
 
 const itemRouter = Router();
+
+// Graph data — /resurface se pehle daalo
+itemRouter.get("/graph", userMiddleware, getGraphData);
 
 /**
  * GET /api/items/resurface
@@ -25,6 +33,31 @@ const itemRouter = Router();
  * Must be defined before /:id to avoid route conflict
  */
 itemRouter.get("/resurface", userMiddleware, resurfaceItems);
+
+/**
+ * GET /api/items/semantic-search
+ * Semantic search using embeddings
+ * Query params: query, limit
+ */
+itemRouter.get("/semantic-search", userMiddleware, semanticSearchItems);
+itemRouter.get("/topics", userMiddleware, getTopicClusters);
+
+/**
+ * POST /api/items/backfill-embeddings
+ * Ek baar chalao — purane items mein embeddings add karo
+ */
+itemRouter.post(
+  "/backfill-embeddings",
+  userMiddleware,
+  backfillEmbeddingsController,
+);
+
+/**
+ * POST /api/items/retag-all
+ * Purane items ko AI se dobara retag karo
+ * Background mein chalega — turant response milega
+ */
+itemRouter.post("/retag-all", userMiddleware, retagAllItemsController);
 
 /**
  * GET /api/items
@@ -106,7 +139,11 @@ itemRouter.get("/:id/related", userMiddleware, getRelatedItems);
  * Returns array of suggested highlight strings
  * User then selects which to save via POST /:id/highlight
  */
-itemRouter.get("/:id/highlights/generate", userMiddleware, generateAIHighlights);
+itemRouter.get(
+  "/:id/highlights/generate",
+  userMiddleware,
+  generateAIHighlights,
+);
 
 /**
  * PATCH /api/items/:id/collection

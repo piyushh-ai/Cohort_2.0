@@ -33,7 +33,6 @@ export const createCollection = async (req, res) => {
     });
 
     return res.status(201).json({ success: true, data: collection });
-
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -47,8 +46,9 @@ export const getAllCollections = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const collections = await CollectionModel.find({ userId })
-      .sort({ createdAt: -1 });
+    const collections = await CollectionModel.find({ userId }).sort({
+      createdAt: -1,
+    });
 
     // Get item count for each collection
     const collectionsWithCount = await Promise.all(
@@ -58,14 +58,13 @@ export const getAllCollections = async (req, res) => {
           collectionId: col._id,
         });
         return { ...col.toObject(), itemCount };
-      })
+      }),
     );
 
     return res.status(200).json({
       success: true,
       data: collectionsWithCount,
     });
-
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -81,10 +80,22 @@ export const updateCollection = async (req, res) => {
     const userId = req.user._id;
     const { name, color } = req.body;
 
+    // ✅ Sirf woh fields update karo jo bheje gaye hain
+    const updateFields = {};
+    if (name !== undefined) updateFields.name = name;
+    if (color !== undefined) updateFields.color = color;
+
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Nothing to update",
+      });
+    }
+
     const collection = await CollectionModel.findOneAndUpdate(
       { _id: id, userId },
-      { name, color },
-      { new: true }
+      { $set: updateFields }, // ✅ $set use karo
+      { new: true },
     );
 
     if (!collection) {
@@ -95,7 +106,6 @@ export const updateCollection = async (req, res) => {
     }
 
     return res.status(200).json({ success: true, data: collection });
-
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -122,7 +132,7 @@ export const deleteCollection = async (req, res) => {
     // Items delete nahi honge — bas unka collectionId null ho jaayega
     await ItemModel.updateMany(
       { userId, collectionId: id },
-      { collectionId: null }
+      { collectionId: null },
     );
 
     await CollectionModel.findByIdAndDelete(id);
@@ -131,7 +141,6 @@ export const deleteCollection = async (req, res) => {
       success: true,
       message: "Collection deleted — items moved to uncategorized",
     });
-
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

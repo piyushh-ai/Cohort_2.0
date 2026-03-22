@@ -5,92 +5,122 @@ import jwt from "jsonwebtoken";
 import { sendEmail } from "../services/mail.service.js";
 
 export const registerUserController = async (req, res) => {
-  const { username, email, password } = req.body;
+  try {
+    const { username, email, password } = req.body;
 
-  const isAlreadyRegistered = await userModel.findOne({
-    $or: [{ email }, { username }],
-  });
+    const isAlreadyRegistered = await userModel.findOne({
+      $or: [{ email }, { username }],
+    });
 
-  if (isAlreadyRegistered) {
-    return res.status(400).json({
-      message: "User with this email or username already exist",
+    if (isAlreadyRegistered) {
+      return res.status(400).json({
+        message: "User with this email or username already exist",
+        success: false,
+        err: "User already exist",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await userModel.create({
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    const token = jwt.sign(
+      { id: user._id, username: user.username },
+      config.jwtSecret,
+      { expiresIn: "7d" }, // ✅ expiry add ki
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true, // ✅ XSS se bachao
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(201).json({
+      message: "User registered successfully",
+      success: true,
+      user: {
+        username: user.username,
+        email: user.email,
+      },
+      token,
+    });
+  } catch (error) {
+    console.error("registerUserController error:", error.message);
+    return res.status(500).json({
+      message: "Server error during registration",
       success: false,
-      err: "User already exist",
     });
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const user = await userModel.create({
-    username,
-    email,
-    password: hashedPassword,
-  });
-
-  const token = jwt.sign(
-    {
-      id: user._id,
-      username: user.username,
-    },
-    config.jwtSecret,
-  );
-
-  res.cookie("token", token);
-
-  return res.status(201).json({
-    message: "User registered successfully",
-    user: {
-      username: user.username,
-      email: user.email,
-    },
-    token,
-  });
 };
 
 export const loginUserController = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({
-      message: "Email and password are required",
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+        success: false,
+      });
+    }
+
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+        success: false,
+      });
+    }
+
+    // Google login wale users ke liye password check mat karo
+    if (user.provider === "google") {
+      return res.status(400).json({
+        message: "This account uses Google login",
+        success: false,
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+        success: false,
+      });
+    }
+
+    const token = jwt.sign(
+      { id: user._id, username: user.username },
+      config.jwtSecret,
+      { expiresIn: "7d" }, // ✅ expiry add ki
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true, // ✅ XSS se bachao
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      message: "Login successful",
+      success: true,
+      user: {
+        username: user.username,
+        email: user.email,
+      },
+      token,
+    });
+  } catch (error) {
+    console.error("loginUserController error:", error.message);
+    return res.status(500).json({
+      message: "Server error during login",
       success: false,
     });
   }
-
-  const user = await userModel.findOne({ email });
-
-  if (!user) {
-    return res.status(401).json({
-      message: "Invalid email or password",
-      success: false,
-    });
-  }
-
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-
-  if (!isPasswordValid) {
-    return res.status(401).json({
-      message: "Invalid email or password",
-      success: false,
-    });
-  }
-
-  const token = jwt.sign(
-    { id: user._id, username: user.username },
-    config.jwtSecret,
-  );
-
-  res.cookie("token", token);
-
-  return res.status(200).json({
-    message: "Login successful",
-    success: true,
-    user: {
-      username: user.username,
-      email: user.email,
-    },
-    token,
-  });
 };
 
 export const getMeController = async (req, res) => {
@@ -119,7 +149,7 @@ export const logoutUserController = async (req, res) => {
 
 export const googleSuccess = async (req, res) => {
   if (!req.user) {
-    return res.redirect("http://localhost:5173/login?error=auth_failed");
+    return res.redirect(`${config.frontendUrl}/login?error=auth_failed`);
   }
 
   const token = jwt.sign(
@@ -135,7 +165,7 @@ export const googleSuccess = async (req, res) => {
   });
 
   // Frontend dashboard pe redirect karo
-  return res.redirect("http://localhost:5173/");
+  return res.redirect(`${config.frontendUrl}/auth/callback?ext_token=${token}`);
 };
 
 export const forgotPasswordController = async (req, res) => {
@@ -160,7 +190,8 @@ export const forgotPasswordController = async (req, res) => {
     expiresIn: "15m",
   });
 
-  const resetLink = `http://localhost:5173/reset-password/${user._id}/${token}`;
+  const frontendUrl = config.frontendUrl || "http://localhost:5173";
+  const resetLink = `${frontendUrl}/reset-password/${user._id}/${token}`;
 
   await sendEmail({
     to: user.email,

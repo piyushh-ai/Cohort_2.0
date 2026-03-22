@@ -33,7 +33,31 @@ export const forgotPasswordAPI = async (data) => {
 export const resetPasswordAPI = async (id, token, data) => {
   const response = await axiosInstance.post(
     `/auth/reset-password/${id}/${token}`,
-    data
+    data,
   );
+  return response.data;
+};
+
+export const updateProfileAPI = async (data) => {
+  const response = await axiosInstance.put("/auth/profile", data);
+  return response.data;
+};
+
+export const updateProfilePictureAPI = async (file) => {
+  const formData = new FormData();
+  formData.append("picture", file);
+  const response = await axiosInstance.post("/auth/profile/picture", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
+};
+
+export const removeProfilePictureAPI = async () => {
+  const response = await axiosInstance.delete("/auth/profile/picture");
+  return response.data;
+};
+
+export const changePasswordAPI = async (data) => {
+  const response = await axiosInstance.put("/auth/profile/password", data);
   return response.data;
 };

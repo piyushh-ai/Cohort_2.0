@@ -11,12 +11,18 @@ import {
   resetPasswordAPI,
 } from "../api/auth.api";
 
+const TOKEN_KEY = "collectra_token";
+
+// Helper: token save/clear
+function persistToken(token) {
+  if (token) localStorage.setItem(TOKEN_KEY, token);
+  else localStorage.removeItem(TOKEN_KEY);
+}
+
 const useAuth = () => {
   const { error, setError, user, setUser, loading, setLoading } =
     useContext(AuthContext);
   const navigate = useNavigate();
-  console.log(user);
-  
 
   // ─── Clear Error ──────────────────────────────────────
   const clearError = () => setError(null);
@@ -36,13 +42,14 @@ const useAuth = () => {
     getUser();
   }, []);
 
-  // ─── Login ────────────────────────────────────────────
+  // ── Login ─────────────────────────────────────────────
   const login = async (formData) => {
     setLoading(true);
     setError(null);
     try {
       const response = await loginAPI(formData);
       setUser(response.user);
+      persistToken(response.token); // <-- ADD THIS
       navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Invalid email or password");
@@ -51,20 +58,17 @@ const useAuth = () => {
     }
   };
 
-  // ─── Register ─────────────────────────────────────────
+  // ── Register ──────────────────────────────────────────
   const register = async (formData) => {
     setLoading(true);
     setError(null);
     try {
       const response = await registerAPI(formData);
       setUser(response.user);
+      persistToken(response.token); // <-- ADD THIS
       navigate("/");
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        err.response?.data?.err ||
-        "Registration failed"
-      );
+      setError(err.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -73,14 +77,22 @@ const useAuth = () => {
   // ─── Google Login ─────────────────────────────────────
   const googleLogin = () => {
     googleLoginAPI();
+    // Google OAuth ke baad URL mein token aata hai
+    const params = new URLSearchParams(window.location.search);
+    const extToken = params.get("ext_token");
+    if (extToken) {
+      persistToken(extToken);
+      window.history.replaceState({}, "", window.location.pathname);
+    }
   };
 
-  // ─── Logout ───────────────────────────────────────────
+  // ── Logout ────────────────────────────────────────────
   const logout = async () => {
     try {
       await logoutAPI();
     } finally {
       setUser(null);
+      persistToken(null); // <-- ADD THIS (clears localStorage)
       navigate("/login");
     }
   };
@@ -114,8 +126,35 @@ const useAuth = () => {
     }
   };
 
+  function syncTokenToExtension(token) {
+    try {
+      const extensionId = import.meta.env.VITE_EXTENSION_ID;
+      if (
+        extensionId &&
+        typeof chrome !== "undefined" &&
+        chrome.runtime?.sendMessage
+      ) {
+        chrome.runtime.sendMessage(extensionId, { type: "SAVE_TOKEN", token });
+      }
+    } catch {
+      // Extension nahi hai — koi baat nahi
+    }
+  }
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const extToken = params.get("ext_token");
+    if (extToken) {
+      syncTokenToExtension(extToken);
+      // URL se token param hatao
+      params.delete("ext_token");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
+
   return {
     user,
+    setUser, // ✅ Profile update ke liye expose karo
     loading,
     error,
     isAuthenticated: !!user,
