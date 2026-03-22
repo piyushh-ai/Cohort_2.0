@@ -65,11 +65,16 @@ export const createItemFromFile = async (userId, file, collectionId) => {
 };
 
 // ─── Save item + trigger background jobs ─────────────
+// ✅ Yeh karo — AI ko bhi await karo
 export const saveItem = async (itemData) => {
   const item = await ItemModel.create(itemData);
-  // Fire and forget — response wait nahi karega
-  runBackgroundJobs(item);
-  generateAndSaveEmbedding(item._id);
+
+  // AI aur embedding parallel mein chalao — dono ka wait karo
+  await Promise.allSettled([
+    runBackgroundJobs(item),
+    generateAndSaveEmbedding(item._id),
+  ]);
+
   return item;
 };
 
