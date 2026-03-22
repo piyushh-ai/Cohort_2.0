@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { PageLoader } from "../shared/components/Loader";
 import ProtectedRoute from "../shared/components/protectRoute";
@@ -28,19 +28,14 @@ const withSuspense = (Component) => (
 
 export const router = createBrowserRouter([
   {
-    path: "/",
-    element: (
-      <ProtectedRoute>
-        <Suspense fallback={<PageLoader />}>
-          <Dashboard />
-        </Suspense>
-      </ProtectedRoute>
-    ),
-  },
-  {
     path: "/welcome",
     element: withSuspense(Welcome),
   },
+  {
+    path: "/",
+    element: <ProtectedRoute />, // ProtectedRoute hata do yahan se
+  },
+
   {
     path: "/login",
     element: withSuspense(Login),

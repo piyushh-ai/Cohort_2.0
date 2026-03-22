@@ -28,15 +28,28 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired — localStorage clear karo aur login pe redirect
       localStorage.removeItem(TOKEN_KEY);
-      // Hard redirect — React Router state corrupt ho sakta hai
-      if (window.location.pathname !== "/login") {
+
+      // Sirf in pages pe redirect karo — /welcome aur /login pe NAHI
+      const publicPaths = [
+        "/login",
+        "/register",
+        "/welcome",
+        "/forgot-password",
+      ];
+      const isPublic = publicPaths.some((path) =>
+        window.location.pathname.startsWith(path),
+      );
+
+      // Aur sirf tab redirect karo jab yeh getMeAPI NA ho
+      // getMeAPI ki failure pe ProtectedRoute handle karega
+      const isMeEndpoint = error.config?.url?.includes("/auth/me");
+
+      if (!isPublic && !isMeEndpoint) {
         window.location.href = "/login";
       }
     }
     return Promise.reject(error);
   },
 );
-
 export default axiosInstance;

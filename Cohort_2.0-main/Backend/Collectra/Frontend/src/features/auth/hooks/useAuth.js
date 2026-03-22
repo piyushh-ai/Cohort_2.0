@@ -93,7 +93,6 @@ const useAuth = () => {
     } finally {
       setUser(null);
       persistToken(null); // <-- ADD THIS (clears localStorage)
-      navigate("/login");
     }
   };
 
