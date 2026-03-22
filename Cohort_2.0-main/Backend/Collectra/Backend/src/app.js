@@ -4,6 +4,11 @@ import session from "express-session";
 import { config } from "./config/config.js";
 import passport from "./config/passport.js";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * All routes imports are here
@@ -70,6 +75,10 @@ app.use((err, req, res, next) => {
     success: false,
     message: err.message || "Internal Server Error",
   });
+});
+
+app.get((req, res) => {
+  res.sendFile(path.join(__dirname, "../dist/index.html"));
 });
 
 export default app;
