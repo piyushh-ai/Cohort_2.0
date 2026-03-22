@@ -4,7 +4,7 @@
 .sidebar {
   width: 232px;
   min-width: 232px;
-  background: rgba(13, 18, 28, 0.95);        // was rgba(3,8,16,0.92) — too dark
+  background: rgba(13, 18, 28, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-right: 1px solid rgba(255,255,255,0.07);
@@ -18,7 +18,6 @@
   position: relative;
   z-index: 10;
 
-  // Right accent gradient line
   &::after {
     content: '';
     position: absolute;
@@ -33,7 +32,6 @@
     pointer-events: none;
   }
 
-  // Custom scrollbar
   &::-webkit-scrollbar { width: 3px; }
   &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb {
@@ -137,7 +135,6 @@
     svg { opacity: 1; }
   }
 
-  // Active — All Items / generic
   &.active,
   &.active--all {
     background: rgba(14,165,233,0.1);
@@ -160,7 +157,6 @@
     }
   }
 
-  // Active — Favorites
   &.active--favorites {
     background: rgba(245,158,11,0.1);
     color: var(--gold);
@@ -178,7 +174,6 @@
     }
   }
 
-  // Active — Rediscover
   &.active--rediscover {
     background: rgba(249,115,22,0.1);
     color: var(--orange);
@@ -242,7 +237,7 @@
   }
 }
 
-// ─── Collection row (with 3-dot menu) ────────────────────
+// ─── Collection row ────────────────────────────────────────
 .sidebar-item-row {
   display: flex;
   align-items: center;
@@ -338,7 +333,7 @@
   position: absolute;
   top: calc(100% + 4px);
   right: 0;
-  background: rgba(22, 28, 42, 0.98);        // was rgba(6,12,22,0.98) — too dark
+  background: rgba(22, 28, 42, 0.98);
   border: 1px solid rgba(255,255,255,0.09);
   border-radius: 11px;
   padding: 5px;
@@ -395,62 +390,164 @@
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0;
+    // ✅ FIX 1: Bottom navbar ke upar tak — 64px bottom nav height
+    bottom: 64px;
     z-index: 200;
-    width: 280px;
-    max-width: 85vw;
-    padding: 0 10px 48px;
-    background: rgba(15, 20, 30, 0.99);      // was rgba(2,5,9,0.99) — too black
+    width: 80vw;
+    max-width: 300px;
+    // ✅ FIX 2: Top safe area + header height (56px) se shuru
+    padding-top: max(60px, calc(env(safe-area-inset-top) + 56px));
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 24px;
+    background: rgba(13, 17, 26, 0.99);
     border-right: 1px solid rgba(255,255,255,0.08);
     box-shadow: 12px 0 60px rgba(0,0,0,0.7);
     transform: translateX(-100%);
     transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform;
+    // JS touchmove sets style.transition = "none" during drag,
+    // then clears it on touchend so this value kicks back in for snap
     overflow-y: auto;
+    overflow-x: hidden;
 
-    padding-top: max(16px, env(safe-area-inset-top));
+    // ✅ FIX 3: Content ko top se shuru karo, gap nahi
+    display: flex;
+    flex-direction: column;
+    gap: 0;
 
     &.sidebar--open {
       transform: translateX(0);
     }
+
+    // ✅ FIX 4: Right glow line hide on mobile (extra visual noise)
+    &::after {
+      display: none;
+    }
   }
 
+  // ✅ FIX 5: Section spacing tighten karo
+  .sidebar-section {
+    margin-bottom: 2px;
+  }
+
+  // ✅ FIX 6: Nav items — touch-friendly 44px min height
   .sidebar-item {
     padding: 11px 12px;
     font-size: 14px;
     border-radius: 10px;
-    gap: 10px;
+    gap: 11px;
+    min-height: 44px;
+
+    // Active indicator thoda bada
+    &.active::before,
+    &.active--all::before,
+    &.active--favorites::before,
+    &.active--rediscover::before {
+      width: 3px;
+    }
   }
 
+  // ✅ FIX 7: Collection main button touch target
   .sidebar-item-main {
     padding: 11px 12px;
     font-size: 14px;
+    min-height: 44px;
   }
 
-  .sidebar-add-collection {
-    padding: 10px 12px;
-    font-size: 13px;
-    margin-top: 8px;
+  // ✅ FIX 8: 3-dot menu button — always visible on mobile (hover nahi hota touch pe)
+  .col-menu-btn {
+    opacity: 1;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
   }
 
+  // ✅ FIX 9: Section labels
   .sidebar-label,
   .sidebar-label-btn {
     padding: 0 12px;
-    margin-top: 14px;
-    margin-bottom: 6px;
+    margin-top: 18px;
+    margin-bottom: 4px;
     font-size: 10px;
+    letter-spacing: 0.1em;
   }
 
-  .col-menu-btn {
-    opacity: 1;
-    width: 28px;
-    height: 28px;
+  // ✅ FIX 10: Add collection button
+  .sidebar-add-collection {
+    padding: 11px 12px;
+    font-size: 13px;
+    margin-top: 6px;
+    min-height: 44px;
+    border-radius: 10px;
+  }
+
+  // ✅ FIX 11: Empty state text
+  .sidebar-empty {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  // ✅ FIX 12: Collection dot thoda bada
+  .collection-dot {
+    width: 9px;
+    height: 9px;
+  }
+
+  // ✅ FIX 13: item-count badge
+  .sidebar-item .item-count,
+  .sidebar-item-main .item-count {
+    font-size: 10px;
+    padding: 2px 8px;
+  }
+
+  // ✅ FIX 14: Dropdown — mobile me upar se nahi, fix position
+  .col-dropdown {
+    right: 0;
+    top: auto;
+    bottom: calc(100% + 4px);
+    min-width: 160px;
+    border-radius: 12px;
+
+    .col-dropdown-item {
+      padding: 12px 12px;
+      font-size: 13px;
+      min-height: 44px;
+      border-radius: 8px;
+    }
   }
 }
 
-@media (max-width: 480px) {
+// Very small phones
+@media (max-width: 380px) {
   .sidebar {
-    width: 272px;
-    max-width: 88vw;
+    width: 85vw;
+    max-width: 290px;
   }
+
+  .sidebar-item {
+    font-size: 13.5px;
+    padding: 10px 11px;
+  }
+}
+
+// ─── Overlay (behind sidebar on mobile) ───────────────────
+.sidebar-overlay {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 199;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    animation: fade-in 0.2s ease both;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }

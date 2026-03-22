@@ -219,7 +219,7 @@ const Dashboard = () => {
           activeFilter={activeFilter}
           onFilterChange={handleFilterChange}
           isOpen={sidebarOpen}
-          className={sidebarOpen ? "sidebar--open" : ""}
+          onClose={() => setSidebarOpen(false)}
           onTopicsRefresh={(fn) => {
             refreshTopicsRef.current = fn;
           }}

@@ -31,6 +31,7 @@ app.use(
 app.use(
   cors({
     origin: (origin, callback) => {
+      console.log("CORS origin:", origin);
       const allowed = [
         "http://localhost:5173",
         "https://collectra-ae2v.onrender.com", // <- apna domain daalo
