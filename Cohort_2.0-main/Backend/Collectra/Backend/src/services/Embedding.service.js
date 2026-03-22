@@ -1,31 +1,46 @@
-import { pipeline } from "@xenova/transformers";
 import ItemModel from "../models/item.model.js";
 
-// ── Model singleton — ek baar load hoga, cache rahega ──
+// ── Render free tier par @xenova/transformers memory kill karta hai ──
+// Isliye dynamic import + try-catch + null fallback use karo
 let embedder = null;
+let embedderFailed = false; // ek baar fail hua toh dobara try mat karo
 
 const getEmbedder = async () => {
-  if (!embedder) {
-    console.log("Loading embedding model (first time ~30s)...");
+  if (embedderFailed) return null;
+  if (embedder) return embedder;
+
+  try {
+    console.log("Loading embedding model...");
+    const { pipeline } = await import("@xenova/transformers");
     embedder = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
     console.log("Embedding model ready!");
+    return embedder;
+  } catch (err) {
+    console.error(
+      "Embedding model failed to load — semantic search disabled:",
+      err.message,
+    );
+    embedderFailed = true;
+    return null;
   }
-  return embedder;
 };
 
 // ── Text ko vector mein convert karo ──────────────────
 export const generateEmbedding = async (text) => {
   try {
     const model = await getEmbedder();
+    if (!model) return null; // gracefully skip — no crash
+
     const output = await model(text, { pooling: "mean", normalize: true });
-    return Array.from(output.data); // 384-dimension vector
+    return Array.from(output.data);
   } catch (err) {
     console.error("Embedding generation failed:", err.message);
+    embedderFailed = true; // aage se try mat karo
     return null;
   }
 };
 
-// ── Cosine similarity calculate karo ─────────────────
+// ── Cosine similarity ─────────────────────────────────
 const cosineSimilarity = (a, b) => {
   if (!a || !b || a.length !== b.length) return 0;
   let dot = 0,
@@ -42,15 +57,25 @@ const cosineSimilarity = (a, b) => {
 // ── Semantic search ───────────────────────────────────
 export const semanticSearch = async (userId, query, limit = 10) => {
   try {
-    // Query ka embedding banao
-    console.log("Semantic search called:", query); // ← add karo
-
     const queryEmbedding = await generateEmbedding(query);
-    console.log("Query embedding length:", queryEmbedding?.length);
-    if (!queryEmbedding) throw new Error("Failed to generate query embedding");
 
-    // Sirf woh items lo jinmein embedding hai
-    // ✅ Yeh karo
+    // ✅ Model load nahi hua — keyword fallback use karo
+    if (!queryEmbedding) {
+      console.log("Embedding unavailable — falling back to keyword search");
+      const items = await ItemModel.find({
+        userId,
+        $or: [
+          { title: { $regex: query, $options: "i" } },
+          { description: { $regex: query, $options: "i" } },
+          { tags: { $in: [new RegExp(query, "i")] } },
+        ],
+      })
+        .limit(Number(limit))
+        .select("-embedding")
+        .lean();
+      return items;
+    }
+
     const items = await ItemModel.find({
       userId,
       embedding: { $exists: true, $not: { $size: 0 } },
@@ -60,25 +85,20 @@ export const semanticSearch = async (userId, query, limit = 10) => {
       )
       .lean();
 
-    // ← Debug ke liye add karo
-    console.log("Items found:", items.length);
-    console.log("First item embedding:", items[0]?.embedding?.length);
-    console.log("First item:", items[0]?.title);
     if (items.length === 0) return [];
 
-    // Har item ke saath similarity calculate karo
     const results = items
       .map((item) => ({
         ...item,
         score: cosineSimilarity(queryEmbedding, item.embedding),
       }))
-      .filter((item) => item.score > 0.1) // threshold — 0.3 se kam = irrelevant
+      .filter((item) => item.score > 0.1)
       .sort((a, b) => b.score - a.score)
       .slice(0, limit)
       .map(({ embedding, score, ...item }) => ({
         ...item,
         score: Math.round(score * 100),
-      })); // embedding hide karo, score % mein
+      }));
 
     return results;
   } catch (err) {
@@ -95,7 +115,6 @@ export const generateAndSaveEmbedding = async (itemId) => {
     );
     if (!item) return;
 
-    // Title + description + tags = rich text for embedding
     const text = [
       item.title,
       item.description,
@@ -104,10 +123,10 @@ export const generateAndSaveEmbedding = async (itemId) => {
     ]
       .filter(Boolean)
       .join(". ")
-      .slice(0, 512); // model ka max input
+      .slice(0, 512);
 
     const embedding = await generateEmbedding(text);
-    if (!embedding) return;
+    if (!embedding) return; // silently skip if model unavailable
 
     await ItemModel.findByIdAndUpdate(itemId, { embedding });
     console.log("Embedding saved for:", item.title);
@@ -116,8 +135,7 @@ export const generateAndSaveEmbedding = async (itemId) => {
   }
 };
 
-// ── Existing items ke liye batch embeddings ───────────
-// Ek baar chalao — purane items ko bhi semantic search mein lao
+// ── Backfill ──────────────────────────────────────────
 export const backfillEmbeddings = async () => {
   try {
     const items = await ItemModel.find({
@@ -128,8 +146,7 @@ export const backfillEmbeddings = async () => {
 
     for (const item of items) {
       await generateAndSaveEmbedding(item._id);
-      // Small delay to avoid overloading
-      await new Promise((r) => setTimeout(r, 100));
+      await new Promise((r) => setTimeout(r, 200));
     }
 
     console.log("Backfill complete!");
