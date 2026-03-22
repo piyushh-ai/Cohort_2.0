@@ -1,4 +1,4 @@
-import { ChatGroq } from "@langchain/groq"; // ← change
+import { ChatGroq } from "@langchain/groq";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { StructuredOutputParser } from "@langchain/core/output_parsers";
 import { z } from "zod";
@@ -6,11 +6,10 @@ import { config } from "../config/config.js";
 import ItemModel from "../models/item.model.js";
 
 const model = new ChatGroq({
-  // ← change
-  model: "llama-3.1-8b-instant", // fast + free
-  apiKey: config.groqApiKey, // ← change
+  model: "llama-3.1-8b-instant",
+  apiKey: config.groqApiKey,
   temperature: 0.3,
-  timeout: 10000, // ← 10 sec max — Render timeout se pehle fail ho
+  timeout: 10000,
 });
 
 const parser = StructuredOutputParser.fromZodSchema(
@@ -57,7 +56,6 @@ Return ONLY valid JSON, nothing else.
 
 export const generateTagsAndSummary = async (title, description, type) => {
   try {
-    // Prompt ko format karo
     const prompt = await taggingPrompt.format({
       title,
       description: description || "No description available",
@@ -65,7 +63,6 @@ export const generateTagsAndSummary = async (title, description, type) => {
       format_instructions: parser.getFormatInstructions(),
     });
 
-    // Model se raw text lo (LLM kabhi schema + example bhi bhej deta hai)
     const llmResult = await model.invoke(prompt);
     const rawText =
       typeof llmResult.content === "string"
@@ -74,26 +71,15 @@ export const generateTagsAndSummary = async (title, description, type) => {
           ? llmResult.content.map((c) => c.text ?? "").join("\n")
           : "";
 
-    // Try to grab JSON object between first '{' and last '}'
     const start = rawText.indexOf("{");
     const end = rawText.lastIndexOf("}");
 
     if (start === -1 || end === -1 || end <= start) {
-      throw new Error(
-        `No JSON object found in LLM output: ${rawText.slice(0, 200)}...`,
-      );
+      throw new Error(`No JSON object found in LLM output`);
     }
 
     const cleaned = rawText.slice(start, end + 1).trim();
-
-    let parsed;
-    try {
-      parsed = JSON.parse(cleaned);
-    } catch (e) {
-      throw new Error(
-        `Failed to parse tagging JSON. Snippet: ${cleaned.slice(0, 200)}...`,
-      );
-    }
+    const parsed = JSON.parse(cleaned);
 
     const tags = Array.isArray(parsed.tags) ? parsed.tags : [];
     const summary = typeof parsed.summary === "string" ? parsed.summary : "";
@@ -101,7 +87,6 @@ export const generateTagsAndSummary = async (title, description, type) => {
 
     return { tags, summary, category };
   } catch (error) {
-    // Fallback: meaningful word extraction — title ko pura tag mat banao
     const safeDescription = description || "";
     const fallbackSummary =
       safeDescription.slice(0, 240) || `Saved item: ${title}`;
@@ -151,34 +136,26 @@ export const generateTagsAndSummary = async (title, description, type) => {
       "just",
     ]);
 
-    // Title se meaningful words nikalo (4+ letters, no stop words)
     const titleWords = title
       .toLowerCase()
       .split(/\W+/)
       .filter((w) => w.length >= 5 && !stopWords.has(w))
       .slice(0, 3);
 
-    // Description se meaningful words nikalo
     const descWords = safeDescription
       .toLowerCase()
       .split(/\W+/)
       .filter((w) => w.length >= 5 && !stopWords.has(w))
       .slice(0, 4);
 
-    // type ko tag mat banao agar generic hai
     const typeTag = ["article", "video", "document"].includes(type)
       ? null
       : type;
-
     const tags = [
       ...new Set([typeTag, ...titleWords, ...descWords].filter(Boolean)),
     ];
 
-    return {
-      tags,
-      summary: fallbackSummary,
-      category: type || "General",
-    };
+    return { tags, summary: fallbackSummary, category: type || "General" };
   }
 };
 
@@ -189,8 +166,6 @@ export const runBackgroundJobs = async (item) => {
       item.description,
       item.type,
     );
-
-    // ✅ ItemModel ab import hai
     await ItemModel.findByIdAndUpdate(item._id, {
       tags: aiResult.tags,
       summary: aiResult.summary,
@@ -203,19 +178,32 @@ export const runBackgroundJobs = async (item) => {
 
 export const generateHighlights = async (title, description, summary) => {
   try {
-    const prompt = `
+    // ✅ FIX: description/summary empty hain toh bhi Groq title se generate kare
+    const content = description || summary || "";
+    const hasContent = content.trim().length > 20;
+
+    const prompt = hasContent
+      ? `
 You are a smart content analyzer.
 Extract the 3-5 most important and insightful sentences from this content.
 
 Title: ${title}
-Content: ${description || summary || "No content available"}
+Content: ${content}
 
 Return ONLY a JSON array of strings. Each string should be a complete, meaningful sentence.
-Example format:
-["First important insight here.", "Second key point here.", "Third notable fact here."]
-
+Example: ["First insight.", "Second key point.", "Third fact."]
 Return ONLY the JSON array, no other text.
-    `;
+`
+      : `
+You are a smart content analyzer.
+Based on this title, generate 3-5 insightful things a person might want to know or remember about this topic.
+
+Title: ${title}
+
+Return ONLY a JSON array of strings. Each string should be a complete, meaningful sentence.
+Example: ["First insight.", "Second key point.", "Third fact."]
+Return ONLY the JSON array, no other text.
+`;
 
     const result = await model.invoke(prompt);
     const rawText =
@@ -225,39 +213,28 @@ Return ONLY the JSON array, no other text.
           ? result.content.map((c) => c.text ?? "").join("\n")
           : "";
 
-    // Try to grab JSON array between first '[' and last ']'
     const start = rawText.indexOf("[");
     const end = rawText.lastIndexOf("]");
 
     if (start === -1 || end === -1 || end <= start) {
-      throw new Error(
-        `No JSON array found in LLM output: ${rawText.slice(0, 200)}...`,
-      );
+      throw new Error("No JSON array found in LLM output");
     }
 
     const cleaned = rawText.slice(start, end + 1).trim();
-
-    let highlights;
-    try {
-      highlights = JSON.parse(cleaned);
-    } catch (e) {
-      throw new Error(
-        `Failed to parse highlights JSON. Snippet: ${cleaned.slice(0, 200)}...`,
-      );
-    }
+    const highlights = JSON.parse(cleaned);
 
     return Array.isArray(highlights) ? highlights : [];
   } catch (error) {
-    console.error("Highlight generation error:", error);
+    console.error("Highlight generation error:", error.message);
 
-    // Fallback: pick first few sentences from description/summary
+    // Fallback — content se sentences nikalo
     const baseText = description || summary || "";
     if (!baseText) return [];
 
     const sentences = baseText
-      .split(/(?<=[\.!\?])\s+/)
+      .split(/(?<=[.!?])\s+/)
       .map((s) => s.trim())
-      .filter(Boolean);
+      .filter((s) => s.length > 20);
 
     return sentences.slice(0, 5);
   }
