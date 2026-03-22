@@ -21,6 +21,8 @@ import {
   retagAllItemsController,
 } from "../controllers/item.controller.js";
 import { Router } from "express";
+import dotenv from "dotenv";
+dotenv.config();
 
 const itemRouter = Router();
 
@@ -157,5 +159,31 @@ itemRouter.patch("/:id/collection", userMiddleware, removeFromCollection);
  * Body: { collectionId }
  */
 itemRouter.patch("/:id/add-to-collection", userMiddleware, addToCollection);
+
+itemRouter.get("/debug/ai-test", async (req, res) => {
+  try {
+    const { generateTagsAndSummary } =
+      await import("../services/ai.service.js");
+
+    // GROQ key check
+    const keyExists = !!process.env.GROQ_API_KEY;
+    const keyPreview = process.env.GROQ_API_KEY?.slice(0, 8);
+
+    // AI test
+    const result = await generateTagsAndSummary(
+      "Minecraft survival video",
+      "Playing minecraft survival mode",
+      "video",
+    );
+
+    return res.json({
+      keyExists,
+      keyPreview,
+      aiResult: result,
+    });
+  } catch (err) {
+    return res.json({ error: err.message });
+  }
+});
 
 export default itemRouter;
