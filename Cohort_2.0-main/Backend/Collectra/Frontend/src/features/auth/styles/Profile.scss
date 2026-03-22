@@ -1,24 +1,24 @@
 @import "../../items/styles/variables";
 
 // ═══════════════════════════════════════════════════════════
-// PROFILE PAGE — matches Collectra dashboard theme exactly
+// PROFILE PAGE — Refined dark theme (less heavy)
 // ═══════════════════════════════════════════════════════════
 
 .profile-page {
   min-height: 100vh;
-  background: var(--bg-void);
+  background: #0d1117;          // slightly lighter than pure void
   color: var(--text-1);
   font-family: var(--font-body);
   position: relative;
   overflow-x: hidden;
 
-  // Same ambient orbs as dashboard
+  // Ambient orbs — same but a bit more visible
   &::before {
     content: "";
     position: fixed;
     top: -250px; left: -200px;
     width: 650px; height: 650px;
-    background: radial-gradient(circle, rgba(14,165,233,0.08), transparent 70%);
+    background: radial-gradient(circle, rgba(14,165,233,0.13), transparent 70%);
     pointer-events: none; z-index: 0; filter: blur(40px);
   }
   &::after {
@@ -26,7 +26,7 @@
     position: fixed;
     bottom: -150px; right: -150px;
     width: 550px; height: 550px;
-    background: radial-gradient(circle, rgba(139,92,246,0.06), transparent 70%);
+    background: radial-gradient(circle, rgba(139,92,246,0.10), transparent 70%);
     pointer-events: none; z-index: 0; filter: blur(40px);
   }
 }
@@ -47,8 +47,8 @@
   animation: scale-in 0.22s var(--spring) both;
 
   &--success {
-    background: rgba(16,185,129,0.1);
-    border: 1px solid rgba(16,185,129,0.28);
+    background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.32);
     color: var(--emerald);
     box-shadow: 0 8px 28px rgba(16,185,129,0.1);
   }
@@ -60,17 +60,17 @@
   }
 }
 
-// ─── Header — exact same as Navbar ─────────────────────────
+// ─── Header ────────────────────────────────────────────────
 .profile-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 28px;
   height: 62px;
-  background: rgba(2, 5, 9, 0.85);
+  background: rgba(15, 20, 30, 0.88);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   position: sticky;
   top: 0; z-index: 50;
   flex-shrink: 0;
@@ -103,7 +103,7 @@
   align-items: center;
   gap: 7px;
   background: transparent;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.1);
   color: var(--text-2);
   font-family: var(--font-body);
   font-size: 12.5px;
@@ -179,12 +179,12 @@
   gap: 10px;
 }
 
-// ─── Avatar Card — same as .item-card glass style ──────────
+// ─── Avatar Card ───────────────────────────────────────────
 .profile-avatar-card {
-  background: rgba(10, 14, 28, 0.85);
+  background: rgba(22, 28, 42, 0.95);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.09);
   border-radius: 18px;
   padding: 26px 18px 20px;
   display: flex;
@@ -195,7 +195,6 @@
   position: relative;
   overflow: hidden;
 
-  // Same top glow line as item-card
   &::before {
     content: "";
     position: absolute;
@@ -204,12 +203,11 @@
     opacity: 0.5;
   }
 
-  // Inner radial top glow
   &::after {
     content: "";
     position: absolute;
     inset: 0; border-radius: 18px;
-    background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(14,165,233,0.07), transparent 70%);
+    background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(14,165,233,0.09), transparent 70%);
     pointer-events: none;
   }
 }
@@ -223,8 +221,8 @@
   width: 90px; height: 90px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid rgba(14,165,233,0.35);
-  background: var(--bg-surface);
+  border: 2px solid rgba(14,165,233,0.4);
+  background: rgba(22,28,42,0.9);
   display: flex; align-items: center; justify-content: center;
   position: relative;
   box-shadow: 0 0 24px rgba(14,165,233,0.2);
@@ -247,7 +245,7 @@
 
 .profile-avatar-overlay {
   position: absolute; inset: 0;
-  background: rgba(2,5,9,0.6);
+  background: rgba(13,17,23,0.55);
   display: flex; align-items: center; justify-content: center;
   border-radius: 50%;
 }
@@ -258,7 +256,7 @@
   width: 26px; height: 26px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--gold-strong), var(--gold));
-  border: 2px solid var(--bg-void);
+  border: 2px solid #0d1117;
   color: #000;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
@@ -270,7 +268,7 @@
     box-shadow: 0 0 20px rgba(245,158,11,0.65);
   }
   &:disabled {
-    background: var(--bg-surface);
+    background: rgba(255,255,255,0.08);
     color: var(--text-3);
     box-shadow: none;
     cursor: not-allowed;
@@ -307,8 +305,8 @@
   font-family: var(--font-mono);
   font-size: 10px;
   color: var(--text-3);
-  background: rgba(14,165,233,0.06);
-  border: 1px solid var(--border);
+  background: rgba(14,165,233,0.07);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 20px;
   padding: 4px 12px;
   z-index: 1;
@@ -318,7 +316,7 @@
 .profile-remove-photo-btn {
   width: 100%;
   background: none;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 8px;
   color: var(--text-3);
   font-family: var(--font-body);
@@ -337,8 +335,8 @@
 
 // ─── Stats Card ────────────────────────────────────────────
 .profile-stats-card {
-  background: rgba(10, 14, 28, 0.85);
-  border: 1px solid var(--border);
+  background: rgba(22, 28, 42, 0.95);
+  border: 1px solid rgba(255,255,255,0.09);
   border-radius: 14px;
   padding: 14px 16px;
   backdrop-filter: blur(14px);
@@ -371,12 +369,12 @@
   flex-direction: column;
 }
 
-// ─── Tabs — same as .view-toggle ───────────────────────────
+// ─── Tabs ──────────────────────────────────────────────────
 .profile-tabs {
   display: flex;
   gap: 2px;
   padding: 0 2px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   margin-bottom: 28px;
   position: relative;
 
@@ -409,12 +407,12 @@
   position: relative;
 
   &:hover {
-    background: rgba(14,165,233,0.06);
+    background: rgba(14,165,233,0.07);
     color: var(--text-2);
   }
   &.active {
     color: var(--text-1);
-    background: rgba(14,165,233,0.07);
+    background: rgba(14,165,233,0.08);
     &::after {
       content: "";
       position: absolute;
@@ -427,7 +425,7 @@
   }
 }
 
-// ─── Section ────────────────────────────────────────────────
+// ─── Section ───────────────────────────────────────────────
 .profile-section {
   animation: fade-up 0.22s var(--ease) both;
 }
@@ -435,7 +433,7 @@
 .profile-section-header {
   margin-bottom: 22px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
 
   h3 {
     font-family: var(--font-display);
@@ -451,7 +449,7 @@
   }
 }
 
-// ─── Form — same as modal-form ──────────────────────────────
+// ─── Form ──────────────────────────────────────────────────
 .profile-form {
   display: flex;
   flex-direction: column;
@@ -480,8 +478,8 @@
   }
 
   input, textarea {
-    background: rgba(4,10,18,0.9);
-    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 10px;
     color: var(--text-1);
     font-size: 13.5px;
@@ -495,7 +493,7 @@
     &::placeholder { color: var(--text-3); font-weight: 300; }
     &:focus {
       border-color: var(--border-blue);
-      background: rgba(14,165,233,0.04);
+      background: rgba(14,165,233,0.05);
       box-shadow: 0 0 0 3px rgba(14,165,233,0.1);
     }
     &:disabled { opacity: 0.35; cursor: not-allowed; }
@@ -511,11 +509,10 @@
   &--right { text-align: right; }
 }
 
-// Prefix input — same glass look
 .profile-input-prefix {
   display: flex; align-items: center;
-  background: rgba(4,10,18,0.9);
-  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
   overflow: hidden;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -530,8 +527,8 @@
     color: var(--text-3);
     font-family: var(--font-mono);
     font-size: 13px;
-    border-right: 1px solid var(--border);
-    background: rgba(14,165,233,0.04);
+    border-right: 1px solid rgba(255,255,255,0.08);
+    background: rgba(14,165,233,0.05);
     flex-shrink: 0;
   }
 
@@ -561,7 +558,6 @@
   }
 }
 
-// Save — gold CTA, same as modal-submit-btn
 .profile-save-btn {
   position: relative;
   display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -593,17 +589,17 @@
   }
   &:active:not(:disabled) { transform: translateY(0) scale(0.98); }
   &:disabled {
-    background: var(--bg-surface);
+    background: rgba(255,255,255,0.06);
     color: var(--text-3);
     box-shadow: none;
     cursor: not-allowed;
   }
 }
 
-// ─── Danger / Account Card ─────────────────────────────────
+// ─── Danger Card ───────────────────────────────────────────
 .profile-danger-card {
-  background: rgba(10,14,28,0.85);
-  border: 1px solid var(--border);
+  background: rgba(22,28,42,0.95);
+  border: 1px solid rgba(255,255,255,0.09);
   border-radius: 16px;
   overflow: hidden;
   backdrop-filter: blur(14px);
@@ -614,7 +610,7 @@
   justify-content: space-between;
   padding: 20px 22px; gap: 20px;
 
-  & + & { border-top: 1px solid var(--border); }
+  & + & { border-top: 1px solid rgba(255,255,255,0.07); }
 
   h4 {
     font-family: var(--font-display);
@@ -639,7 +635,7 @@
 
   &--outline {
     background: none;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,0.1);
     color: var(--text-2);
 
     &:hover {
@@ -651,7 +647,7 @@
   }
 }
 
-// ─── Spinner — override with blue ──────────────────────────
+// ─── Spinner ───────────────────────────────────────────────
 .profile-page .spinner {
   border-color: rgba(14,165,233,0.15);
   border-top-color: var(--blue);

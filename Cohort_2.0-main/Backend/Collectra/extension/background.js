@@ -1,22 +1,19 @@
-// Collectra — Background Service Worker
+// ─── Background Service Worker ────────────────────────────
 
-chrome.runtime.onInstalled.addListener(() => {
-  console.log("Collectra extension installed!");
+// PING handler — website se extension detect karne ke liye
+// Collectra website chrome.runtime.sendMessage(EXTENSION_ID, {type:"PING"}) bhejti hai
+// Agar extension installed hai to yahan response milega
+chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+  if (message?.type === "PING") {
+    sendResponse({ installed: true, version: chrome.runtime.getManifest().version });
+  }
+  return true; // async response ke liye
 });
 
-// Frontend app se token receive karo
+// Internal messages bhi handle karo
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === "SAVE_TOKEN") {
-    chrome.storage.local.set({ collectra_token: message.token }, () => {
-      sendResponse({ success: true });
-    });
-    return true;
+  if (message?.type === "PING") {
+    sendResponse({ installed: true });
   }
-
-  if (message.type === "CLEAR_TOKEN") {
-    chrome.storage.local.remove("collectra_token", () => {
-      sendResponse({ success: true });
-    });
-    return true;
-  }
+  return true;
 });

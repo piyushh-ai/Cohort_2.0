@@ -16,6 +16,7 @@ const Navbar = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [isSemanticMode, setIsSemanticMode] = useState(false);
+  const [extensionInstalled, setExtensionInstalled] = useState(true);
   const dropdownRef = useRef(null);
   const searchDebounceRef = useRef(null);
 
@@ -59,6 +60,18 @@ const Navbar = ({
       onSearch?.("");
     }
   };
+
+  // Extension detect — content.js injects #collectra-ext-installed div
+  useEffect(() => {
+    const check = () => {
+      setExtensionInstalled(
+        !!document.getElementById("collectra-ext-installed"),
+      );
+    };
+    check();
+    const t = setTimeout(check, 800);
+    return () => clearTimeout(t);
+  }, []);
 
   const getInitials = (username) => {
     if (!username) return "U";
@@ -123,6 +136,22 @@ const Navbar = ({
 
       {/* ── Actions ── */}
       <div className="navbar-actions">
+        {/* Extension download — sirf tab dikhao jab installed nahi ho */}
+        {!extensionInstalled && (
+          <a
+            className="ext-download-btn"
+            href="/collectra-extension.zip"
+            download="collectra-extension.zip"
+            title="Download Collectra Extension"
+          >
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+              <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+            </svg>
+            <span className="ext-btn-label">Get Extension</span>
+          </a>
+        )}
+
         {/* Knowledge Graph — desktop only (CSS se hide on mobile) */}
         <button
           className="graph-btn"
