@@ -13,13 +13,13 @@ import {
   removeItemFromCollection,
   fetchRelatedItems,
   fetchResurfaceItems,
-} from "../services/item.service.js";
+} from "../services/Item.search.service.js";
 
 import {
   buildGraphData,
   searchItemsSemantic,
   buildTopicClusters,
-} from "../services/item.search.service.js";
+} from "../services/Item.search.service.js";
 
 import {
   getAIHighlights,

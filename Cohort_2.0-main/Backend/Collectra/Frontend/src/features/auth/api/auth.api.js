@@ -12,7 +12,7 @@ export const loginAPI = async (data) => {
 
 export const googleLoginAPI = () => {
   // Google OAuth — redirect karo backend pe
-  window.location.href = "http://localhost:3000/api/auth/google";
+  window.location.href = "https://collectra-ae2v.onrender.com/api/auth/google";
 };
 
 export const getMeAPI = async () => {

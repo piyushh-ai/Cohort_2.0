@@ -3,7 +3,8 @@ import axios from "axios";
 const TOKEN_KEY = "collectra_token";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000/api",
+  baseURL:
+    "https://collectra-ae2v.onrender.com/api" || "http://localhost:3000/api",
   withCredentials: true, // ✅ cookies bhi bhejo (JWT cookie)
   headers: {
     "Content-Type": "application/json",
