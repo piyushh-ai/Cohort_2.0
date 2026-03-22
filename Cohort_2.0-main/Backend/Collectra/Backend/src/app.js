@@ -54,13 +54,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// health check
-app.get("/", (req, res) => {
-  res.json({
-    message: "Server is running",
-  });
-});
-
 /**
  * All routes are define here
  */
@@ -77,8 +70,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.get((req, res) => {
-  res.sendFile(path.join(__dirname, "../dist/index.html"));
+const distPath = path.join(__dirname, "../dist");
+
+app.use(express.static(distPath));
+
+app.use("/{*splat}", (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
 });
 
 export default app;
