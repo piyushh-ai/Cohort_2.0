@@ -1,19 +1,4 @@
-import {
-  createItemFromUrl,
-  createItemFromFile,
-  saveItem,
-  fetchAllItems,
-  fetchItemById,
-  updateItemById,
-  deleteItemById,
-  toggleItemFavorite,
-  addItemHighlight,
-  deleteItemHighlight,
-  moveItemToCollection,
-  removeItemFromCollection,
-  fetchRelatedItems,
-  fetchResurfaceItems,
-} from "../services/Item.search.service.js";
+import {} from "../services/Item.search.service.js";
 
 import {
   buildGraphData,
@@ -26,6 +11,23 @@ import {
   runBackfillEmbeddings,
   retagAllItems,
 } from "../services/item.ai.service.js";
+
+import {
+  addItemHighlight,
+  createItemFromUrl,
+  createItemFromFile,
+  saveItem,
+  fetchAllItems,
+  fetchItemById,
+  updateItemById,
+  deleteItemById,
+  toggleItemFavorite,
+  deleteItemHighlight,
+  moveItemToCollection,
+  removeItemFromCollection,
+  fetchRelatedItems,
+  fetchResurfaceItems,
+} from "../services/Item.service.js";
 
 // ─── Create ───────────────────────────────────────────
 export const createItem = async (req, res) => {
@@ -200,13 +202,11 @@ export const removeFromCollection = async (req, res) => {
       return res
         .status(404)
         .json({ success: false, message: "Item not found" });
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Item removed from collection",
-        data: item,
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Item removed from collection",
+      data: item,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
