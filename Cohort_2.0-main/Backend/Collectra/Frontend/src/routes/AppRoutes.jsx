@@ -1,8 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import { PageLoader } from "../shared/components/Loader";
+import { BarLoader, circleLoading, DotsLoader, PageLoader, SkeletonCard } from "../shared/components/Loader";
 import ProtectedRoute from "../shared/components/protectRoute";
 import AuthCallback from "./AuthCallback";
+import { SkeletonGrid } from "../features/items/pages/Dashboard";
 
 const Login = lazy(() => import("../features/auth/pages/Login"));
 const Register = lazy(() => import("../features/auth/pages/Register"));
@@ -21,7 +22,7 @@ const KnowledgeGraph = lazy(
 const Profile = lazy(() => import("../features/auth/pages/Profile"));
 
 const withSuspense = (Component) => (
-  <Suspense fallback={<PageLoader />}>
+  <Suspense fallback={circleLoading}>
     <Component />
   </Suspense>
 );

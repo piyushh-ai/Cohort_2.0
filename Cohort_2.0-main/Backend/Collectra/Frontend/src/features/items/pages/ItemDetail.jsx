@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import useItems from "../hooks/useItems";
 import useCollections from "../../collections/hooks/useCollections";
 import "../styles/ItemDetail.scss";
+import { circleLoading } from "../../../shared/components/Loader";
+
 
 const ItemDetail = () => {
   const { id } = useParams();
@@ -18,6 +20,8 @@ const ItemDetail = () => {
     removeFromCollection,
     getRelatedItems,
   } = useItems();
+
+   
 
   const { collections, fetchCollections } = useCollections();
 
@@ -199,18 +203,11 @@ const ItemDetail = () => {
     (c) => c._id === item?.collectionId,
   );
 
+
+
   // ─── Loading ──────────────────────────────────────────
   if (loading) {
-    return (
-      <div className="detail-loading">
-        <div className="brain-loader">
-          <div className="brain-ring ring-1" />
-          <div className="brain-ring ring-2" />
-          <div className="brain-ring ring-3" />
-          <div className="ring-center" />
-        </div>
-      </div>
-    );
+    return circleLoading;
   }
 
   if (!item) return null;

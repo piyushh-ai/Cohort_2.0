@@ -9,7 +9,7 @@ import "../styles/_variables.scss";
 import Sidebar from "../../collections/components/Sidebar";
 import useCollections from "../../collections/hooks/useCollections";
 
-const SkeletonGrid = ({ count = 6 }) => (
+export const SkeletonGrid = ({ count = 6 }) => (
   <div className="items-grid">
     {[...Array(count)].map((_, i) => (
       <div

@@ -191,3 +191,56 @@ $accent-hover:  #2ea043;
     opacity: 1;
   }
 }
+
+.detail-loading {
+  min-height: 100vh;
+  background: #0d1117;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+// Brain loader
+.brain-loader {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brain-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  animation: spin 1.2s linear infinite;
+  &.ring-1 {
+    width: 48px;
+    height: 48px;
+    border-top-color: var(--emerald);
+    animation-duration: 1s;
+  }
+  &.ring-2 {
+    width: 34px;
+    height: 34px;
+    border-top-color: var(--cyan);
+    animation-duration: 1.4s;
+    animation-direction: reverse;
+  }
+  &.ring-3 {
+    width: 20px;
+    height: 20px;
+    border-top-color: var(--amber);
+    animation-duration: 0.8s;
+  }
+}
+
+.ring-center {
+  width: 6px;
+  height: 6px;
+  background: var(--text-3);
+  border-radius: 50%;
+}

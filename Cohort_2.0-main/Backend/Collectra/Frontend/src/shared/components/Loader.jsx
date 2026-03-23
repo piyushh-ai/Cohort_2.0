@@ -1,4 +1,5 @@
 import "../components/Loader.scss"
+import "../../features/items/styles/itemDetail.scss"
 // ─── Main Page Loader ─────────────────────────────────────
 export const PageLoader = () => (
   <div className="skeleton-card">
@@ -34,3 +35,14 @@ export const SkeletonCard = () => (
     <div className="skel-line xshort" />
   </div>
 );
+
+export const circleLoading = (
+    <div className="detail-loading">
+      <div className="brain-loader">
+        <div className="brain-ring ring-1" />
+        <div className="brain-ring ring-2" />
+        <div className="brain-ring ring-3" />
+        <div className="ring-center" />
+      </div>
+    </div>
+  );
