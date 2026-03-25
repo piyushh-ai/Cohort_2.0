@@ -33,7 +33,8 @@ app.use(
     origin: (origin, callback) => {
       const allowed = [
         "http://localhost:5173",
-        "https://collectra-ae2v.onrender.com", // <- apna domain daalo
+        "https://collectra-ae2v.onrender.com",
+        "https://collectra.online" // <- apna domain daalo
       ];
 
       // No origin (curl/Postman) ya allowed origins ya Chrome extension

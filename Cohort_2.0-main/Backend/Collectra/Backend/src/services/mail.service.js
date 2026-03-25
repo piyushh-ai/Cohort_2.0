@@ -6,7 +6,7 @@ const resend = new Resend(config.resendApiKey);
 export async function sendEmail({ to, subject, html, text }) {
   try {
     const data = await resend.emails.send({
-      from: "Collectra <onboarding@resend.dev>", // 👈 branding add
+      from: "Collectra <noreply@collectra.online>",
       to,
       subject,
       html: html || `<p>${text}</p>`,
