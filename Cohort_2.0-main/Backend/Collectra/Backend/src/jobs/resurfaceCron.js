@@ -56,7 +56,7 @@ const buildResurfaceEmailHtml = (items) => {
                     </p>`
                   : ""
               }
-              <a href="${frontendUrl}/items/${item._id}"
+              <a href="${frontendUrl}/item/${item._id}"
                 style="display:inline-block;background:#238636;color:#ffffff;
                   text-decoration:none;font-size:13px;font-weight:600;
                   padding:8px 20px;border-radius:6px;">
