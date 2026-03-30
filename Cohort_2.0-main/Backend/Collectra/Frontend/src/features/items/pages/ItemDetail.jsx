@@ -5,7 +5,6 @@ import useCollections from "../../collections/hooks/useCollections";
 import "../styles/ItemDetail.scss";
 import { circleLoading } from "../../../shared/components/Loader";
 
-
 const ItemDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -20,8 +19,6 @@ const ItemDetail = () => {
     removeFromCollection,
     getRelatedItems,
   } = useItems();
-
-   
 
   const { collections, fetchCollections } = useCollections();
 
@@ -85,8 +82,9 @@ const ItemDetail = () => {
         setShowCollectionDropdown(false);
       }
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    // mousedown → click use karo outside close ke liye
+    document.addEventListener("pointerdown", handler);
+    return () => document.removeEventListener("pointerdown", handler);
   }, []);
 
   const handleFavorite = async () => {
@@ -202,8 +200,6 @@ const ItemDetail = () => {
   const currentCollection = collections.find(
     (c) => c._id === item?.collectionId,
   );
-
-
 
   // ─── Loading ──────────────────────────────────────────
   if (loading) {
