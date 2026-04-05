@@ -20,6 +20,10 @@ import collectionRouter from "./routes/collection.routes.js";
 
 const app = express();
 
+// Render (and most PaaS) run behind a reverse proxy — tell Express
+// so express-rate-limit can read X-Forwarded-For correctly.
+app.set("trust proxy", 1);
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(
