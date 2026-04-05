@@ -3,16 +3,39 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { config } from "../config/config.js";
 import { semanticSearch } from "./Embedding.service.js";
 
-// ─── Gemini Pro for reasoning ─────────────────────────────
+// ─── Exponential backoff for rate-limit errors ─────────────
+const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+
+const invokeWithRetry = async (model, prompt, maxRetries = 3) => {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await model.invoke(prompt);
+    } catch (err) {
+      const is429 = err?.message?.includes("429") || err?.status === 429;
+      if (is429 && attempt < maxRetries - 1) {
+        // Extract retryDelay from error message if available, else use backoff
+        const retryMatch = err.message?.match(/"retryDelay":"(\d+)s"/);
+        const waitMs = retryMatch
+          ? parseInt(retryMatch[1], 10) * 1000 + 500
+          : Math.min(2 ** attempt * 5000, 60000); // 5s, 10s, 20s …
+        console.warn(`⚠️  Gemini 429 – retrying in ${waitMs / 1000}s (attempt ${attempt + 1}/${maxRetries})`);
+        await sleep(waitMs);
+      } else {
+        throw err;
+      }
+    }
+  }
+};
+
+// ─── Gemini model (flash-8b → higher free-tier quota) ──────
 const geminiPro = new ChatGoogleGenerativeAI({
-  model: "gemini-2.0-flash",
+  model: "gemini-1.5-flash-8b",   // lightweight, higher free-tier RPM
   apiKey: config.geminiApiKey,
   temperature: 0.3,
-  maxRetries: 2,
+  maxRetries: 0,                   // we handle retries ourselves
 });
 
-// ─── State definition ─────────────────────────────────────
-// LangGraph state — each node receives this and returns partial update
+// ─── State definition ──────────────────────────────────────
 const initialState = {
   query: "",
   userId: "",
@@ -24,32 +47,23 @@ const initialState = {
   error: null,
 };
 
-// ─── Node 1: Query Analyzer ───────────────────────────────
-// Classify the query type to route correctly
+// ─── Node 1: Query Analyzer (no LLM – keyword heuristic) ──
+// Saves one API call per request on the free tier.
 const analyzeQuery = async (state) => {
   const { query } = state;
+  const q = query.toLowerCase();
 
-  try {
-    const prompt = `Classify this user query into one of three types:
-- "search": User wants to find/list specific items they saved
-- "question": User has a question that their saved content might answer  
-- "summary": User wants an overview/digest of their collection
-
-Query: "${query}"
-
-Return only one word: search, question, or summary`;
-
-    const result = await geminiPro.invoke(prompt);
-    const raw = typeof result.content === "string" ? result.content.trim().toLowerCase() : "question";
-    const queryType = ["search", "question", "summary"].includes(raw) ? raw : "question";
-    return { queryType };
-  } catch {
-    return { queryType: "question" };
+  let queryType = "question";
+  if (/\b(find|show|list|search|give me|what.*saved|do i have)\b/.test(q)) {
+    queryType = "search";
+  } else if (/\b(summar|overview|digest|all my|everything|collection)\b/.test(q)) {
+    queryType = "summary";
   }
+
+  return { queryType };
 };
 
-// ─── Node 2: Retriever ────────────────────────────────────
-// Find relevant items using semantic search
+// ─── Node 2: Retriever ─────────────────────────────────────
 const retrieveItems = async (state) => {
   const { userId, query, queryType } = state;
 
@@ -63,8 +77,7 @@ const retrieveItems = async (state) => {
   }
 };
 
-// ─── Node 3: Context Builder ──────────────────────────────
-// Format retrieved items as readable context for the LLM
+// ─── Node 3: Context Builder ───────────────────────────────
 const buildContext = async (state) => {
   const { retrievedItems } = state;
 
@@ -86,15 +99,16 @@ const buildContext = async (state) => {
   const context = retrievedItems
     .map(
       (item, i) =>
-        `[Item ${i + 1}] Title: ${item.title}\nType: ${item.type}\nSummary: ${item.summary || item.description || "No description"}\nTags: ${item.tags?.join(", ") || "none"}\n`
+        `[Item ${i + 1}] Title: ${item.title}\nType: ${item.type}\nSummary: ${
+          item.summary || item.description || "No description"
+        }\nTags: ${item.tags?.join(", ") || "none"}\n`
     )
     .join("\n---\n");
 
   return { context, sources };
 };
 
-// ─── Node 4: RAG Responder ────────────────────────────────
-// Generate answer using retrieved context
+// ─── Node 4: RAG Responder ─────────────────────────────────
 const generateAnswer = async (state) => {
   const { query, context, queryType, retrievedItems } = state;
 
@@ -130,23 +144,27 @@ User query: "${query}"
 Provide a helpful, conversational response. Be concise but informative. Reference specific items by their title when relevant.`;
 
   try {
-    const result = await geminiPro.invoke(prompt);
+    const result = await invokeWithRetry(geminiPro, prompt);
     const answer =
       typeof result.content === "string"
         ? result.content
-        : result.content?.map?.((c) => c.text ?? "").join("") ?? "Sorry, I couldn't generate a response.";
+        : result.content?.map?.((c) => c.text ?? "").join("") ??
+          "Sorry, I couldn't generate a response.";
     return { answer };
   } catch (err) {
     console.error("❌ RAG responder error:", err.message);
+
+    const is429 = err?.message?.includes("429") || err?.status === 429;
     return {
-      answer:
-        "I had trouble generating a response. Please try again.",
+      answer: is429
+        ? "⚠️ The AI is temporarily rate-limited. Please wait a minute and try again."
+        : "I had trouble generating a response. Please try again.",
       error: err.message,
     };
   }
 };
 
-// ─── Build LangGraph ──────────────────────────────────────
+// ─── Build LangGraph ───────────────────────────────────────
 const buildRAGGraph = () => {
   const graph = new StateGraph({
     channels: {
@@ -161,13 +179,11 @@ const buildRAGGraph = () => {
     },
   });
 
-  // Add nodes
   graph.addNode("analyzeQuery", analyzeQuery);
   graph.addNode("retrieveItems", retrieveItems);
   graph.addNode("buildContext", buildContext);
   graph.addNode("generateAnswer", generateAnswer);
 
-  // Add edges (linear flow)
   graph.addEdge(START, "analyzeQuery");
   graph.addEdge("analyzeQuery", "retrieveItems");
   graph.addEdge("retrieveItems", "buildContext");
@@ -177,7 +193,7 @@ const buildRAGGraph = () => {
   return graph.compile();
 };
 
-// ─── Singleton compiled graph ─────────────────────────────
+// ─── Singleton compiled graph ──────────────────────────────
 let ragApp = null;
 
 const getRAGApp = () => {
@@ -185,7 +201,7 @@ const getRAGApp = () => {
   return ragApp;
 };
 
-// ─── Main export: chat with collection ───────────────────
+// ─── Main export: chat with collection ────────────────────
 export const chatWithCollection = async (userId, query) => {
   try {
     const app = getRAGApp();
