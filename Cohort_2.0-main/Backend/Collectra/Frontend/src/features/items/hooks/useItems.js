@@ -14,6 +14,8 @@ import {
   getRelatedItemsAPI,
   resurfaceItemsAPI,
   semanticSearchAPI,
+  chatWithCollectionAPI,
+  getItemInsightAPI,
 } from "../api/items.api";
 
 const useItems = () => {
@@ -219,6 +221,28 @@ const useItems = () => {
   // ─── Clear Error ──────────────────────────────────────
   const clearError = () => setError(null);
 
+  // ─── Chat with Collection (RAG Agent) NEW ──────────
+  const chatWithCollection = async (query) => {
+    try {
+      const response = await chatWithCollectionAPI(query);
+      return response;
+    } catch (err) {
+      setError(err.response?.data?.message || "Chat failed");
+      return null;
+    }
+  };
+
+  // ─── Get Item Insight (Deep AI Analysis) NEW ───────
+  const getItemInsight = async (id) => {
+    try {
+      const response = await getItemInsightAPI(id);
+      return response.data;
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to get insight");
+      return null;
+    }
+  };
+
   return {
     // State
     items,
@@ -240,6 +264,8 @@ const useItems = () => {
     getRelatedItems,
     fetchResurfaceItems,
     semanticSearch,
+    chatWithCollection,
+    getItemInsight,
     clearError,
   };
 };

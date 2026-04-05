@@ -1,17 +1,16 @@
-import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { MistralAIEmbeddings } from "@langchain/mistralai";
 import { config } from "../config/config.js";
 import ItemModel from "../models/item.model.js";
 
-// ─── Google text-embedding-004 (768 dim, cloud-based, no memory cost) ──────
+// ─── Mistral mistral-embed (1024 dim, cloud-based, no memory cost) ──────
 // Replaces @xenova/transformers which caused OOM on Render free tier
 let embeddingsModel = null;
 
 const getEmbeddingModel = () => {
   if (embeddingsModel) return embeddingsModel;
-  embeddingsModel = new GoogleGenerativeAIEmbeddings({
-    model: "text-embedding-004",
-    apiKey: config.geminiApiKey,
-    taskType: "RETRIEVAL_DOCUMENT",
+  embeddingsModel = new MistralAIEmbeddings({
+    apiKey: config.mistralApiKey,
+    model: "mistral-embed",
   });
   return embeddingsModel;
 };
@@ -76,7 +75,7 @@ export const semanticSearch = async (userId, query, limit = 10) => {
         ...item,
         score: cosineSimilarity(queryEmbedding, item.embedding),
       }))
-      .filter((item) => item.score > 0.4) // Higher threshold for 768-dim
+      .filter((item) => item.score > 0.4) // Higher threshold for 1024-dim
       .sort((a, b) => b.score - a.score)
       .slice(0, limit)
       .map(({ embedding, score, ...item }) => ({
@@ -109,7 +108,7 @@ export const generateAndSaveEmbedding = async (itemId) => {
     if (!embedding) return;
 
     await ItemModel.findByIdAndUpdate(itemId, { embedding });
-    console.log(`✅ Embedding saved (768-dim) for: ${item.title}`);
+    console.log(`✅ Embedding saved (1024-dim) for: ${item.title}`);
   } catch (err) {
     console.error("❌ Save embedding error:", err.message);
   }
@@ -138,14 +137,14 @@ export const backfillEmbeddings = async (userId = null) => {
   }
 };
 
-// ─── Full migration: clear all old 384-dim embeddings + regenerate ─────────
+// ─── Full migration: clear all old embeddings + regenerate ─────────
 export const migrateEmbeddings = async () => {
   try {
-    console.log("🔄 Clearing old 384-dim embeddings...");
+    console.log("🔄 Clearing old embeddings...");
     await ItemModel.updateMany({}, { $set: { embedding: [] } });
 
     const items = await ItemModel.find({}).select("_id title");
-    console.log(`📦 Migrating ${items.length} items to 768-dim embeddings...`);
+    console.log(`📦 Migrating ${items.length} items to 1024-dim embeddings...`);
 
     for (const item of items) {
       await generateAndSaveEmbedding(item._id);

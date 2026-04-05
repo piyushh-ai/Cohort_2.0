@@ -18,6 +18,7 @@ const ItemDetail = () => {
     addToCollection,
     removeFromCollection,
     getRelatedItems,
+    getItemInsight,
   } = useItems();
 
   const { collections, fetchCollections } = useCollections();
@@ -33,6 +34,8 @@ const ItemDetail = () => {
   const [showCollectionDropdown, setShowCollectionDropdown] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [activeTab, setActiveTab] = useState("highlights");
+  const [insight, setInsight] = useState(null);
+  const [loadingInsight, setLoadingInsight] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
     title: "",
@@ -586,12 +589,7 @@ const ItemDetail = () => {
               className={`detail-tab${activeTab === "highlights" ? " active" : ""}`}
               onClick={() => setActiveTab("highlights")}
             >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 16 16"
-                fill="currentColor"
-              >
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z" />
                 <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319z" />
               </svg>
@@ -604,21 +602,30 @@ const ItemDetail = () => {
               className={`detail-tab${activeTab === "related" ? " active" : ""}`}
               onClick={() => setActiveTab("related")}
             >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 16 16"
-                fill="currentColor"
-              >
-                <circle cx="18" cy="5" r="3" />
-                <circle cx="6" cy="12" r="3" />
-                <circle cx="18" cy="19" r="3" />
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z" />
               </svg>
               Related
               {relatedItems.length > 0 && (
                 <span className="tab-badge">{relatedItems.length}</span>
               )}
+            </button>
+            <button
+              className={`detail-tab${activeTab === "insight" ? " active" : ""}`}
+              onClick={async () => {
+                setActiveTab("insight");
+                if (!insight && !loadingInsight) {
+                  setLoadingInsight(true);
+                  const data = await getItemInsight(id);
+                  setInsight(data);
+                  setLoadingInsight(false);
+                }
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
+              </svg>
+              Insight
             </button>
           </div>
 
@@ -812,6 +819,85 @@ const ItemDetail = () => {
                     );
                   })}
                 </div>
+              )}
+            </div>
+          )}
+          {/* ─── Insight Tab (NEW) ─── */}
+          {activeTab === "insight" && (
+            <div className="detail-tab-content">
+              {loadingInsight ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "8px 0" }}>
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="skel-line" style={{ height: "16px", borderRadius: "8px", animationDelay: `${i * 0.1}s` }} />
+                  ))}
+                </div>
+              ) : insight ? (
+                <div className="insight-container">
+                  {/* Why Saved */}
+                  {insight.whySaved && (
+                    <div className="insight-card">
+                      <p className="insight-card-label">
+                        <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
+                          <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748z" />
+                        </svg>
+                        Why You Saved This
+                      </p>
+                      <p className="insight-card-text">{insight.whySaved}</p>
+                    </div>
+                  )}
+
+                  {/* Read time + Key concepts */}
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    {insight.estimatedReadTime && (
+                      <span className="insight-chip insight-chip--time">
+                        <svg width="9" height="9" viewBox="0 0 16 16" fill="currentColor">
+                          <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
+                          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                        </svg>
+                        {insight.estimatedReadTime}
+                      </span>
+                    )}
+                    {insight.keyConcepts?.map((c, i) => (
+                      <span key={i} className="insight-chip insight-chip--concept">{c}</span>
+                    ))}
+                  </div>
+
+                  {/* Action Items */}
+                  {insight.actionItems?.length > 0 && (
+                    <div className="insight-card">
+                      <p className="insight-card-label">
+                        <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
+                          <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+                        </svg>
+                        Action Items
+                      </p>
+                      <ul className="insight-action-list">
+                        {insight.actionItems.map((a, i) => (
+                          <li key={i}>{a}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Related Topics */}
+                  {insight.relatedTopics?.length > 0 && (
+                    <div>
+                      <p className="insight-card-label" style={{ marginBottom: "8px" }}>
+                        <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
+                          <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492z" />
+                        </svg>
+                        Related Topics
+                      </p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                        {insight.relatedTopics.map((t, i) => (
+                          <span key={i} className="detail-tag">#{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="detail-empty-text">Could not load insight. Try again.</p>
               )}
             </div>
           )}

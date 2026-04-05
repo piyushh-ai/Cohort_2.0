@@ -4,9 +4,9 @@ const TOKEN_KEY = "collectra_token";
 
 const axiosInstance = axios.create({
   baseURL:
-    "https://collectra-ae2v.onrender.com/api" ||
-    "http://localhost:5000/api",
-  withCredentials: true, // ✅ cookies bhi bhejo (JWT cookie)
+    import.meta.env.VITE_API_URL ||
+    "https://collectra-ae2v.onrender.com/api",
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },

@@ -51,7 +51,7 @@ export const addHighlightAPI = async (id, data) => {
 
 export const deleteHighlightAPI = async (id, highlightId) => {
   const response = await axiosInstance.delete(
-    `/items/${id}/highlight/${highlightId}`,
+    `/items/${id}/highlight/${highlightId}`
   );
   return response.data;
 };
@@ -85,5 +85,29 @@ export const semanticSearchAPI = async (query, limit = 10) => {
 
 export const getTopicClustersAPI = async () => {
   const response = await axiosInstance.get("/items/topics");
+  return response.data;
+};
+
+// ─── NEW: RAG Chat with Collection ───────────────────────
+export const chatWithCollectionAPI = async (query) => {
+  const response = await axiosInstance.post("/items/chat", { query });
+  return response.data;
+};
+
+// ─── NEW: Deep item insight ───────────────────────────────
+export const getItemInsightAPI = async (id) => {
+  const response = await axiosInstance.get(`/items/${id}/insight`);
+  return response.data;
+};
+
+// ─── NEW: Trigger resurface (test) ───────────────────────
+export const triggerResurfaceAPI = async () => {
+  const response = await axiosInstance.post("/items/admin/trigger-resurface");
+  return response.data;
+};
+
+// ─── NEW: Backfill embeddings ─────────────────────────────
+export const backfillEmbeddingsAPI = async () => {
+  const response = await axiosInstance.post("/items/backfill-embeddings");
   return response.data;
 };
