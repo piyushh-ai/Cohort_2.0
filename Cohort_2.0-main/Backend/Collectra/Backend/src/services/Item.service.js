@@ -245,7 +245,175 @@ export const fetchResurfaceItems = async (userId) => {
     { $project: { embedding: 0 } },
   ]);
 
-  // ✅ DO NOT update lastSurfaced here
-  // It's now updated in resurfaceCron AFTER successful email delivery
+  // DO NOT update lastSurfaced here
+  // It's updated in resurfaceCron AFTER successful email delivery
   return items;
+};
+
+// ─── Insights / Analytics ─────────────────────────────────
+export const getInsightsData = async (userId) => {
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const [aggregation, collectionsCount] = await Promise.all([
+    ItemModel.aggregate([
+      { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+      {
+        $facet: {
+          // Total counts
+          totalItems: [{ $count: "count" }],
+          totalFavorites: [
+            { $match: { isFavorite: true } },
+            { $count: "count" },
+          ],
+          totalHighlights: [
+            { $project: { hlCount: { $size: { $ifNull: ["$highlights", []] } } } },
+            { $group: { _id: null, count: { $sum: "$hlCount" } } },
+          ],
+
+          // Breakdown by content type
+          typeBreakdown: [
+            { $group: { _id: "$type", count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+          ],
+
+          // Breakdown by site name
+          siteBreakdown: [
+            { $match: { siteName: { $nin: [null, ""] } } },
+            { $group: { _id: "$siteName", count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 10 },
+          ],
+
+          // Top tags
+          topTags: [
+            { $unwind: "$tags" },
+            { $group: { _id: { $toLower: "$tags" }, count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 12 },
+          ],
+
+          // Recent activity — items per day for last 30 days
+          recentActivity: [
+            { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+            {
+              $group: {
+                _id: {
+                  $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+                },
+                count: { $sum: 1 },
+              },
+            },
+            { $sort: { _id: 1 } },
+          ],
+
+          // All creation dates — for streak calculation
+          allDates: [
+            {
+              $group: {
+                _id: {
+                  $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+                },
+              },
+            },
+            { $sort: { _id: -1 } },
+          ],
+
+          // Most viewed items
+          mostViewed: [
+            { $match: { viewCount: { $gt: 0 } } },
+            { $sort: { viewCount: -1 } },
+            { $limit: 5 },
+            {
+              $project: {
+                title: 1,
+                viewCount: 1,
+                type: 1,
+                siteName: 1,
+                image: 1,
+              },
+            },
+          ],
+        },
+      },
+    ]),
+    CollectionModel.countDocuments({ userId }),
+  ]);
+
+  const result = aggregation[0];
+
+  const totalItems = result.totalItems[0]?.count || 0;
+  const totalFavorites = result.totalFavorites[0]?.count || 0;
+  const totalHighlights = result.totalHighlights[0]?.count || 0;
+
+  // Build type breakdown with percentages
+  const typeBreakdown = result.typeBreakdown.map((t) => ({
+    type: t._id || "other",
+    count: t.count,
+    percentage: totalItems > 0 ? Math.round((t.count / totalItems) * 100) : 0,
+  }));
+
+  // Build site breakdown
+  const siteBreakdown = result.siteBreakdown.map((s) => ({
+    site: s._id,
+    count: s.count,
+  }));
+
+  // Build top tags
+  const topTags = result.topTags.map((t) => ({
+    tag: t._id,
+    count: t.count,
+  }));
+
+  // Build recent activity
+  const recentActivity = result.recentActivity.map((d) => ({
+    date: d._id,
+    count: d.count,
+  }));
+
+  // Calculate streak
+  const allDatesSet = new Set(result.allDates.map((d) => d._id));
+  let currentStreak = 0;
+  let longestStreak = 0;
+  let tempStreak = 0;
+  const today = new Date();
+
+  // Current streak: count consecutive days backwards from today
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split("T")[0];
+    if (allDatesSet.has(key)) {
+      currentStreak++;
+    } else {
+      break;
+    }
+  }
+
+  // Longest streak: walk through all sorted dates
+  const sortedDates = [...allDatesSet].sort();
+  for (let i = 0; i < sortedDates.length; i++) {
+    if (i === 0) {
+      tempStreak = 1;
+    } else {
+      const prev = new Date(sortedDates[i - 1]);
+      const curr = new Date(sortedDates[i]);
+      const diffDays = (curr - prev) / (1000 * 60 * 60 * 24);
+      tempStreak = diffDays === 1 ? tempStreak + 1 : 1;
+    }
+    longestStreak = Math.max(longestStreak, tempStreak);
+  }
+
+  return {
+    totalItems,
+    totalFavorites,
+    totalHighlights,
+    totalCollections: collectionsCount,
+    typeBreakdown,
+    siteBreakdown,
+    topTags,
+    recentActivity,
+    mostViewed: result.mostViewed,
+    streak: { current: currentStreak, longest: longestStreak },
+  };
 };

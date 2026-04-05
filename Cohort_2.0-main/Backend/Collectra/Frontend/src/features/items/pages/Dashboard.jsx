@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import ItemCard from "../components/ItemCard";
 import AddItemModal from "../components/AddItemModal";
 import TopicClusters from "../components/TopicClusters";
+import InsightsPanel from "../components/InsightsPanel";
 import useItems from "../hooks/useItems";
 import "../styles/Dashboard.scss";
 import "../styles/_variables.scss";
@@ -392,6 +393,15 @@ const Dashboard = () => {
           </svg>
           Topics
         </button>
+        <button
+          className={`view-toggle-btn${activeView === "insights" ? " active" : ""}`}
+          onClick={() => setActiveView("insights")}
+        >
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M4 11H2v3h2v-3zm5.5-4h-2v7h2V7zM15 2h-2v12h2V2zM0 2v14h16V2H0zm15 13H1V3h14v12z" />
+          </svg>
+          Insights
+        </button>
       </div>
 
       {/* ── Body ── */}
@@ -414,7 +424,9 @@ const Dashboard = () => {
 
         {/* ── Main ── */}
         <main className="dashboard-main">
-          {activeView === "topics" ? (
+          {activeView === "insights" ? (
+            <InsightsPanel />
+          ) : activeView === "topics" ? (
             <TopicClusters
               onTopicClick={(tag) => {
                 const t = tag.toLowerCase();
@@ -629,16 +641,13 @@ const Dashboard = () => {
             </svg>
           </button>
           <button
-            className={`mob-nav-item${activeFilter === "favorites" ? " mob-active" : ""}`}
-            onClick={() => {
-              setActiveView("items");
-              handleFilterChange("favorites");
-            }}
+            className={`mob-nav-item${activeView === "insights" ? " mob-active" : ""}`}
+            onClick={() => setActiveView("insights")}
           >
             <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+              <path d="M4 11H2v3h2v-3zm5.5-4h-2v7h2V7zM15 2h-2v12h2V2zM0 2v14h16V2H0zm15 13H1V3h14v12z" />
             </svg>
-            <span>Saved</span>
+            <span>Insights</span>
           </button>
           {/* AI Chat button on mobile */}
           <button

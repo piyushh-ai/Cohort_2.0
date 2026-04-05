@@ -106,8 +106,14 @@ export const triggerResurfaceAPI = async () => {
   return response.data;
 };
 
-// ─── NEW: Backfill embeddings ─────────────────────────────
+// ─── Backfill embeddings ─────────────────────────────────
 export const backfillEmbeddingsAPI = async () => {
   const response = await axiosInstance.post("/items/backfill-embeddings");
+  return response.data;
+};
+
+// ─── Insights / Analytics ─────────────────────────────────
+export const getInsightsAPI = async () => {
+  const response = await axiosInstance.get("/items/insights");
   return response.data;
 };

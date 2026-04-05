@@ -16,6 +16,7 @@ import {
   semanticSearchAPI,
   chatWithCollectionAPI,
   getItemInsightAPI,
+  getInsightsAPI,
 } from "../api/items.api";
 
 const useItems = () => {
@@ -232,13 +233,24 @@ const useItems = () => {
     }
   };
 
-  // ─── Get Item Insight (Deep AI Analysis) NEW ───────
+  // ─── Get Item Insight (Deep AI Analysis) ────────────
   const getItemInsight = async (id) => {
     try {
       const response = await getItemInsightAPI(id);
       return response.data;
     } catch (err) {
       setError(err.response?.data?.message || "Failed to get insight");
+      return null;
+    }
+  };
+
+  // ─── Fetch Insights / Analytics ─────────────────────
+  const fetchInsights = async () => {
+    try {
+      const response = await getInsightsAPI();
+      return response.data;
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to fetch insights");
       return null;
     }
   };
@@ -266,6 +278,7 @@ const useItems = () => {
     semanticSearch,
     chatWithCollection,
     getItemInsight,
+    fetchInsights,
     clearError,
   };
 };

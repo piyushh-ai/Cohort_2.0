@@ -37,7 +37,7 @@
     left: 0;
     bottom: 0;
     width: 3px;
-    background: var(--topic-color, var(--blue));
+    background: var(--topic-color, var(--orange));
     opacity: 0;
     transition: opacity 0.25s ease;
     z-index: 2;
@@ -54,7 +54,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      var(--topic-color, var(--blue)),
+      var(--topic-color, var(--orange)),
       transparent
     );
     opacity: 0;
@@ -64,12 +64,12 @@
   }
 
   &:hover {
-    border-color: var(--topic-color, rgba(139, 92, 246, 0.4));
+    border-color: var(--topic-color, rgba(249, 115, 22, 0.4));
     transform: translateY(-5px) scale(1.015);
     box-shadow:
       0 16px 40px rgba(0, 0, 0, 0.5),
-      0 0 0 1px var(--topic-color, rgba(139, 92, 246, 0.2)),
-      0 6px 24px var(--topic-glow, rgba(139, 92, 246, 0.08));
+      0 0 0 1px var(--topic-color, rgba(249, 115, 22, 0.2)),
+      0 6px 24px var(--topic-glow, rgba(249, 115, 22, 0.08));
 
     &::before {
       opacity: 1;
@@ -82,10 +82,10 @@
       transform: scale(1.08);
     }
     .topic-name {
-      color: var(--topic-color, var(--blue));
+      color: var(--topic-color, var(--orange));
     }
     .topic-count-pill {
-      background: var(--topic-color, var(--blue));
+      background: var(--topic-color, var(--orange));
       color: #000;
     }
   }
@@ -207,7 +207,7 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(139, 92, 246, 0.04) 45%,
+      rgba(249, 115, 22, 0.04) 45%,
       transparent 100%
     );
     background-size: 200% 100%;
@@ -228,7 +228,7 @@
 
   svg {
     opacity: 0.18;
-    color: var(--blue);
+    color: var(--orange);
   }
 
   p {
@@ -250,7 +250,7 @@
 }
 
 // ═══════════════════════════════════════════════════════════
-// KNOWLEDGE GRAPH
+// KNOWLEDGE GRAPH (in TopicClusters view)
 // ═══════════════════════════════════════════════════════════
 
 .graph-wrapper {
@@ -283,7 +283,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(139, 92, 246, 0.05);
+  background: rgba(249, 115, 22, 0.05);
   border: 1px solid var(--glass-border);
   color: var(--text-2);
   padding: 6px 12px;
@@ -296,9 +296,9 @@
   white-space: nowrap;
   flex-shrink: 0;
   &:hover {
-    border-color: rgba(139, 92, 246, 0.3);
+    border-color: rgba(249, 115, 22, 0.3);
     color: var(--text-1);
-    background: rgba(139, 92, 246, 0.08);
+    background: rgba(249, 115, 22, 0.08);
   }
 }
 
@@ -333,9 +333,9 @@
   border: 1px solid var(--glass-border);
   font-family: var(--font-mono);
   &--edge {
-    color: var(--blue);
-    border-color: rgba(139, 92, 246, 0.3);
-    background: rgba(139, 92, 246, 0.08);
+    color: var(--cyan);
+    border-color: rgba(6, 182, 212, 0.3);
+    background: rgba(6, 182, 212, 0.08);
   }
 }
 
@@ -416,7 +416,7 @@
     stroke-opacity: 0.04 !important;
   }
   &--active {
-    stroke: var(--blue);
+    stroke: var(--cyan);
     stroke-opacity: 0.55 !important;
   }
 }
@@ -479,7 +479,7 @@
   width: 36px;
   height: 36px;
   border: 2px solid var(--bg-card);
-  border-top-color: var(--blue);
+  border-top-color: var(--orange);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -564,8 +564,8 @@
   transition: all 0.15s;
   &:hover {
     color: var(--text-1);
-    background: rgba(139, 92, 246, 0.08);
-    border-color: rgba(139, 92, 246, 0.2);
+    background: rgba(249, 115, 22, 0.08);
+    border-color: rgba(249, 115, 22, 0.2);
   }
 }
 .graph-preview-title {

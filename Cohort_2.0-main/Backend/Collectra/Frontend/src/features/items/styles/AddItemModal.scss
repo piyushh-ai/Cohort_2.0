@@ -28,21 +28,21 @@
 
   &:hover {
     color: var(--text-1);
-    background: rgba(139, 92, 246, 0.05);
+    background: rgba(249, 115, 22, 0.05);
     border-color: var(--glass-border);
   }
 
   &.active {
-    background: rgba(139, 92, 246, 0.1);
-    border-color: rgba(139, 92, 246, 0.25);
-    color: var(--blue);
+    background: rgba(249, 115, 22, 0.1);
+    border-color: rgba(249, 115, 22, 0.25);
+    color: var(--orange);
     font-weight: 600;
   }
 }
 
 // ─── File Dropzone ────────────────────────────────────────
 .file-dropzone {
-  border: 1.5px dashed rgba(139, 92, 246, 0.12);
+  border: 1.5px dashed rgba(168, 85, 247, 0.15);
   border-radius: var(--radius-md);
   cursor: pointer;
   min-height: 130px;
@@ -51,7 +51,7 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
-  background: rgba(139, 92, 246, 0.02);
+  background: rgba(168, 85, 247, 0.02);
   transition:
     border-color 0.2s,
     background 0.2s,
@@ -63,7 +63,7 @@
     inset: 0;
     background: radial-gradient(
       circle at 50% 50%,
-      rgba(139, 92, 246, 0.06),
+      rgba(168, 85, 247, 0.06),
       transparent 60%
     );
     opacity: 0;
@@ -72,8 +72,8 @@
 
   &:hover:not(.has-file),
   &.drag-over {
-    border-color: rgba(139, 92, 246, 0.45);
-    background: rgba(139, 92, 246, 0.05);
+    border-color: rgba(168, 85, 247, 0.45);
+    background: rgba(168, 85, 247, 0.05);
     transform: scale(1.005);
     &::before {
       opacity: 1;
@@ -83,8 +83,8 @@
   &.has-file {
     cursor: default;
     border-style: solid;
-    border-color: rgba(139, 92, 246, 0.22);
-    background: rgba(139, 92, 246, 0.04);
+    border-color: rgba(249, 115, 22, 0.22);
+    background: rgba(249, 115, 22, 0.04);
   }
 }
 
@@ -109,7 +109,7 @@
     color: var(--text-2);
 
     span {
-      color: var(--blue);
+      color: var(--purple);
       text-decoration: underline;
       text-underline-offset: 2px;
       cursor: pointer;
@@ -141,14 +141,14 @@
   height: 46px;
   background: var(--bg-surface);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(249, 115, 22, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 600;
-  color: var(--blue);
+  color: var(--orange);
   flex-shrink: 0;
   overflow: hidden;
 }

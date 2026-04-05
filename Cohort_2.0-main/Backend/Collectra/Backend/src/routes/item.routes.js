@@ -23,6 +23,7 @@ import {
   getItemInsightController,
   migrateEmbeddingsController,
   triggerResurfaceController,
+  getInsightsController,
 } from "../controllers/item.controller.js";
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
@@ -75,6 +76,9 @@ itemRouter.post("/backfill-embeddings", userMiddleware, backfillEmbeddingsContro
 
 // ─── Retag all ────────────────────────────────────────────
 itemRouter.post("/retag-all", userMiddleware, retagAllItemsController);
+
+// ─── Insights / Analytics ─────────────────────────────────
+itemRouter.get("/insights", userMiddleware, getInsightsController);
 
 // ─── CRUD ─────────────────────────────────────────────────
 itemRouter.get("/", userMiddleware, getAllItems);

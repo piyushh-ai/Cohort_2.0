@@ -1,1 +1,0 @@
-import"./axios-DoHS1q7A.js";import{u as e}from"./items.api-ChbNsC4M.js";export{e as getItemByIdAPI};

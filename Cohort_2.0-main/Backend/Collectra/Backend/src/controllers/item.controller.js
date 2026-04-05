@@ -30,6 +30,7 @@ import {
   removeItemFromCollection,
   fetchRelatedItems,
   fetchResurfaceItems,
+  getInsightsData,
 } from "../services/Item.service.js";
 
 // ─── Create ───────────────────────────────────────────────
@@ -307,5 +308,16 @@ export const retagAllItemsController = async (req, res) => {
     if (!res.headersSent) {
       return res.status(500).json({ success: false, message: error.message });
     }
+  }
+};
+
+// ─── Insights / Analytics ─────────────────────────────────
+export const getInsightsController = async (req, res) => {
+  try {
+    const data = await getInsightsData(req.user._id);
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error("Insights error:", error.message);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
