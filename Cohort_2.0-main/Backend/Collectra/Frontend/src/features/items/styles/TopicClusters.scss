@@ -1,7 +1,7 @@
 @import "./variables";
 
 // ═══════════════════════════════════════════════════════════
-// TOPIC CLUSTERS — Premium Redesign
+// TOPIC CLUSTERS
 // ═══════════════════════════════════════════════════════════
 
 .topics-grid {
@@ -19,9 +19,9 @@
 
 // ─── Topic Card ───────────────────────────────────────────
 .topic-card {
-  background: var(--bg-void); // lowest surface container
-  border: 1px solid transparent; // "No-Line" rule
-  border-radius: var(--radius-xl); // Use extra large radii
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   overflow: hidden;
   cursor: pointer;
   position: relative;
@@ -30,7 +30,6 @@
     transform 0.3s var(--spring),
     box-shadow 0.25s ease;
 
-  // Left accent bar — color injected via JS style var
   &::before {
     content: "";
     position: absolute;
@@ -45,7 +44,6 @@
     border-radius: 16px 0 0 16px;
   }
 
-  // Top shimmer line
   &::after {
     content: "";
     position: absolute;
@@ -66,12 +64,12 @@
   }
 
   &:hover {
-    border-color: var(--topic-color, var(--blue));
+    border-color: var(--topic-color, rgba(139, 92, 246, 0.4));
     transform: translateY(-5px) scale(1.015);
     box-shadow:
       0 16px 40px rgba(0, 0, 0, 0.5),
-      0 0 0 1px var(--topic-color, var(--blue)),
-      0 6px 24px var(--topic-glow, rgba(14, 165, 233, 0.1));
+      0 0 0 1px var(--topic-color, rgba(139, 92, 246, 0.2)),
+      0 6px 24px var(--topic-glow, rgba(139, 92, 246, 0.08));
 
     &::before {
       opacity: 1;
@@ -128,7 +126,6 @@
     background: rgba(255, 255, 255, 0.02);
   }
 
-  // First cell slightly larger feel via z-index on hover
   &:first-child {
     border-radius: 0;
   }
@@ -150,7 +147,7 @@
   justify-content: space-between;
   gap: 8px;
   background: rgba(0, 0, 0, 0.2);
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-top: 1px solid var(--glass-border);
 }
 
 .topic-name {
@@ -167,7 +164,7 @@
 }
 
 .topic-count {
-  display: none; // replaced by pill below
+  display: none;
 }
 
 .topic-count-pill {
@@ -179,7 +176,7 @@
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.07);
   color: var(--text-3);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
   white-space: nowrap;
   flex-shrink: 0;
   transition:
@@ -210,7 +207,7 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(14, 165, 233, 0.04) 45%,
+      rgba(139, 92, 246, 0.04) 45%,
       transparent 100%
     );
     background-size: 200% 100%;
@@ -253,7 +250,7 @@
 }
 
 // ═══════════════════════════════════════════════════════════
-// KNOWLEDGE GRAPH — unchanged, keep existing styles
+// KNOWLEDGE GRAPH
 // ═══════════════════════════════════════════════════════════
 
 .graph-wrapper {
@@ -263,7 +260,7 @@
   display: flex;
   flex-direction: column;
   background: var(--bg-void);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   min-height: 600px;
 }
@@ -273,24 +270,24 @@
   align-items: center;
   gap: 16px;
   padding: 10px 18px;
-  background: var(--surface-variant-alpha);
+  background: var(--glass-bg);
   border-bottom: none;
   font-size: 12px;
   color: var(--text-2);
   flex-shrink: 0;
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
 
 .graph-back-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border);
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid var(--glass-border);
   color: var(--text-2);
   padding: 6px 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-xs);
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 500;
@@ -299,9 +296,9 @@
   white-space: nowrap;
   flex-shrink: 0;
   &:hover {
-    border-color: var(--border-mid);
+    border-color: rgba(139, 92, 246, 0.3);
     color: var(--text-1);
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(139, 92, 246, 0.08);
   }
 }
 
@@ -316,7 +313,7 @@
   flex-shrink: 0;
   gap: 12px;
   flex-wrap: wrap;
-  background: rgba(8, 11, 24, 0.6);
+  background: rgba(8, 9, 13, 0.6);
 }
 
 .graph-stats-left {
@@ -333,12 +330,12 @@
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 20px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
   font-family: var(--font-mono);
   &--edge {
-    color: var(--violet);
-    border-color: rgba(167, 139, 250, 0.3);
-    background: rgba(167, 139, 250, 0.08);
+    color: var(--blue);
+    border-color: rgba(139, 92, 246, 0.3);
+    background: rgba(139, 92, 246, 0.08);
   }
 }
 
@@ -365,7 +362,7 @@
   border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
   flex-shrink: 0;
-  background: rgba(8, 11, 24, 0.5);
+  background: rgba(8, 9, 13, 0.5);
   @media (max-width: 480px) {
     gap: 8px;
     padding: 6px 14px;
@@ -419,7 +416,7 @@
     stroke-opacity: 0.04 !important;
   }
   &--active {
-    stroke: var(--cyan);
+    stroke: var(--blue);
     stroke-opacity: 0.55 !important;
   }
 }
@@ -482,7 +479,7 @@
   width: 36px;
   height: 36px;
   border: 2px solid var(--bg-card);
-  border-top-color: var(--emerald);
+  border-top-color: var(--blue);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -523,8 +520,8 @@
   bottom: 20px;
   right: 20px;
   width: 265px;
-  background: var(--surface-variant-alpha);
-  border: 1px solid transparent;
+  background: var(--glass-bg-solid);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   padding: 16px;
   backdrop-filter: blur(40px);
@@ -557,18 +554,18 @@
 }
 .graph-preview-close {
   background: none;
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
   color: var(--text-3);
   cursor: pointer;
   font-size: 13px;
   padding: 3px 7px;
-  border-radius: 6px;
+  border-radius: var(--radius-xs);
   line-height: 1;
   transition: all 0.15s;
   &:hover {
     color: var(--text-1);
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--border-mid);
+    background: rgba(139, 92, 246, 0.08);
+    border-color: rgba(139, 92, 246, 0.2);
   }
 }
 .graph-preview-title {
@@ -596,7 +593,7 @@
 }
 .graph-preview-open {
   width: 100%;
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 700;

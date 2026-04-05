@@ -1,8 +1,5 @@
 @import "./variables";
 
-// ─── Modal Overlay ────────────────────────────────────────
-// (shared base is in _variables.scss — these are modal-specific additions)
-
 // ─── Modal Tabs ───────────────────────────────────────────
 .modal-tabs {
   display: flex;
@@ -17,7 +14,7 @@
   padding: 8px 18px;
   background: none;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-family: var(--font-body);
   color: var(--text-2);
   font-size: 13px;
@@ -31,22 +28,22 @@
 
   &:hover {
     color: var(--text-1);
-    background: rgba(255, 255, 255, 0.04);
-    border-color: var(--border);
+    background: rgba(139, 92, 246, 0.05);
+    border-color: var(--glass-border);
   }
 
   &.active {
-    background: var(--blue-dim);
-    border-color: rgba(137, 206, 255, 0.25);
-    color: var(--blue-strong);
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.25);
+    color: var(--blue);
     font-weight: 600;
   }
 }
 
 // ─── File Dropzone ────────────────────────────────────────
 .file-dropzone {
-  border: 1.5px dashed rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
+  border: 1.5px dashed rgba(139, 92, 246, 0.12);
+  border-radius: var(--radius-md);
   cursor: pointer;
   min-height: 130px;
   display: flex;
@@ -54,20 +51,19 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.01);
+  background: rgba(139, 92, 246, 0.02);
   transition:
     border-color 0.2s,
     background 0.2s,
     transform 0.2s var(--spring);
 
-  // Inner radial glow
   &::before {
     content: "";
     position: absolute;
     inset: 0;
     background: radial-gradient(
       circle at 50% 50%,
-      rgba(56, 189, 248, 0.05),
+      rgba(139, 92, 246, 0.06),
       transparent 60%
     );
     opacity: 0;
@@ -76,8 +72,8 @@
 
   &:hover:not(.has-file),
   &.drag-over {
-    border-color: var(--blue);
-    background: var(--blue-dim);
+    border-color: rgba(139, 92, 246, 0.45);
+    background: rgba(139, 92, 246, 0.05);
     transform: scale(1.005);
     &::before {
       opacity: 1;
@@ -87,8 +83,8 @@
   &.has-file {
     cursor: default;
     border-style: solid;
-    border-color: rgba(137, 206, 255, 0.22);
-    background: var(--blue-dim);
+    border-color: rgba(139, 92, 246, 0.22);
+    background: rgba(139, 92, 246, 0.04);
   }
 }
 
@@ -113,7 +109,7 @@
     color: var(--text-2);
 
     span {
-      color: var(--cyan);
+      color: var(--blue);
       text-decoration: underline;
       text-underline-offset: 2px;
       cursor: pointer;
@@ -144,15 +140,15 @@
   width: 46px;
   height: 46px;
   background: var(--bg-surface);
-  border-radius: 10px;
-  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 600;
-  color: var(--cyan);
+  color: var(--blue);
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -187,8 +183,8 @@
   width: 28px;
   height: 28px;
   background: none;
-  border: 1px solid var(--border);
-  border-radius: 7px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xs);
   color: var(--text-3);
   cursor: pointer;
   display: flex;
@@ -208,7 +204,6 @@
 // RESPONSIVE
 // ═══════════════════════════════════════════════════════════
 
-// Bottom sheet on mobile
 @media (max-width: 768px) {
   .modal-overlay {
     padding: 0;
@@ -218,12 +213,11 @@
   .modal {
     max-width: 100%;
     width: 100%;
-    border-radius: 22px 22px 0 0;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     max-height: 92vh;
     padding-bottom: env(safe-area-inset-bottom, 0px);
-    animation: slide-up-sheet 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: slide-up-sheet 0.3s var(--snap) both;
 
-    // Pull handle indicator
     &::before {
       content: "";
       display: block;
@@ -234,7 +228,6 @@
       margin: 12px auto 0;
     }
 
-    // Override the gradient line
     &::after {
       content: none;
     }

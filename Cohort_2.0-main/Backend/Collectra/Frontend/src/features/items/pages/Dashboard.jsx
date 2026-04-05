@@ -288,7 +288,10 @@ const Dashboard = () => {
     if (activeTags) params.tags = activeTags;
     if (activeFilter === "favorites") {
       params.isFavorite = true;
-    } else if (activeFilter !== "all" && !activeFilter.startsWith("topic:")) {
+    } else if (activeFilter.startsWith("topic:")) {
+      // Topic filter — tags param is already set above via activeTags
+      // Just fetch with the tags param, no extra filter needed
+    } else if (activeFilter !== "all") {
       const types = ["article", "video", "pdf", "image", "tweet", "document"];
       if (types.includes(activeFilter)) params.type = activeFilter;
       else params.collectionId = activeFilter;
@@ -422,6 +425,9 @@ const Dashboard = () => {
                 setActiveTags(t);
                 setPage(1);
               }}
+              onTopicsRefresh={(fn) => {
+                refreshTopicsRef.current = fn;
+              }}
             />
           ) : (
             <>
@@ -436,7 +442,11 @@ const Dashboard = () => {
                   </span>
                   <button
                     className="semantic-clear"
-                    onClick={() => setActiveTags(null)}
+                    onClick={() => {
+                      setActiveTags(null);
+                      setActiveFilter("all");
+                      setPage(1);
+                    }}
                   >
                     Clear
                   </button>

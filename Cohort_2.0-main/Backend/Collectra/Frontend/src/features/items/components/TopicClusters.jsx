@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { getTopicClustersAPI } from "../api/items.api";
 import "../styles/TopicClusters.scss";
 
@@ -17,26 +17,36 @@ const getClusterAccent = (items) => {
   return TYPE_COLORS[type] || { color: "#0ea5e9", glow: "rgba(14,165,233,0.12)" };
 };
 
-const TopicClusters = ({ onTopicClick }) => {
+const TopicClusters = ({ onTopicClick, onTopicsRefresh }) => {
   const [clusters, setClusters] = useState([]);
   const [loading, setLoading]   = useState(true);
-  const hasFetched               = useRef(false);
+  const [error, setError]       = useState(null);
 
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-    const fetchClusters = async () => {
-      try {
-        const res = await getTopicClustersAPI();
-        setClusters(res.data || []);
-      } catch {
-        setClusters([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchClusters();
+  const fetchClusters = useCallback(async () => {
+    try {
+      setError(null);
+      const res = await getTopicClustersAPI();
+      setClusters(res.data || []);
+    } catch (err) {
+      console.error("TopicClusters fetch error:", err.message);
+      setClusters([]);
+      setError(err.message || "Failed to load topics");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchClusters();
+  }, [fetchClusters]);
+
+  // Expose refresh function to parent (Dashboard)
+  useEffect(() => {
+    if (onTopicsRefresh) {
+      onTopicsRefresh(fetchClusters);
+    }
+  }, [onTopicsRefresh, fetchClusters]);
 
   if (loading) {
     return (
@@ -44,6 +54,35 @@ const TopicClusters = ({ onTopicClick }) => {
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div key={i} className="topic-skeleton" style={{ animationDelay: `${i * 0.06}s` }} />
         ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="topics-empty">
+        <svg width="36" height="36" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+          <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z" />
+        </svg>
+        <p>Failed to load topics</p>
+        <span>{error}</span>
+        <button
+          onClick={fetchClusters}
+          style={{
+            marginTop: "12px",
+            padding: "6px 16px",
+            borderRadius: "8px",
+            background: "rgba(139, 92, 246, 0.15)",
+            border: "1px solid rgba(139, 92, 246, 0.3)",
+            color: "#a78bfa",
+            cursor: "pointer",
+            fontSize: "12px",
+            fontWeight: 600,
+          }}
+        >
+          Retry
+        </button>
       </div>
     );
   }

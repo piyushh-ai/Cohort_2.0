@@ -38,6 +38,8 @@ app.use(
     origin: (origin, callback) => {
       const allowed = [
         "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
         "https://collectra-ae2v.onrender.com",
         "https://collectra.online" // <- apna domain daalo
       ];

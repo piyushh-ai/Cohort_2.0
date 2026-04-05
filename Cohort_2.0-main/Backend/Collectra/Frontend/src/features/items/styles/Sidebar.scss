@@ -2,22 +2,23 @@
 
 // ─── Sidebar ──────────────────────────────────────────────
 .sidebar {
-  width: 232px;
-  min-width: 232px;
-  background: var(--surface-variant-alpha);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
+  width: 248px;
+  min-width: 248px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(1.3);
+  -webkit-backdrop-filter: blur(24px) saturate(1.3);
   border-right: none;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
-  padding: 12px 8px 32px;
+  padding: 14px 10px 32px;
   gap: 2px;
   position: relative;
   z-index: 10;
 
+  // Right gradient border
   &::after {
     content: '';
     position: absolute;
@@ -25,8 +26,9 @@
     width: 1px;
     background: linear-gradient(180deg,
       transparent 0%,
-      rgba(14,165,233,0.3) 25%,
-      rgba(245,158,11,0.15) 65%,
+      rgba(139, 92, 246, 0.25) 25%,
+      rgba(99, 102, 241, 0.15) 50%,
+      rgba(6, 182, 212, 0.1) 75%,
       transparent 100%
     );
     pointer-events: none;
@@ -35,9 +37,9 @@
   &::-webkit-scrollbar { width: 3px; }
   &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.1);
+    background: rgba(139, 92, 246, 0.15);
     border-radius: 999px;
-    &:hover { background: rgba(255,255,255,0.18); }
+    &:hover { background: rgba(139, 92, 246, 0.3); }
   }
 }
 
@@ -56,8 +58,8 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
   padding: 0 10px;
-  margin-bottom: 4px;
-  margin-top: 14px;
+  margin-bottom: 6px;
+  margin-top: 16px;
 }
 
 .sidebar-label-btn {
@@ -74,8 +76,8 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
   padding: 0 10px;
-  margin-bottom: 4px;
-  margin-top: 14px;
+  margin-bottom: 6px;
+  margin-top: 16px;
   transition: color 0.15s;
   gap: 6px;
 
@@ -95,7 +97,7 @@
   padding: 8px 10px;
   background: none;
   border: none;
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   font-family: var(--font-body);
   color: var(--text-2);
   font-size: 13px;
@@ -103,14 +105,11 @@
   cursor: pointer;
   text-align: left;
   position: relative;
-  transition:
-    background 0.15s,
-    color 0.15s,
-    transform 0.2s var(--spring);
+  transition: background 0.15s, color 0.15s, transform 0.2s var(--spring);
 
   svg {
     flex-shrink: 0;
-    opacity: 0.55;
+    opacity: 0.5;
     transition: opacity 0.15s, color 0.15s;
   }
 
@@ -119,8 +118,8 @@
     font-family: var(--font-mono);
     font-size: 9.5px;
     color: var(--text-3);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.09);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
     padding: 1px 7px;
     border-radius: 999px;
     letter-spacing: 0.04em;
@@ -129,7 +128,7 @@
   }
 
   &:hover {
-    background: rgba(14,165,233,0.07);
+    background: rgba(139, 92, 246, 0.06);
     color: var(--text-1);
     transform: translateX(2px);
     svg { opacity: 1; }
@@ -137,14 +136,14 @@
 
   &.active,
   &.active--all {
-    background: rgba(14,165,233,0.1);
+    background: rgba(139, 92, 246, 0.1);
     color: var(--blue);
     font-weight: 600;
     svg { opacity: 1; color: var(--blue); }
     .item-count {
-      background: rgba(14,165,233,0.15);
+      background: rgba(139, 92, 246, 0.12);
       color: var(--blue);
-      border-color: rgba(14,165,233,0.25);
+      border-color: rgba(139, 92, 246, 0.2);
     }
     &::before {
       content: '';
@@ -153,16 +152,16 @@
       width: 2.5px;
       background: var(--blue);
       border-radius: 999px;
-      box-shadow: 0 0 10px rgba(14,165,233,0.8);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.7);
     }
   }
 
   &.active--favorites {
-    background: rgba(245,158,11,0.1);
+    background: rgba(245, 158, 11, 0.08);
     color: var(--gold);
     font-weight: 600;
     svg { opacity: 1; color: var(--gold); }
-    .item-count { background: rgba(245,158,11,0.15); color: var(--gold); border-color: rgba(245,158,11,0.25); }
+    .item-count { background: rgba(245, 158, 11, 0.12); color: var(--gold); border-color: rgba(245, 158, 11, 0.2); }
     &::before {
       content: '';
       position: absolute;
@@ -170,24 +169,24 @@
       width: 2.5px;
       background: var(--gold);
       border-radius: 999px;
-      box-shadow: 0 0 10px rgba(245,158,11,0.8);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.7);
     }
   }
 
   &.active--rediscover {
-    background: rgba(249,115,22,0.1);
-    color: var(--orange);
+    background: rgba(6, 182, 212, 0.08);
+    color: var(--cyan);
     font-weight: 600;
-    svg { opacity: 1; color: var(--orange); }
-    .item-count { background: rgba(249,115,22,0.15); color: var(--orange); border-color: rgba(249,115,22,0.25); }
+    svg { opacity: 1; color: var(--cyan); }
+    .item-count { background: rgba(6, 182, 212, 0.12); color: var(--cyan); border-color: rgba(6, 182, 212, 0.2); }
     &::before {
       content: '';
       position: absolute;
       left: 0; top: 18%; bottom: 18%;
       width: 2.5px;
-      background: var(--orange);
+      background: var(--cyan);
       border-radius: 999px;
-      box-shadow: 0 0 10px rgba(249,115,22,0.8);
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.7);
     }
   }
 }
@@ -195,8 +194,8 @@
 // ─── Divider ──────────────────────────────────────────────
 .sidebar-divider {
   height: 1px;
-  background: rgba(255,255,255,0.07);
-  margin: 6px 4px;
+  background: var(--border);
+  margin: 8px 4px;
   opacity: 0.6;
 }
 
@@ -217,8 +216,8 @@
   width: 100%;
   padding: 7px 10px;
   background: none;
-  border: 1px dashed rgba(14,165,233,0.18);
-  border-radius: 9px;
+  border: 1px dashed rgba(139, 92, 246, 0.15);
+  border-radius: var(--radius-sm);
   font-family: var(--font-body);
   color: var(--text-3);
   font-size: 12px;
@@ -230,9 +229,9 @@
   svg { flex-shrink: 0; }
 
   &:hover {
-    border-color: rgba(14,165,233,0.4);
+    border-color: rgba(139, 92, 246, 0.4);
     color: var(--blue);
-    background: rgba(14,165,233,0.05);
+    background: rgba(139, 92, 246, 0.05);
     transform: translateX(2px);
   }
 }
@@ -241,18 +240,18 @@
 .sidebar-item-row {
   display: flex;
   align-items: center;
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   position: relative;
   transition: background 0.15s;
 
   &:hover {
-    background: rgba(14,165,233,0.06);
+    background: rgba(139, 92, 246, 0.05);
     .col-menu-btn { opacity: 1; }
     .sidebar-item-main { transform: translateX(2px); }
   }
 
   &.active {
-    background: rgba(14,165,233,0.08);
+    background: rgba(139, 92, 246, 0.08);
     .sidebar-item-main { color: var(--blue); font-weight: 600; }
     &::before {
       content: '';
@@ -261,7 +260,7 @@
       width: 2.5px;
       background: var(--blue);
       border-radius: 999px;
-      box-shadow: 0 0 10px rgba(14,165,233,0.7);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
     }
   }
 }
@@ -294,8 +293,8 @@
     font-family: var(--font-mono);
     font-size: 9.5px;
     color: var(--text-3);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.09);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
     padding: 1px 7px;
     border-radius: 999px;
     flex-shrink: 0;
@@ -314,7 +313,7 @@
   height: 24px;
   background: none;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-xs);
   cursor: pointer;
   color: var(--text-3);
   display: flex;
@@ -324,7 +323,7 @@
   transition: opacity 0.15s, background 0.15s, color 0.15s;
 
   &:hover {
-    background: rgba(14,165,233,0.1);
+    background: rgba(139, 92, 246, 0.1);
     color: var(--text-1);
   }
 }
@@ -333,9 +332,9 @@
   position: absolute;
   top: calc(100% + 4px);
   right: 0;
-  background: var(--surface-variant-alpha);
-  border: 1px solid transparent; // Ghost border alternative handled by box-shadow
-  border-radius: var(--radius-sm);
+  background: var(--glass-bg-solid);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
   padding: 5px;
   min-width: 148px;
   z-index: 80;
@@ -353,7 +352,7 @@
   padding: 8px 10px;
   background: none;
   border: none;
-  border-radius: 7px;
+  border-radius: 8px;
   font-family: var(--font-body);
   font-size: 12.5px;
   color: var(--text-2);
@@ -364,7 +363,7 @@
   svg { flex-shrink: 0; }
 
   &:hover {
-    background: rgba(14,165,233,0.08);
+    background: rgba(139, 92, 246, 0.06);
     color: var(--text-1);
   }
   &.danger {
@@ -388,29 +387,23 @@
     position: fixed;
     top: 0;
     left: 0;
-    // ✅ FIX 1: Bottom navbar ke upar tak — 64px bottom nav height
     bottom: 64px;
     z-index: 200;
     width: 80vw;
     max-width: 300px;
-    // ✅ FIX 2: Top safe area + header height (56px) se shuru
     padding-top: max(60px, calc(env(safe-area-inset-top) + 56px));
     padding-left: 10px;
     padding-right: 10px;
     padding-bottom: 24px;
-    background: var(--surface-variant-alpha);
+    background: var(--glass-bg-solid);
     border-right: none;
     box-shadow: var(--shadow-float);
-    backdrop-filter: blur(40px); // adding blur to mobile sidebar explicitly
+    backdrop-filter: blur(40px);
     transform: translateX(-100%);
     transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform;
-    // JS touchmove sets style.transition = "none" during drag,
-    // then clears it on touchend so this value kicks back in for snap
     overflow-y: auto;
     overflow-x: hidden;
-
-    // ✅ FIX 3: Content ko top se shuru karo, gap nahi
     display: flex;
     flex-direction: column;
     gap: 0;
@@ -418,27 +411,18 @@
     &.sidebar--open {
       transform: translateX(0);
     }
-
-    // ✅ FIX 4: Right glow line hide on mobile (extra visual noise)
-    &::after {
-      display: none;
-    }
+    &::after { display: none; }
   }
 
-  // ✅ FIX 5: Section spacing tighten karo
-  .sidebar-section {
-    margin-bottom: 2px;
-  }
+  .sidebar-section { margin-bottom: 2px; }
 
-  // ✅ FIX 6: Nav items — touch-friendly 44px min height
   .sidebar-item {
     padding: 11px 12px;
     font-size: 14px;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     gap: 11px;
     min-height: 44px;
 
-    // Active indicator thoda bada
     &.active::before,
     &.active--all::before,
     &.active--favorites::before,
@@ -447,14 +431,12 @@
     }
   }
 
-  // ✅ FIX 7: Collection main button touch target
   .sidebar-item-main {
     padding: 11px 12px;
     font-size: 14px;
     min-height: 44px;
   }
 
-  // ✅ FIX 8: 3-dot menu button — always visible on mobile (hover nahi hota touch pe)
   .col-menu-btn {
     opacity: 1;
     width: 36px;
@@ -462,7 +444,6 @@
     border-radius: 8px;
   }
 
-  // ✅ FIX 9: Section labels
   .sidebar-label,
   .sidebar-label-btn {
     padding: 0 12px;
@@ -472,41 +453,33 @@
     letter-spacing: 0.1em;
   }
 
-  // ✅ FIX 10: Add collection button
   .sidebar-add-collection {
     padding: 11px 12px;
     font-size: 13px;
     margin-top: 6px;
     min-height: 44px;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
   }
 
-  // ✅ FIX 11: Empty state text
   .sidebar-empty {
     padding: 6px 12px;
     font-size: 12px;
   }
 
-  // ✅ FIX 12: Collection dot thoda bada
-  .collection-dot {
-    width: 9px;
-    height: 9px;
-  }
+  .collection-dot { width: 9px; height: 9px; }
 
-  // ✅ FIX 13: item-count badge
   .sidebar-item .item-count,
   .sidebar-item-main .item-count {
     font-size: 10px;
     padding: 2px 8px;
   }
 
-  // ✅ FIX 14: Dropdown — mobile me upar se nahi, fix position
   .col-dropdown {
     right: 0;
     top: auto;
     bottom: calc(100% + 4px);
     min-width: 160px;
-    border-radius: 12px;
+    border-radius: var(--radius-md);
 
     .col-dropdown-item {
       padding: 12px 12px;
@@ -517,13 +490,11 @@
   }
 }
 
-// Very small phones
 @media (max-width: 380px) {
   .sidebar {
     width: 85vw;
     max-width: 290px;
   }
-
   .sidebar-item {
     font-size: 13.5px;
     padding: 10px 11px;
@@ -538,15 +509,10 @@
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(4, 4, 12, 0.65);
     z-index: 199;
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     animation: fade-in 0.2s ease both;
   }
-}
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
 }
