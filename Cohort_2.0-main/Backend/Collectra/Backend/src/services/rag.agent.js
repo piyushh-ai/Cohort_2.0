@@ -5,7 +5,7 @@ import { semanticSearch } from "./Embedding.service.js";
 
 // ─── Gemini Pro for reasoning ─────────────────────────────
 const geminiPro = new ChatGoogleGenerativeAI({
-  model: "gemini-1.5-flash",
+  model: "gemini-2.0-flash",
   apiKey: config.geminiApiKey,
   temperature: 0.3,
   maxRetries: 2,
