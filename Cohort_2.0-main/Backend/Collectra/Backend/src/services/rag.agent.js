@@ -29,7 +29,7 @@ const invokeWithRetry = async (model, prompt, maxRetries = 3) => {
 
 // ─── Gemini model (flash-lite → lower cost, higher free-tier limits) ──
 const geminiPro = new ChatGoogleGenerativeAI({
-  model: "gemini-2.0-flash-lite",   // lightweight, higher free-tier RPM
+  model: "gemini-flash-latest",   // lightweight, higher free-tier RPM
   apiKey: config.geminiApiKey,
   temperature: 0.3,
   maxRetries: 0,                   // we handle retries ourselves
