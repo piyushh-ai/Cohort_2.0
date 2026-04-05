@@ -1,68 +1,55 @@
+import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { config } from "../config/config.js";
 import ItemModel from "../models/item.model.js";
 
-// ── Render free tier par @xenova/transformers memory kill karta hai ──
-// Isliye dynamic import + try-catch + null fallback use karo
-let embedder = null;
-let embedderFailed = false; // ek baar fail hua toh dobara try mat karo
+// ─── Google text-embedding-004 (768 dim, cloud-based, no memory cost) ──────
+// Replaces @xenova/transformers which caused OOM on Render free tier
+let embeddingsModel = null;
 
-const getEmbedder = async () => {
-  if (embedderFailed) return null;
-  if (embedder) return embedder;
-
-  try {
-    console.log("Loading embedding model...");
-    const { pipeline } = await import("@xenova/transformers");
-    embedder = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
-    console.log("Embedding model ready!");
-    return embedder;
-  } catch (err) {
-    console.error(
-      "Embedding model failed to load — semantic search disabled:",
-      err.message,
-    );
-    embedderFailed = true;
-    return null;
-  }
+const getEmbeddingModel = () => {
+  if (embeddingsModel) return embeddingsModel;
+  embeddingsModel = new GoogleGenerativeAIEmbeddings({
+    model: "text-embedding-004",
+    apiKey: config.geminiApiKey,
+    taskType: "RETRIEVAL_DOCUMENT",
+  });
+  return embeddingsModel;
 };
 
-// ── Text ko vector mein convert karo ──────────────────
+// ─── Generate embedding vector for text ──────────────────
 export const generateEmbedding = async (text) => {
   try {
-    const model = await getEmbedder();
-    if (!model) return null; // gracefully skip — no crash
-
-    const output = await model(text, { pooling: "mean", normalize: true });
-    return Array.from(output.data);
+    const model = getEmbeddingModel();
+    const vector = await model.embedQuery(text);
+    return vector; // float32[], 768 dimensions
   } catch (err) {
-    console.error("Embedding generation failed:", err.message);
-    embedderFailed = true; // aage se try mat karo
+    console.error("❌ Embedding generation failed:", err.message);
     return null;
   }
 };
 
-// ── Cosine similarity ─────────────────────────────────
+// ─── Cosine similarity ────────────────────────────────────
 const cosineSimilarity = (a, b) => {
   if (!a || !b || a.length !== b.length) return 0;
-  let dot = 0,
-    normA = 0,
-    normB = 0;
+  let dot = 0, normA = 0, normB = 0;
   for (let i = 0; i < a.length; i++) {
     dot += a[i] * b[i];
     normA += a[i] * a[i];
     normB += b[i] * b[i];
   }
-  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+  const denom = Math.sqrt(normA) * Math.sqrt(normB);
+  return denom === 0 ? 0 : dot / denom;
 };
 
-// ── Semantic search ───────────────────────────────────
+// ─── Semantic search ──────────────────────────────────────
 export const semanticSearch = async (userId, query, limit = 10) => {
   try {
     const queryEmbedding = await generateEmbedding(query);
 
-    // ✅ Model load nahi hua — keyword fallback use karo
+    // Fallback to keyword search if embedding fails
     if (!queryEmbedding) {
-      console.log("Embedding unavailable — falling back to keyword search");
-      const items = await ItemModel.find({
+      console.log("⚠️ Embedding unavailable — falling back to keyword search");
+      return ItemModel.find({
         userId,
         $or: [
           { title: { $regex: query, $options: "i" } },
@@ -73,16 +60,13 @@ export const semanticSearch = async (userId, query, limit = 10) => {
         .limit(Number(limit))
         .select("-embedding")
         .lean();
-      return items;
     }
 
     const items = await ItemModel.find({
       userId,
       embedding: { $exists: true, $not: { $size: 0 } },
     })
-      .select(
-        "+embedding _id title description type tags image siteName createdAt isFavorite collectionId",
-      )
+      .select("+embedding _id title description type tags image siteName createdAt isFavorite collectionId summary")
       .lean();
 
     if (items.length === 0) return [];
@@ -92,65 +76,86 @@ export const semanticSearch = async (userId, query, limit = 10) => {
         ...item,
         score: cosineSimilarity(queryEmbedding, item.embedding),
       }))
-      .filter((item) => item.score > 0.1)
+      .filter((item) => item.score > 0.4) // Higher threshold for 768-dim
       .sort((a, b) => b.score - a.score)
       .slice(0, limit)
       .map(({ embedding, score, ...item }) => ({
         ...item,
-        score: Math.round(score * 100),
+        relevanceScore: Math.round(score * 100),
       }));
 
     return results;
   } catch (err) {
-    console.error("Semantic search error:", err.message);
+    console.error("❌ Semantic search error:", err.message);
     return [];
   }
 };
 
-// ── Item ka embedding generate karke save karo ───────
+// ─── Generate + save embedding for an item ────────────────
 export const generateAndSaveEmbedding = async (itemId) => {
   try {
     const item = await ItemModel.findById(itemId).select(
-      "title description tags summary",
+      "title description tags summary"
     );
     if (!item) return;
 
-    const text = [
-      item.title,
-      item.description,
-      item.summary,
-      item.tags?.join(", "),
-    ]
+    // Combine all text for rich embedding
+    const text = [item.title, item.description, item.summary, item.tags?.join(", ")]
       .filter(Boolean)
       .join(". ")
-      .slice(0, 512);
+      .slice(0, 2048); // Google supports longer context
 
     const embedding = await generateEmbedding(text);
-    if (!embedding) return; // silently skip if model unavailable
+    if (!embedding) return;
 
     await ItemModel.findByIdAndUpdate(itemId, { embedding });
-    console.log("Embedding saved for:", item.title);
+    console.log(`✅ Embedding saved (768-dim) for: ${item.title}`);
   } catch (err) {
-    console.error("Save embedding error:", err.message);
+    console.error("❌ Save embedding error:", err.message);
   }
 };
 
-// ── Backfill ──────────────────────────────────────────
-export const backfillEmbeddings = async () => {
+// ─── Backfill: regenerate all embeddings (call after model migration) ──────
+export const backfillEmbeddings = async (userId = null) => {
   try {
-    const items = await ItemModel.find({
-      $or: [{ embedding: { $exists: false } }, { embedding: { $size: 0 } }],
-    }).select("_id title");
+    const filter = userId 
+      ? { userId, $or: [{ embedding: { $exists: false } }, { embedding: { $size: 0 } }] }
+      : { $or: [{ embedding: { $exists: false } }, { embedding: { $size: 0 } }] };
 
-    console.log(`Backfilling embeddings for ${items.length} items...`);
+    const items = await ItemModel.find(filter).select("_id title");
+    console.log(`📦 Backfilling embeddings for ${items.length} items...`);
 
     for (const item of items) {
       await generateAndSaveEmbedding(item._id);
-      await new Promise((r) => setTimeout(r, 200));
+      await new Promise((r) => setTimeout(r, 100)); // Rate limiting
     }
 
-    console.log("Backfill complete!");
+    console.log("✅ Backfill complete!");
+    return items.length;
   } catch (err) {
-    console.error("Backfill error:", err.message);
+    console.error("❌ Backfill error:", err.message);
+    return 0;
+  }
+};
+
+// ─── Full migration: clear all old 384-dim embeddings + regenerate ─────────
+export const migrateEmbeddings = async () => {
+  try {
+    console.log("🔄 Clearing old 384-dim embeddings...");
+    await ItemModel.updateMany({}, { $set: { embedding: [] } });
+
+    const items = await ItemModel.find({}).select("_id title");
+    console.log(`📦 Migrating ${items.length} items to 768-dim embeddings...`);
+
+    for (const item of items) {
+      await generateAndSaveEmbedding(item._id);
+      await new Promise((r) => setTimeout(r, 150)); // Careful rate limiting
+    }
+
+    console.log("✅ Migration complete!");
+    return items.length;
+  } catch (err) {
+    console.error("❌ Migration error:", err.message);
+    throw err;
   }
 };

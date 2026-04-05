@@ -4,10 +4,10 @@
 .sidebar {
   width: 232px;
   min-width: 232px;
-  background: rgba(13, 18, 28, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(255,255,255,0.07);
+  background: var(--surface-variant-alpha);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-right: none;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -333,17 +333,15 @@
   position: absolute;
   top: calc(100% + 4px);
   right: 0;
-  background: rgba(22, 28, 42, 0.98);
-  border: 1px solid rgba(255,255,255,0.09);
-  border-radius: 11px;
+  background: var(--surface-variant-alpha);
+  border: 1px solid transparent; // Ghost border alternative handled by box-shadow
+  border-radius: var(--radius-sm);
   padding: 5px;
   min-width: 148px;
   z-index: 80;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow:
-    0 0 0 1px rgba(14,165,233,0.05),
-    0 12px 32px rgba(0,0,0,0.5);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  box-shadow: var(--shadow-float);
   animation: scale-in 0.18s var(--spring) both;
 }
 
@@ -400,9 +398,10 @@
     padding-left: 10px;
     padding-right: 10px;
     padding-bottom: 24px;
-    background: rgba(13, 17, 26, 0.99);
-    border-right: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 12px 0 60px rgba(0,0,0,0.7);
+    background: var(--surface-variant-alpha);
+    border-right: none;
+    box-shadow: var(--shadow-float);
+    backdrop-filter: blur(40px); // adding blur to mobile sidebar explicitly
     transform: translateX(-100%);
     transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform;

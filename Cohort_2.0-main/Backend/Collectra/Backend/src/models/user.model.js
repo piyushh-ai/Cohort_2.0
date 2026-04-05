@@ -54,6 +54,18 @@ const userSchema = new mongoose.Schema(
       enum: ["local", "google"],
       default: "local",
     },
+
+    // ─── User preferences ──────────────────────────────
+    preferences: {
+      resurfaceEnabled: {
+        type: Boolean,
+        default: true, // Opt-in by default
+      },
+      emailNotifications: {
+        type: Boolean,
+        default: true,
+      },
+    },
   },
   { timestamps: true },
 );

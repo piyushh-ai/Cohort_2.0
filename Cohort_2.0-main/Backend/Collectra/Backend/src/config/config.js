@@ -46,6 +46,10 @@ if (!process.env.GROQ_API_KEY) {
   throw new Error("GROQ_API_KEY is not defined");
 }
 
+if (!process.env.GEMINI_API_KEY) {
+  throw new Error("GEMINI_API_KEY is not defined");
+}
+
 if (!process.env.FRONTEND_URL) {
   throw new Error("FRONTEND_URL is not defined");
 }
@@ -65,6 +69,8 @@ export const config = {
   cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
   cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
   groqApiKey: process.env.GROQ_API_KEY,
+  geminiApiKey: process.env.GEMINI_API_KEY,
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
   resendApiKey: process.env.RESEND_API_KEY,
+  nodeEnv: process.env.NODE_ENV || "development",
 };

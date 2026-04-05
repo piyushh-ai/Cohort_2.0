@@ -36,9 +36,9 @@
   }
 
   &.active {
-    background: rgba(56, 189, 248, 0.1);
-    border-color: rgba(56, 189, 248, 0.25);
-    color: var(--cyan);
+    background: var(--blue-dim);
+    border-color: rgba(137, 206, 255, 0.25);
+    color: var(--blue-strong);
     font-weight: 600;
   }
 }
@@ -76,8 +76,8 @@
 
   &:hover:not(.has-file),
   &.drag-over {
-    border-color: rgba(56, 189, 248, 0.45);
-    background: rgba(56, 189, 248, 0.04);
+    border-color: var(--blue);
+    background: var(--blue-dim);
     transform: scale(1.005);
     &::before {
       opacity: 1;
@@ -87,8 +87,8 @@
   &.has-file {
     cursor: default;
     border-style: solid;
-    border-color: rgba(56, 189, 248, 0.22);
-    background: rgba(56, 189, 248, 0.04);
+    border-color: rgba(137, 206, 255, 0.22);
+    background: var(--blue-dim);
   }
 }
 
@@ -287,7 +287,7 @@
     justify-content: center;
     padding: 13px 20px;
     font-size: 14px;
-    border-radius: 10px;
+    border-radius: var(--radius-full);
   }
 
   .form-group {

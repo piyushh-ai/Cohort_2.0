@@ -99,10 +99,11 @@
   align-items: center;
   gap: 2px;
   padding: 0 20px;
-  height: 42px;
-  background: rgba(4, 10, 18, 0.88);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border);
+  height: 48px;
+  background: var(--surface-variant-alpha);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-bottom: none;
   flex-shrink: 0;
   position: relative;
   z-index: 1;
@@ -296,8 +297,8 @@
 // ─── Skeleton ─────────────────────────────────────────────
 .skeleton-card {
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
+  border: 1px solid transparent; // "No-Line" rule, use tonal shifting instead
+  border-radius: var(--radius-xl);
   overflow: hidden;
   opacity: 0;
   animation: cardIn 0.5s var(--ease) both;
@@ -524,21 +525,21 @@
   }
 }
 
-// GOLD add button — premium CTA
+// BLUE gradient add button — primary CTA
 .mob-add-btn {
   width: 50px;
   height: 50px;
-  border-radius: 15px;
-  background: linear-gradient(135deg, var(--gold-strong), var(--gold));
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--blue-strong), var(--blue));
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #000;
+  color: var(--bg-deep);
   box-shadow:
-    0 0 24px rgba(245, 158, 11, 0.55),
-    0 0 50px rgba(245, 158, 11, 0.18);
+    0 0 24px rgba(14, 165, 233, 0.55),
+    0 0 50px rgba(14, 165, 233, 0.18);
   transition:
     transform 0.3s var(--spring),
     box-shadow 0.2s;

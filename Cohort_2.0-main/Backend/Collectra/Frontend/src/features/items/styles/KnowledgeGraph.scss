@@ -289,11 +289,11 @@
 }
 
 .topic-card {
-  background: rgba(10, 14, 28, 0.82);
+  background: var(--bg-void); // lowest surface container for base state
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  border: 1px solid transparent; // No direct line boundaries
+  border-radius: var(--radius-xl); // Use extra large radius for cards
   overflow: hidden;
   cursor: pointer;
   position: relative;
@@ -413,8 +413,8 @@
     var(--bg-card) 75%
   );
   background-size: 200% 100%;
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xl);
   animation: shimmer-bg 1.6s linear infinite;
 }
 

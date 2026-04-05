@@ -15,11 +15,11 @@
 
 // ─── CARD ─────────────────────────────────────────────────
 .item-card {
-  background: rgba(10, 14, 28, 0.85);
+  background: var(--bg-void); // surface-container-lowest
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--border);
-  border-radius: 18px;
+  border: 1px solid transparent; // No borders
+  border-radius: var(--radius-xl); // 3rem radius
   overflow: hidden;
   cursor: pointer;
   display: flex;
@@ -96,7 +96,7 @@
 
 // ─── Inner clip wrapper (clips image/content, not the card itself) ──────────
 .item-card-inner {
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -208,7 +208,7 @@
 
 // ─── Content ──────────────────────────────────────────────
 .item-card-content {
-  padding: 14px 15px 10px;
+  padding: 24px 28px 16px; // High padding according to editorial design
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -275,8 +275,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 9px 15px 13px;
-  border-top: 1px solid rgba(255,255,255,0.04);
+  padding: 12px 28px 24px;
+  border-top: none; // No lines
   margin-top: auto;
   position: relative;
   z-index: 2;

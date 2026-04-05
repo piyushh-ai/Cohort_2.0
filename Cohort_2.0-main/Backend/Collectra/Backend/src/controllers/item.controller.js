@@ -1,5 +1,3 @@
-
-
 import {
   buildGraphData,
   searchItemsSemantic,
@@ -10,7 +8,12 @@ import {
   getAIHighlights,
   runBackfillEmbeddings,
   retagAllItems,
+  getItemInsight,
+  chatWithUserCollection,
+  runMigrateEmbeddings,
 } from "../services/item.ai.service.js";
+
+import { runResurfaceJob } from "../jobs/resurfaceCron.js";
 
 import {
   addItemHighlight,
@@ -29,7 +32,7 @@ import {
   fetchResurfaceItems,
 } from "../services/Item.service.js";
 
-// ─── Create ───────────────────────────────────────────
+// ─── Create ───────────────────────────────────────────────
 export const createItem = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -42,9 +45,7 @@ export const createItem = async (req, res) => {
     } else if (url) {
       itemData = await createItemFromUrl(userId, url, collectionId);
     } else {
-      return res
-        .status(400)
-        .json({ success: false, message: "URL or file is required" });
+      return res.status(400).json({ success: false, message: "URL or file is required" });
     }
 
     const item = await saveItem(itemData);
@@ -55,7 +56,7 @@ export const createItem = async (req, res) => {
   }
 };
 
-// ─── Read All ─────────────────────────────────────────
+// ─── Read All ─────────────────────────────────────────────
 export const getAllItems = async (req, res) => {
   try {
     const { items, pagination } = await fetchAllItems(req.user._id, req.query);
@@ -65,89 +66,62 @@ export const getAllItems = async (req, res) => {
   }
 };
 
-// ─── Read One ─────────────────────────────────────────
+// ─── Read One ─────────────────────────────────────────────
 export const getItemById = async (req, res) => {
   try {
     const item = await fetchItemById(req.params.id, req.user._id);
-    if (!item)
-      return res
-        .status(404)
-        .json({ success: false, message: "Item not found" });
+    if (!item) return res.status(404).json({ success: false, message: "Item not found" });
     return res.status(200).json({ success: true, data: item });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ─── Update ───────────────────────────────────────────
+// ─── Update ───────────────────────────────────────────────
 export const updateItem = async (req, res) => {
   try {
     const item = await updateItemById(req.params.id, req.user._id, req.body);
-    if (!item)
-      return res
-        .status(404)
-        .json({ success: false, message: "Item not found" });
+    if (!item) return res.status(404).json({ success: false, message: "Item not found" });
     return res.status(200).json({ success: true, data: item });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ─── Delete ───────────────────────────────────────────
+// ─── Delete ───────────────────────────────────────────────
 export const deleteItem = async (req, res) => {
   try {
     const item = await deleteItemById(req.params.id, req.user._id);
-    if (!item)
-      return res
-        .status(404)
-        .json({ success: false, message: "Item not found" });
-    return res
-      .status(200)
-      .json({ success: true, message: "Item deleted successfully" });
+    if (!item) return res.status(404).json({ success: false, message: "Item not found" });
+    return res.status(200).json({ success: true, message: "Item deleted successfully" });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ─── Toggle Favorite ──────────────────────────────────
+// ─── Toggle Favorite ──────────────────────────────────────
 export const toggleFavorite = async (req, res) => {
   try {
     const item = await toggleItemFavorite(req.params.id, req.user._id);
-    if (!item)
-      return res
-        .status(404)
-        .json({ success: false, message: "Item not found" });
+    if (!item) return res.status(404).json({ success: false, message: "Item not found" });
     return res.status(200).json({
       success: true,
       data: { isFavorite: item.isFavorite },
-      message: item.isFavorite
-        ? "Added to favorites"
-        : "Removed from favorites",
+      message: item.isFavorite ? "Added to favorites" : "Removed from favorites",
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ─── Highlights ───────────────────────────────────────
+// ─── Highlights ───────────────────────────────────────────
 export const addHighlight = async (req, res) => {
   try {
     const { text, note } = req.body;
-    if (!text)
-      return res
-        .status(400)
-        .json({ success: false, message: "Highlight text is required" });
+    if (!text) return res.status(400).json({ success: false, message: "Highlight text is required" });
 
-    const item = await addItemHighlight(
-      req.params.id,
-      req.user._id,
-      text,
-      note,
-    );
-    if (!item)
-      return res
-        .status(404)
-        .json({ success: false, message: "Item not found" });
+    const item = await addItemHighlight(req.params.id, req.user._id, text, note);
+    if (!item) return res.status(404).json({ success: false, message: "Item not found" });
     return res.status(200).json({ success: true, data: item.highlights });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -156,39 +130,23 @@ export const addHighlight = async (req, res) => {
 
 export const deleteHighlight = async (req, res) => {
   try {
-    const item = await deleteItemHighlight(
-      req.params.id,
-      req.user._id,
-      req.params.highlightId,
-    );
-    if (!item)
-      return res
-        .status(404)
-        .json({ success: false, message: "Item not found" });
+    const item = await deleteItemHighlight(req.params.id, req.user._id, req.params.highlightId);
+    if (!item) return res.status(404).json({ success: false, message: "Item not found" });
     return res.status(200).json({ success: true, data: item.highlights });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ─── Collections ──────────────────────────────────────
+// ─── Collections ──────────────────────────────────────────
 export const addToCollection = async (req, res) => {
   try {
     const { collectionId } = req.body;
     if (!collectionId)
-      return res
-        .status(400)
-        .json({ success: false, message: "collectionId is required" });
+      return res.status(400).json({ success: false, message: "collectionId is required" });
 
-    const item = await moveItemToCollection(
-      req.params.id,
-      req.user._id,
-      collectionId,
-    );
-    if (!item)
-      return res
-        .status(404)
-        .json({ success: false, message: "Item or collection not found" });
+    const item = await moveItemToCollection(req.params.id, req.user._id, collectionId);
+    if (!item) return res.status(404).json({ success: false, message: "Item or collection not found" });
     return res.status(200).json({ success: true, data: item });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -198,35 +156,25 @@ export const addToCollection = async (req, res) => {
 export const removeFromCollection = async (req, res) => {
   try {
     const item = await removeItemFromCollection(req.params.id, req.user._id);
-    if (!item)
-      return res
-        .status(404)
-        .json({ success: false, message: "Item not found" });
-    return res.status(200).json({
-      success: true,
-      message: "Item removed from collection",
-      data: item,
-    });
+    if (!item) return res.status(404).json({ success: false, message: "Item not found" });
+    return res.status(200).json({ success: true, message: "Item removed from collection", data: item });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ─── Related ──────────────────────────────────────────
+// ─── Related ──────────────────────────────────────────────
 export const getRelatedItems = async (req, res) => {
   try {
     const items = await fetchRelatedItems(req.params.id, req.user._id);
-    if (!items)
-      return res
-        .status(404)
-        .json({ success: false, message: "Item not found" });
+    if (!items) return res.status(404).json({ success: false, message: "Item not found" });
     return res.status(200).json({ success: true, data: items });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ─── Resurface ────────────────────────────────────────
+// ─── Resurface ────────────────────────────────────────────
 export const resurfaceItems = async (req, res) => {
   try {
     const items = await fetchResurfaceItems(req.user._id);
@@ -236,7 +184,7 @@ export const resurfaceItems = async (req, res) => {
   }
 };
 
-// ─── Graph ────────────────────────────────────────────
+// ─── Graph ────────────────────────────────────────────────
 export const getGraphData = async (req, res) => {
   try {
     const data = await buildGraphData(req.user._id);
@@ -246,29 +194,21 @@ export const getGraphData = async (req, res) => {
   }
 };
 
-// ─── Semantic Search ──────────────────────────────────
+// ─── Semantic Search ──────────────────────────────────────
 export const semanticSearchItems = async (req, res) => {
   try {
     const { query, limit } = req.query;
     if (!query?.trim())
-      return res
-        .status(400)
-        .json({ success: false, message: "Query is required" });
+      return res.status(400).json({ success: false, message: "Query is required" });
 
-    const results = await searchItemsSemantic(
-      req.user._id,
-      query.trim(),
-      limit,
-    );
-    return res
-      .status(200)
-      .json({ success: true, data: results, count: results.length });
+    const results = await searchItemsSemantic(req.user._id, query.trim(), limit);
+    return res.status(200).json({ success: true, data: results, count: results.length });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ─── Topic Clusters ───────────────────────────────────
+// ─── Topic Clusters ───────────────────────────────────────
 export const getTopicClusters = async (req, res) => {
   try {
     const clusters = await buildTopicClusters(req.user._id);
@@ -278,14 +218,11 @@ export const getTopicClusters = async (req, res) => {
   }
 };
 
-// ─── AI Highlights ────────────────────────────────────
+// ─── AI Highlights ────────────────────────────────────────
 export const generateAIHighlights = async (req, res) => {
   try {
     const item = await fetchItemById(req.params.id, req.user._id);
-    if (!item)
-      return res
-        .status(404)
-        .json({ success: false, message: "Item not found" });
+    if (!item) return res.status(404).json({ success: false, message: "Item not found" });
 
     const highlights = await getAIHighlights(item);
     return res.status(200).json({ success: true, data: highlights });
@@ -294,19 +231,71 @@ export const generateAIHighlights = async (req, res) => {
   }
 };
 
-// ─── Backfill Embeddings ──────────────────────────────
-export const backfillEmbeddingsController = async (req, res) => {
+// ─── Item Insight (NEW) ───────────────────────────────────
+export const getItemInsightController = async (req, res) => {
   try {
-    runBackfillEmbeddings();
-    return res
-      .status(200)
-      .json({ success: true, message: "Backfill started in background" });
+    const item = await fetchItemById(req.params.id, req.user._id);
+    if (!item) return res.status(404).json({ success: false, message: "Item not found" });
+
+    const insight = await getItemInsight(item);
+    return res.status(200).json({ success: true, data: insight });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ─── Retag All ────────────────────────────────────────
+// ─── RAG Chat with Collection (NEW) ──────────────────────
+export const chatController = async (req, res) => {
+  try {
+    const { query } = req.body;
+    if (!query?.trim() || query.trim().length > 500) {
+      return res.status(400).json({
+        success: false,
+        message: "Query is required and must be under 500 characters",
+      });
+    }
+
+    const result = await chatWithUserCollection(req.user._id, query.trim());
+    return res.status(200).json({ success: true, ...result });
+  } catch (error) {
+    console.error("Chat error:", error.message);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ─── Backfill Embeddings ──────────────────────────────────
+export const backfillEmbeddingsController = async (req, res) => {
+  try {
+    runBackfillEmbeddings(req.user._id);
+    return res.status(200).json({ success: true, message: "Embedding backfill started for your items" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ─── Migrate Embeddings (Admin) ───────────────────────────
+export const migrateEmbeddingsController = async (req, res) => {
+  try {
+    res.status(200).json({ success: true, message: "Embedding migration started in background" });
+    // Run after response is sent
+    const count = await runMigrateEmbeddings();
+    console.log(`✅ Migration completed for ${count} items`);
+  } catch (error) {
+    console.error("Migration error:", error.message);
+  }
+};
+
+// ─── Trigger Resurface (Admin/Test) ──────────────────────
+export const triggerResurfaceController = async (req, res) => {
+  try {
+    res.status(200).json({ success: true, message: "Resurface job triggered — check server logs" });
+    await runResurfaceJob();
+  } catch (error) {
+    console.error("Resurface trigger error:", error.message);
+  }
+};
+
+// ─── Retag All ────────────────────────────────────────────
 export const retagAllItemsController = async (req, res) => {
   try {
     const count = await retagAllItems(req.user._id);

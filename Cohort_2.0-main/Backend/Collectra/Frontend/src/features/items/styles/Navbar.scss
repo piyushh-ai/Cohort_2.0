@@ -6,31 +6,15 @@
   align-items: center;
   gap: 16px;
   padding: 0 24px;
-  height: 54px;
-  background: rgba(15, 20, 30, 0.92); // was rgba(2,5,9,0.9) — too black
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  height: 64px;
+  background: var(--surface-variant-alpha);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-bottom: none;
   flex-shrink: 0;
   z-index: 50;
   position: relative;
   animation: fade-down 0.5s var(--snap) both;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(14, 165, 233, 0.65) 30%,
-      rgba(245, 158, 11, 0.45) 65%,
-      transparent 100%
-    );
-  }
 }
 
 // ── Hamburger ─────────────────────────────────────────────
@@ -370,17 +354,17 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  background: linear-gradient(135deg, var(--gold-strong), var(--gold));
-  color: #000;
+  background: linear-gradient(135deg, var(--blue-strong), var(--blue));
+  color: var(--bg-deep);
   border: none;
-  border-radius: 10px;
-  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  padding: 10px 22px;
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   overflow: hidden;
-  box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+  box-shadow: none;
   transition:
     transform 0.3s var(--spring),
     box-shadow 0.2s;
@@ -453,17 +437,15 @@
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  background: rgba(22, 28, 42, 0.98); // was rgba(7,16,24,0.98) — too dark
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 16px;
+  background: var(--surface-variant-alpha);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
   padding: 6px;
   min-width: 210px;
   z-index: 100;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow:
-    0 0 0 1px rgba(14, 165, 233, 0.05),
-    0 20px 48px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  box-shadow: var(--shadow-float);
   animation: scale-in 0.2s var(--spring) both;
 }
 

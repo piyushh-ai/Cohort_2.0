@@ -19,9 +19,9 @@
 
 // ─── Topic Card ───────────────────────────────────────────
 .topic-card {
-  background: rgba(9, 14, 26, 0.8);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  background: var(--bg-void); // lowest surface container
+  border: 1px solid transparent; // "No-Line" rule
+  border-radius: var(--radius-xl); // Use extra large radii
   overflow: hidden;
   cursor: pointer;
   position: relative;
@@ -198,8 +198,8 @@
 .topic-skeleton {
   height: 148px;
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   position: relative;
 
@@ -273,13 +273,13 @@
   align-items: center;
   gap: 16px;
   padding: 10px 18px;
-  background: rgba(8, 11, 24, 0.9);
-  border-bottom: 1px solid var(--border);
+  background: var(--surface-variant-alpha);
+  border-bottom: none;
   font-size: 12px;
   color: var(--text-2);
   flex-shrink: 0;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
 }
 
 .graph-back-btn {
@@ -523,15 +523,13 @@
   bottom: 20px;
   right: 20px;
   width: 265px;
-  background: rgba(17, 21, 38, 0.94);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  background: var(--surface-variant-alpha);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
   padding: 16px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.04),
-    0 12px 36px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  box-shadow: var(--shadow-float);
   animation: scale-in 0.2s var(--spring) both;
   z-index: 10;
   @media (max-width: 600px) {

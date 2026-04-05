@@ -6,6 +6,7 @@ import passport from "./config/passport.js";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import rateLimit from "express-rate-limit";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,10 +56,19 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// ─── Auth rate limiter ────────────────────────────────────
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  message: { success: false, message: "Too many requests — please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 /**
- * All routes are define here
+ * All routes are defined here
  */
-app.use("/api/auth", authRouter);
+app.use("/api/auth", authLimiter, authRouter);
 app.use("/api/items", itemRouter);
 app.use("/api/collections", collectionRouter);
 
