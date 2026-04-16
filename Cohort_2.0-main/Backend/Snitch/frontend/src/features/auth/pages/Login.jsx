@@ -443,11 +443,31 @@ const Login = () => {
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
+      
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+          .lg-left-panel { width: 36% !important; }
+        }
+        @media (max-width: 640px) {
+          .lg-container { flex-direction: column !important; overflow-y: auto !important; overflow-x: hidden !important; }
+          .lg-left-panel { display: none !important; }
+          .lg-right-panel {
+            min-height: 100vh !important;
+            padding: 2rem 1.25rem 2.5rem !important;
+            align-items: flex-start !important;
+            overflow-y: auto !important;
+          }
+          .lg-mobile-header { display: flex !important; }
+          .lg-form-card {
+            max-width: 100% !important;
+            border-radius: 16px !important;
+          }
+        }
       `}</style>
 
       <div
         ref={containerRef}
-        className="lg-dm"
+        className="lg-dm lg-container"
         style={{
           minHeight: "100vh",
           display: "flex",
@@ -459,6 +479,7 @@ const Login = () => {
         {/* LEFT PANEL */}
         <div
           ref={leftPanelRef}
+          className="lg-left-panel"
           style={{
             width: "42%",
             minHeight: "100vh",
@@ -660,6 +681,7 @@ const Login = () => {
           ref={rightRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
+          className="lg-right-panel"
           style={{
             flex: 1,
             position: "relative",
@@ -684,7 +706,51 @@ const Login = () => {
           <div ref={orb1Ref} className="lg-orb1" />
           <div ref={orb2Ref} className="lg-orb2" />
 
-          {/* FIXED cursor glow: uses left/top positioning, transform handles centering */}
+          {/* Mobile Header - only visible on small screens */}
+          <div
+            className="lg-mobile-header"
+            style={{
+              display: "none",
+              flexDirection: "column",
+              marginBottom: 28,
+              paddingTop: 8,
+              width: "100%",
+            }}
+          >
+            <h1
+              className="lg-bebas lg-logo-grad"
+              style={{
+                fontSize: "clamp(2.8rem,12vw,4rem)",
+                letterSpacing: "0.22em",
+                lineHeight: 1,
+              }}
+            >
+              SNITCH
+            </h1>
+            <div
+              style={{
+                height: 2,
+                marginTop: 6,
+                background:
+                  "linear-gradient(90deg,#7c3aed,#db2777,transparent)",
+              }}
+            />
+            <span
+              style={{
+                display: "block",
+                fontSize: 10,
+                letterSpacing: "0.28em",
+                textTransform: "uppercase",
+                marginTop: 8,
+                color: "rgba(109,40,217,0.75)",
+                fontWeight: 600,
+              }}
+            >
+              Premium Streetwear
+            </span>
+          </div>
+
+          {/* cursor glow */}
           <div
             ref={cursorGlowRef}
             className="lg-cglow"
@@ -722,6 +788,7 @@ const Login = () => {
           {/* Form card */}
           <div
             ref={formCardRef}
+            className="lg-form-card"
             style={{
               position: "relative",
               zIndex: 10,

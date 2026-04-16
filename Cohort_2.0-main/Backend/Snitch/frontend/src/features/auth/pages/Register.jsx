@@ -578,11 +578,31 @@ const Register = () => {
         .rg-scroll::-webkit-scrollbar { width: 4px; }
         .rg-scroll::-webkit-scrollbar-track { background: transparent; }
         .rg-scroll::-webkit-scrollbar-thumb { background: rgba(109,40,217,0.2); border-radius: 4px; }
+      
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+          .rg-left-panel { width: 36% !important; }
+        }
+        @media (max-width: 640px) {
+          .rg-container { flex-direction: column !important; overflow-y: auto !important; overflow-x: hidden !important; }
+          .rg-left-panel { display: none !important; }
+          .rg-right-panel {
+            min-height: 100vh !important;
+            padding: 2rem 1.25rem 2.5rem !important;
+            align-items: flex-start !important;
+            overflow-y: auto !important;
+          }
+          .rg-mobile-header { display: flex !important; }
+          .rg-form-card {
+            max-width: 100% !important;
+            border-radius: 16px !important;
+          }
+        }
       `}</style>
 
       <div
         ref={containerRef}
-        className="rg-dm"
+        className="rg-dm rg-container"
         style={{
           minHeight: "100vh",
           display: "flex",
@@ -593,6 +613,7 @@ const Register = () => {
         {/* LEFT PANEL */}
         <div
           ref={leftPanelRef}
+          className="rg-left-panel"
           style={{
             width: "42%",
             minHeight: "100vh",
@@ -794,7 +815,8 @@ const Register = () => {
           ref={rightRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className="rg-scroll"
+          className="rg-right-panel"
+          // className="rg-right-panel"
           style={{
             flex: 1,
             position: "relative",
@@ -821,7 +843,51 @@ const Register = () => {
           <div ref={orb1Ref} className="rg-orb1" />
           <div ref={orb2Ref} className="rg-orb2" />
 
-          {/* FIXED cursor glow: left/top with translate centering */}
+          {/* Mobile Header - only visible on small screens */}
+          <div
+            className="rg-mobile-header"
+            style={{
+              display: "none",
+              flexDirection: "column",
+              marginBottom: 24,
+              paddingTop: 8,
+              width: "100%",
+            }}
+          >
+            <h1
+              className="rg-bebas rg-logo-grad"
+              style={{
+                fontSize: "clamp(2.8rem,12vw,4rem)",
+                letterSpacing: "0.22em",
+                lineHeight: 1,
+              }}
+            >
+              SNITCH
+            </h1>
+            <div
+              style={{
+                height: 2,
+                marginTop: 6,
+                background:
+                  "linear-gradient(90deg,#7c3aed,#db2777,transparent)",
+              }}
+            />
+            <span
+              style={{
+                display: "block",
+                fontSize: 10,
+                letterSpacing: "0.28em",
+                textTransform: "uppercase",
+                marginTop: 8,
+                color: "rgba(109,40,217,0.75)",
+                fontWeight: 600,
+              }}
+            >
+              Premium Streetwear
+            </span>
+          </div>
+
+          {/* cursor glow */}
           <div
             ref={cursorGlowRef}
             className="rg-cglow"
@@ -831,6 +897,7 @@ const Register = () => {
           {/* Form card */}
           <div
             ref={formCardRef}
+            className="rg-form-card"
             style={{
               position: "relative",
               zIndex: 10,
