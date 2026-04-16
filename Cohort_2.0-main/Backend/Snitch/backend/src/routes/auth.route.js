@@ -1,12 +1,44 @@
 import express from "express";
-import { validateRegisterUser } from "../validators/auth.validator.js";
-import { register } from "../controllers/auth.controller.js";
+import {
+  validateLoginUser,
+  validateRegisterUser,
+} from "../validators/auth.validator.js";
+import { googleCallback, login, register } from "../controllers/auth.controller.js";
+import passport from "passport";
+import { config } from "../config/config.js";
 
-const authRouter = express.Router()
+const authRouter = express.Router();
 
 /**
- * POST /api/auth/register register user 
+ * POST /api/auth/register register user
  */
-authRouter.post("/register", validateRegisterUser, register)
+authRouter.post("/register", validateRegisterUser, register);
 
-export default authRouter
+/**
+ * POST /api/auth/login login user
+ */
+authRouter.post("/login", validateLoginUser, login);
+
+/**
+ * GET /api/auth/google
+ */
+authRouter.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+);
+
+/**
+ * GET /api/auth/google/callback
+ */
+authRouter.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    session: false,
+    failureRedirect:
+      config.nodeEnv == "development"
+        ? "http://localhost:5173/login"
+        : "/login",
+  }),
+  googleCallback
+);
+export default authRouter;
