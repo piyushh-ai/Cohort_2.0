@@ -16,7 +16,7 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     price: {
-      amout: {
+      amount: {
         type: Number,
         required: true,
       },

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
-import { useAuth } from "../services/useAuth";
+import { useAuth } from "../hooks/useAuth";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -580,23 +580,43 @@ const Register = () => {
         .rg-scroll::-webkit-scrollbar-thumb { background: rgba(109,40,217,0.2); border-radius: 4px; }
       
         /* ── RESPONSIVE ── */
-        @media (max-width: 900px) {
-          .rg-left-panel { width: 36% !important; }
+        @media (max-width: 960px) {
+          .rg-left-panel { width: 40% !important; }
         }
-        @media (max-width: 640px) {
-          .rg-container { flex-direction: column !important; overflow-y: auto !important; overflow-x: hidden !important; }
+        @media (max-width: 768px) {
+          .rg-container {
+            flex-direction: column !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            min-height: 100vh !important;
+          }
           .rg-left-panel { display: none !important; }
           .rg-right-panel {
+            flex: 1 !important;
             min-height: 100vh !important;
-            padding: 2rem 1.25rem 2.5rem !important;
+            height: auto !important;
+            padding: 2rem 1.1rem 3rem !important;
             align-items: flex-start !important;
-            overflow-y: auto !important;
+            overflow: visible !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
           }
           .rg-mobile-header { display: flex !important; }
           .rg-form-card {
             max-width: 100% !important;
+            width: 100% !important;
             border-radius: 16px !important;
+            padding: 1.5rem 1.25rem !important;
+            margin: 0 !important;
           }
+          .rg-orb1 { width: 240px !important; height: 240px !important; top: -60px !important; right: -80px !important; }
+          .rg-orb2 { width: 180px !important; height: 180px !important; }
+          .rg-cglow { display: none !important; }
+        }
+        @media (max-width: 400px) {
+          .rg-right-panel { padding: 1.5rem 0.85rem 2.5rem !important; }
+          .rg-form-card { padding: 1.25rem 1rem !important; }
         }
       `}</style>
 
@@ -820,7 +840,8 @@ const Register = () => {
           style={{
             flex: 1,
             position: "relative",
-            overflow: "hidden",
+            overflowX: "hidden",
+            overflowY: "auto",
             background: "#faf8ff",
             display: "flex",
             alignItems: "center",
@@ -903,6 +924,7 @@ const Register = () => {
               zIndex: 10,
               width: "100%",
               maxWidth: 440,
+              margin: "0 auto",
               background: "rgba(255,255,255,0.84)",
               backdropFilter: "blur(18px)",
               WebkitBackdropFilter: "blur(18px)",

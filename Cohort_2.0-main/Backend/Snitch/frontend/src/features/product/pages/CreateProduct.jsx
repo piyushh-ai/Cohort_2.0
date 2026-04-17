@@ -8,8 +8,9 @@ const CreateProduct = () => {
     title: "",
     description: "",
     amount: "",
-    imageUrl: "",
   });
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -28,12 +29,13 @@ const CreateProduct = () => {
   const orb2Ref = useRef(null);
   const previewRef = useRef(null);
 
-  // ─── Default Image ──────────────────────────────────
+  // ─── Constants & Dynamic Values ──────────────────────
+  const MAX_IMAGES = 7;
   const defaultImage =
     "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=800&auto=format&fit=crop";
-  const displayImage = formData.imageUrl || defaultImage;
+  const displayImage = previewUrls.length > 0 ? previewUrls[0] : defaultImage;
 
-  // ─── Preload Image ──────────────────────────────────
+  // ─── Preload Left Panel Image ────────────────────────
   useEffect(() => {
     const img = new Image();
     img.src = displayImage;
@@ -41,14 +43,14 @@ const CreateProduct = () => {
     img.onerror = () => setImageLoaded(true);
   }, [displayImage]);
 
-  // ─── Animations ─────────────────────────────────────
+  // ─── GSAP Entrance Animations ────────────────────────
   useEffect(() => {
     const ctx = gsap.context(() => {
       // Left panel reveal
       gsap.fromTo(
         leftPanelRef.current,
         { x: -60, opacity: 0 },
-        { x: 0, opacity: 1, duration: 1.1, ease: "power4.out" }
+        { x: 0, opacity: 1, duration: 1.1, ease: "power4.out" },
       );
 
       // Background image fade
@@ -65,31 +67,31 @@ const CreateProduct = () => {
         formCardRef.current,
         { opacity: 0, y: 30, scale: 0.97 },
         { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" },
-        0.2
+        0.2,
       )
         .fromTo(
           headerRef.current,
           { opacity: 0, y: 15 },
           { opacity: 1, y: 0, duration: 0.6 },
-          0.4
+          0.4,
         )
         .fromTo(
           previewRef.current,
           { opacity: 0, scale: 0.95 },
           { opacity: 1, scale: 1, duration: 0.6 },
-          0.5
+          0.5,
         )
         .fromTo(
           fieldRefs.current,
           { opacity: 0, y: 15 },
           { opacity: 1, y: 0, stagger: 0.1, duration: 0.5 },
-          0.6
+          0.6,
         )
         .fromTo(
           ctaRef.current,
           { opacity: 0, y: 15 },
           { opacity: 1, y: 0, duration: 0.5 },
-          0.9
+          0.9,
         );
 
       // Ambient orbs
@@ -120,7 +122,34 @@ const CreateProduct = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    if (selectedImages.length + files.length > MAX_IMAGES) {
+      alert(`You can only upload a maximum of ${MAX_IMAGES} images.`);
+      return;
+    }
+
+    const newFiles = [...selectedImages, ...files].slice(0, MAX_IMAGES);
+    const newUrls = newFiles.map((file) => URL.createObjectURL(file));
+
+    setSelectedImages(newFiles);
+    setPreviewUrls(newUrls);
+
+    // Clean up input value so same files can be re-selected if needed
+    e.target.value = "";
+  };
+
+  const removeImage = (indexToRemove) => {
+    const newFiles = selectedImages.filter((_, i) => i !== indexToRemove);
+    const newUrls = previewUrls.filter((_, i) => i !== indexToRemove);
+    setSelectedImages(newFiles);
+    setPreviewUrls(newUrls);
+  };
+
   const onFieldEnter = (e) => {
+    if (e.currentTarget.dataset.nofocus === "true") return;
     gsap.to(e.currentTarget, {
       scale: 1.015,
       duration: 0.25,
@@ -129,35 +158,43 @@ const CreateProduct = () => {
   };
 
   const onFieldLeave = (e) => {
+    if (e.currentTarget.dataset.nofocus === "true") return;
     gsap.to(e.currentTarget, { scale: 1, duration: 0.25 });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
+
+    if (selectedImages.length === 0) {
+      alert("Please select at least 1 image.");
+      return;
+    }
+
     setIsSubmitting(true);
 
-    gsap.timeline()
+    gsap
+      .timeline()
       .to(ctaRef.current, { scale: 0.96, duration: 0.1 })
-      .to(ctaRef.current, { scale: 1, duration: 0.4, ease: "elastic.out(1,0.5)" });
+      .to(ctaRef.current, {
+        scale: 1,
+        duration: 0.4,
+        ease: "elastic.out(1,0.5)",
+      });
 
-    const payload = {
-      title: formData.title,
-      description: formData.description,
-      price: {
-        amout: Number(formData.amount), // using amout as per JSON schema
-        currency: "INR",
-      },
-      images: [
-        {
-          url: formData.imageUrl,
-        },
-      ],
-    };
+    const formPayload = new FormData();
+    formPayload.append("title", formData.title);
+    formPayload.append("description", formData.description);
+    formPayload.append("priceAmount", Number(formData.amount));
+    formPayload.append("priceCurrency", "INR");
 
-    await handleCreateProduct(payload);
+    selectedImages.forEach((imgObj) => {
+      formPayload.append("images", imgObj);
+    });
+
+    await handleCreateProduct(formPayload);
     setIsSubmitting(false);
-    navigate("/seller"); // Redirect to seller dashboard or appropriate page
+    navigate("/seller/dashboard"); // Redirect back to seller dashboard
   };
 
   const setFieldRef = (el, index) => {
@@ -166,11 +203,18 @@ const CreateProduct = () => {
     }
   };
 
+  useEffect(() => {
+    // Cleanup generated object URLs
+    return () => {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+    // eslint-disable-next-line
+  }, []);
+
   // ─── JSX ───────────────────────────────────────────
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Playfair+Display:ital@1&display=swap');
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Playfair+Display:ital@1&display=swap');
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -237,6 +281,22 @@ const CreateProduct = () => {
           color: #7c3aed; font-weight: 600;
         }
 
+        /* Image Upload Box */
+        .cp-upload-box {
+          border: 1px dashed rgba(109,40,217,0.3);
+          background: rgba(109,40,217,0.03);
+          border-radius: 12px;
+          display: flex; flex-direction: column;
+          align-items: center; justify-content: center;
+          padding: 24px; cursor: pointer;
+          transition: all 0.2s;
+          text-align: center;
+        }
+        .cp-upload-box:hover {
+          border-color: rgba(109,40,217,0.6);
+          background: rgba(109,40,217,0.06);
+        }
+
         /* CTA */
         .cp-cta {
           background: linear-gradient(135deg, #7c3aed 0%, #db2777 55%, #f59e0b 100%);
@@ -290,20 +350,57 @@ const CreateProduct = () => {
           background-clip: text;
         }
         
-        .cp-preview-overlay {
-          background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+        /* ── RESPONSIVE ── */
+        @media (max-width: 960px) {
+          .cp-left-panel { width: 40% !important; }
         }
-      `}</style>
+        @media (max-width: 768px) {
+          .cp-container {
+            flex-direction: column !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            min-height: 100vh !important;
+            height: auto !important;
+          }
+          .cp-left-panel {
+            width: 100% !important;
+            min-height: auto !important;
+            height: clamp(260px, 40vw, 380px) !important;
+            flex: none !important;
+          }
+          .cp-right-panel {
+            width: 100% !important;
+            flex: none !important;
+            padding: 2rem 1.1rem 3rem !important;
+            min-height: auto !important;
+            overflow: visible !important;
+            display: block !important;
+          }
+          .cp-form-card {
+            max-width: 100% !important;
+            width: 100% !important;
+            border-radius: 16px !important;
+            padding: 1.5rem 1.25rem !important;
+            margin: 0 !important;
+          }
+          .cp-orb1 { width: 240px !important; height: 240px !important; top: -60px !important; right: -80px !important; }
+          .cp-orb2 { width: 180px !important; height: 180px !important; }
+        }
+        @media (max-width: 400px) {
+          .cp-right-panel { padding: 1.5rem 0.85rem 2.5rem !important; }
+          .cp-form-card { padding: 1.25rem 1rem !important; }
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
 
       <div
         ref={containerRef}
-        className="cp-dm"
+        className="cp-dm cp-container"
         style={{
           minHeight: "100vh",
           display: "flex",
           flexDirection: "row",
           background: "#faf8ff",
-          overflow: "hidden",
+          overflowX: "hidden",
         }}
       >
         {/* ═══════════════════════════════════════
@@ -311,6 +408,7 @@ const CreateProduct = () => {
         ═══════════════════════════════════════ */}
         <div
           ref={leftPanelRef}
+          className="cp-left-panel"
           style={{
             width: "45%",
             minHeight: "100vh",
@@ -330,7 +428,7 @@ const CreateProduct = () => {
               backgroundPosition: "center",
               filter: "saturate(0.65) brightness(0.85)",
               opacity: 0, // faded in by GSAP
-              transition: "background-image 0.5s ease-in-out"
+              transition: "background-image 0.4s ease-in-out",
             }}
           />
           {/* Subtle vignette/gradient overlay */}
@@ -438,12 +536,27 @@ const CreateProduct = () => {
                 {formData.description ||
                   "Craft your product description here. Make it compelling, sharp, and true to the culture."}
               </p>
-              
-              <div style={{ marginTop: 24, display: "flex", alignItems: "baseline", gap: 8 }}>
-                <span style={{ color: "#10b981", fontSize: 24, fontWeight: 700 }}>
+
+              <div
+                style={{
+                  marginTop: 24,
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: 8,
+                }}
+              >
+                <span
+                  style={{ color: "#10b981", fontSize: 24, fontWeight: 700 }}
+                >
                   ₹{formData.amount || "0.00"}
                 </span>
-                <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, textTransform: "uppercase" }}>
+                <span
+                  style={{
+                    color: "rgba(255,255,255,0.5)",
+                    fontSize: 13,
+                    textTransform: "uppercase",
+                  }}
+                >
                   INR
                 </span>
               </div>
@@ -455,6 +568,7 @@ const CreateProduct = () => {
             RIGHT PANEL – Product Creation Form
         ═══════════════════════════════════════ */}
         <div
+          className="cp-right-panel"
           style={{
             flex: 1,
             position: "relative",
@@ -462,7 +576,7 @@ const CreateProduct = () => {
             overflowX: "hidden",
             background: "#faf8ff",
             display: "flex",
-            alignItems: "center",
+            alignItems: "flex-start",
             justifyContent: "center",
             padding: "clamp(2rem,4vw,3rem) 2rem",
           }}
@@ -501,6 +615,7 @@ const CreateProduct = () => {
           {/* Form Card */}
           <div
             ref={formCardRef}
+            className="cp-form-card"
             style={{
               position: "relative",
               zIndex: 10,
@@ -559,8 +674,8 @@ const CreateProduct = () => {
                 Create Product
               </h2>
               <p style={{ fontSize: 13.5, color: "#9ca3af", lineHeight: 1.5 }}>
-                Drop a new piece into the Snitch catalog. Define the style,
-                set the price, build the hype.
+                Drop a new piece into the Snitch catalog. Define the style, set
+                the price, build the hype.
               </p>
             </div>
 
@@ -592,9 +707,16 @@ const CreateProduct = () => {
                     transition: "color 0.2s",
                   }}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
-                    <line x1="7" y1="7" x2="7.01" y2="7"/>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+                    <line x1="7" y1="7" x2="7.01" y2="7" />
                   </svg>
                 </div>
                 <input
@@ -636,9 +758,16 @@ const CreateProduct = () => {
                     transition: "color 0.2s",
                   }}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <line x1="12" y1="1" x2="12" y2="23"/>
-                    <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <line x1="12" y1="1" x2="12" y2="23" />
+                    <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
                   </svg>
                 </div>
                 <input
@@ -658,54 +787,9 @@ const CreateProduct = () => {
                 </label>
               </div>
 
-              {/* Image URL */}
-              <div
-                ref={(el) => setFieldRef(el, 2)}
-                className="cp-field"
-                style={{
-                  background: "#f4f3fb",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 12,
-                  transition: "border-color 0.2s, box-shadow 0.2s",
-                }}
-                onMouseEnter={onFieldEnter}
-                onMouseLeave={onFieldLeave}
-              >
-                <div
-                  className="cp-ficon"
-                  style={{
-                    position: "absolute",
-                    left: 16,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    color: "#d1d5db",
-                    transition: "color 0.2s",
-                  }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                    <polyline points="21 15 16 10 5 21"/>
-                  </svg>
-                </div>
-                <input
-                  id="prod-image"
-                  name="imageUrl"
-                  type="url"
-                  required
-                  placeholder=" "
-                  className="cp-input"
-                  value={formData.imageUrl}
-                  onChange={handleChange}
-                />
-                <label className="cp-label" htmlFor="prod-image">
-                  Primary Image URL
-                </label>
-              </div>
-
               {/* Description */}
               <div
-                ref={(el) => setFieldRef(el, 3)}
+                ref={(el) => setFieldRef(el, 2)}
                 className="cp-field"
                 style={{
                   background: "#f4f3fb",
@@ -726,11 +810,18 @@ const CreateProduct = () => {
                     transition: "color 0.2s",
                   }}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <line x1="21" y1="10" x2="3" y2="10"/>
-                    <line x1="21" y1="6" x2="3" y2="6"/>
-                    <line x1="21" y1="14" x2="3" y2="14"/>
-                    <line x1="14" y1="18" x2="3" y2="18"/>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <line x1="21" y1="10" x2="3" y2="10" />
+                    <line x1="21" y1="6" x2="3" y2="6" />
+                    <line x1="21" y1="14" x2="3" y2="14" />
+                    <line x1="14" y1="18" x2="3" y2="18" />
                   </svg>
                 </div>
                 <textarea
@@ -745,6 +836,142 @@ const CreateProduct = () => {
                 <label className="cp-label" htmlFor="prod-desc">
                   Product Description
                 </label>
+              </div>
+
+              {/* Multiple Image Upload / Previews */}
+              <div
+                ref={(el) => setFieldRef(el, 3)}
+                data-nofocus="true" // prevent scale logic from breaking hover
+                style={{ marginTop: 6 }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: 8,
+                    alignItems: "center",
+                  }}
+                >
+                  <label
+                    style={{ fontSize: 13, fontWeight: 600, color: "#4b5563" }}
+                  >
+                    Image Gallery <span style={{ color: "#a78bfa" }}>*</span>
+                  </label>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      color: "#9ca3af",
+                      background: "#f3f4f6",
+                      padding: "2px 8px",
+                      borderRadius: 10,
+                    }}
+                  >
+                    {previewUrls.length} / {MAX_IMAGES} files
+                  </span>
+                </div>
+
+                <label htmlFor="prod-images" className="cp-upload-box">
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#a78bfa"
+                    strokeWidth="1.5"
+                    style={{ marginBottom: 8 }}
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  <span
+                    style={{ fontSize: 13, color: "#6b7280", fontWeight: 500 }}
+                  >
+                    Click to browse up to 7 images
+                  </span>
+                  <span
+                    style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}
+                  >
+                    Supports PNG, JPG, WEBP
+                  </span>
+                </label>
+                <input
+                  id="prod-images"
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  style={{ display: "none" }}
+                />
+
+                {/* Previews Row */}
+                {previewUrls.length > 0 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: 10,
+                      marginTop: 14,
+                    }}
+                  >
+                    {previewUrls.map((url, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          position: "relative",
+                          width: 60,
+                          height: 60,
+                          borderRadius: 8,
+                          overflow: "hidden",
+                          boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                          border:
+                            index === 0
+                              ? "2px solid #7c3aed"
+                              : "2px solid transparent",
+                        }}
+                      >
+                        <img
+                          src={url}
+                          alt={`Preview ${index}`}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          style={{
+                            position: "absolute",
+                            top: 2,
+                            right: 2,
+                            width: 18,
+                            height: 18,
+                            background: "rgba(239,68,68,0.9)",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: 4,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                            fontSize: 10,
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {/* Notice text */}
+                {previewUrls.length > 0 && (
+                  <p style={{ fontSize: 11, color: "#9ca3af", marginTop: 8 }}>
+                    * The first image (highlighted in violet) is your primary
+                    image.
+                  </p>
+                )}
               </div>
 
               {/* Submit CTA */}
@@ -776,9 +1003,19 @@ const CreateProduct = () => {
                     <svg
                       className="animate-spin"
                       style={{ animation: "spin 1s linear infinite" }}
-                      width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
                     >
-                      <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)"/>
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="rgba(255,255,255,0.3)"
+                      />
                       <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                     </svg>
                     CREATING...
@@ -786,21 +1023,24 @@ const CreateProduct = () => {
                 ) : (
                   <>
                     PUBLISH PRODUCT
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <line x1="5" y1="12" x2="19" y2="12"></line>
                       <polyline points="12 5 19 12 12 19"></polyline>
                     </svg>
                   </>
                 )}
               </button>
-
             </form>
           </div>
         </div>
       </div>
-      <style>{`
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-      `}</style>
     </>
   );
 };

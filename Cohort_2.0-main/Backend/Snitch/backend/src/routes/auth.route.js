@@ -3,9 +3,10 @@ import {
   validateLoginUser,
   validateRegisterUser,
 } from "../validators/auth.validator.js";
-import { googleCallback, login, register } from "../controllers/auth.controller.js";
+import { getMe, googleCallback, login, register } from "../controllers/auth.controller.js";
 import passport from "passport";
 import { config } from "../config/config.js";
+import { authenticateUser } from "../middleware/auth.middleware.js";
 
 const authRouter = express.Router();
 
@@ -41,4 +42,9 @@ authRouter.get(
   }),
   googleCallback
 );
+
+/**
+ * GET /api/auth/me
+ */
+authRouter.get("/me", authenticateUser, getMe)
 export default authRouter;

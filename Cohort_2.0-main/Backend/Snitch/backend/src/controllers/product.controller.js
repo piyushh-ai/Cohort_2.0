@@ -2,7 +2,9 @@ import porductModel from "../models/product.model.js";
 import { uploadFile } from "../services/storage.service.js";
 
 export const createProduct = async (req, res) => {
-  const { title, description, priceAmout, priceCurrency } = req.body;
+  console.log(req.body);
+console.log(req.files);
+  const { title, description, priceAmount, priceCurrency } = req.body;
   const seller = req.user;
 
   const images = await Promise.all(
@@ -18,7 +20,7 @@ export const createProduct = async (req, res) => {
     title,
     description,
     price: {
-      amout: priceAmout,
+      amount: priceAmount,
       currency: priceCurrency,
     },
     images,
