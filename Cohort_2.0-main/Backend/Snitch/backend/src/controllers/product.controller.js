@@ -2,8 +2,7 @@ import porductModel from "../models/product.model.js";
 import { uploadFile } from "../services/storage.service.js";
 
 export const createProduct = async (req, res) => {
-  console.log(req.body);
-console.log(req.files);
+
   const { title, description, priceAmount, priceCurrency } = req.body;
   const seller = req.user;
 
@@ -43,5 +42,35 @@ export const getAllSellerProduct = async (req, res) => {
     message: "All Seller products fetched successfully",
     success: true,
     products,
+  });
+};
+
+export const getAllProduct = async (req, res) => {
+
+  const products = await porductModel.find();
+
+  return res.status(200).json({
+    message: "All products fetched successfully",
+    success: true,
+    products,
+  });
+};
+
+export const getProduct = async (req, res) => {
+  const { id } = req.params;
+
+  const product = await porductModel.findById(id);
+
+  if (!product) {
+    return res.status(404).json({
+      message: "Product not found",
+      success: false,
+    });
+  }
+
+  return res.status(200).json({
+    message: "Product fetched successfully",
+    success: true,
+    product,
   });
 };

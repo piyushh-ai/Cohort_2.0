@@ -17,3 +17,23 @@ export const getSellerProducts = async () => {
     console.log(error);
   }
 };
+
+export const getAllProducts = async () => {
+  try {
+    const response = await apiInstance.get("/product");
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+
+export const getProduct = async (productId) => {
+  try {
+    const response = await apiInstance.get(`/product/${productId}`);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

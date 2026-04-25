@@ -225,8 +225,12 @@ const Login = () => {
         duration: 0.38,
         ease: "elastic.out(1,0.45)",
       });
-    await handleLogin({ email: formData.email, password: formData.password });
-    navigate("/");
+    const user = await handleLogin({ email: formData.email, password: formData.password });
+    if(user.role === "buyer"){
+      navigate("/");
+    }else if(user.role === "seller"){
+      navigate("/seller/dashboard");
+    }
   };
 
   const handleTogglePw = () => {

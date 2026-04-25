@@ -11,6 +11,7 @@ const CreateProduct = () => {
   });
   const [selectedImages, setSelectedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
+  const [activePreviewIndex, setActivePreviewIndex] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -33,7 +34,7 @@ const CreateProduct = () => {
   const MAX_IMAGES = 7;
   const defaultImage =
     "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=800&auto=format&fit=crop";
-  const displayImage = previewUrls.length > 0 ? previewUrls[0] : defaultImage;
+  const displayImage = previewUrls.length > 0 ? previewUrls[activePreviewIndex] : defaultImage;
 
   // ─── Preload Left Panel Image ────────────────────────
   useEffect(() => {
@@ -136,6 +137,9 @@ const CreateProduct = () => {
 
     setSelectedImages(newFiles);
     setPreviewUrls(newUrls);
+    if (previewUrls.length === 0) {
+      setActivePreviewIndex(0);
+    }
 
     // Clean up input value so same files can be re-selected if needed
     e.target.value = "";
@@ -146,6 +150,11 @@ const CreateProduct = () => {
     const newUrls = previewUrls.filter((_, i) => i !== indexToRemove);
     setSelectedImages(newFiles);
     setPreviewUrls(newUrls);
+    if (activePreviewIndex >= newUrls.length) {
+      setActivePreviewIndex(Math.max(0, newUrls.length - 1));
+    } else if (activePreviewIndex === indexToRemove) {
+      setActivePreviewIndex(0);
+    }
   };
 
   const onFieldEnter = (e) => {
@@ -251,7 +260,7 @@ const CreateProduct = () => {
           width: 100%;
           color: #1a1b21;
           outline: none;
-          border-radius: 12px;
+          border-radius: 0;
           font-size: 14px;
           font-family: 'DM Sans', sans-serif;
           border: none;
@@ -285,7 +294,7 @@ const CreateProduct = () => {
         .cp-upload-box {
           border: 1px dashed rgba(109,40,217,0.3);
           background: rgba(109,40,217,0.03);
-          border-radius: 12px;
+          border-radius: 0;
           display: flex; flex-direction: column;
           align-items: center; justify-content: center;
           padding: 24px; cursor: pointer;
@@ -379,7 +388,7 @@ const CreateProduct = () => {
           .cp-form-card {
             max-width: 100% !important;
             width: 100% !important;
-            border-radius: 16px !important;
+            border-radius: 0 !important;
             padding: 1.5rem 1.25rem !important;
             margin: 0 !important;
           }
@@ -560,6 +569,34 @@ const CreateProduct = () => {
                   INR
                 </span>
               </div>
+
+              {/* Multiple Upload Previews - Left Panel Gallery */}
+              {previewUrls.length > 1 && (
+                <div style={{ marginTop: 32, display: "flex", gap: 12, flexWrap: "wrap", zIndex: 10 }}>
+                  {previewUrls.map((url, i) => (
+                    <div
+                      key={i}
+                      onClick={() => setActivePreviewIndex(i)}
+                      style={{
+                        width: 54,
+                        height: 54,
+                        cursor: "pointer",
+                        border: i === activePreviewIndex ? "2px solid #ffffff" : "1px solid rgba(255,255,255,0.2)",
+                        opacity: i === activePreviewIndex ? 1 : 0.6,
+                        transition: "all 0.2s ease",
+                        overflow: "hidden",
+                        borderRadius: 0,
+                      }}
+                    >
+                      <img
+                        src={url}
+                        alt={`Gallery ${i}`}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -626,7 +663,7 @@ const CreateProduct = () => {
               background: "rgba(255,255,255,0.85)",
               backdropFilter: "blur(24px)",
               WebkitBackdropFilter: "blur(24px)",
-              borderRadius: 20,
+              borderRadius: 0,
               border: "1px solid rgba(109,40,217,0.12)",
               boxShadow:
                 "0 12px 48px rgba(109,40,217,0.08), 0 2px 12px rgba(0,0,0,0.04)",
@@ -688,9 +725,9 @@ const CreateProduct = () => {
                 ref={(el) => setFieldRef(el, 0)}
                 className="cp-field"
                 style={{
-                  background: "#f4f3fb",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 12,
+                  background: "#e8e7ef",
+                  border: "none",
+                  borderRadius: 0,
                   transition: "border-color 0.2s, box-shadow 0.2s",
                 }}
                 onMouseEnter={onFieldEnter}
@@ -739,9 +776,9 @@ const CreateProduct = () => {
                 ref={(el) => setFieldRef(el, 1)}
                 className="cp-field"
                 style={{
-                  background: "#f4f3fb",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 12,
+                  background: "#e8e7ef",
+                  border: "none",
+                  borderRadius: 0,
                   transition: "border-color 0.2s, box-shadow 0.2s",
                 }}
                 onMouseEnter={onFieldEnter}
@@ -792,9 +829,9 @@ const CreateProduct = () => {
                 ref={(el) => setFieldRef(el, 2)}
                 className="cp-field"
                 style={{
-                  background: "#f4f3fb",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 12,
+                  background: "#e8e7ef",
+                  border: "none",
+                  borderRadius: 0,
                   transition: "border-color 0.2s, box-shadow 0.2s",
                 }}
                 onMouseEnter={onFieldEnter}
@@ -921,11 +958,11 @@ const CreateProduct = () => {
                           position: "relative",
                           width: 60,
                           height: 60,
-                          borderRadius: 8,
+                          borderRadius: 0,
                           overflow: "hidden",
                           boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
                           border:
-                            index === 0
+                            index === activePreviewIndex
                               ? "2px solid #7c3aed"
                               : "2px solid transparent",
                         }}
@@ -968,8 +1005,7 @@ const CreateProduct = () => {
                 {/* Notice text */}
                 {previewUrls.length > 0 && (
                   <p style={{ fontSize: 11, color: "#9ca3af", marginTop: 8 }}>
-                    * The first image (highlighted in violet) is your primary
-                    image.
+                    * Supported limits are 1 to {MAX_IMAGES} images. 
                   </p>
                 )}
               </div>
@@ -987,7 +1023,7 @@ const CreateProduct = () => {
                   fontSize: 14,
                   fontWeight: 800,
                   letterSpacing: "0.14em",
-                  borderRadius: 12,
+                  borderRadius: 0,
                   marginTop: 16,
                   border: "none",
                   cursor: isSubmitting ? "not-allowed" : "pointer",

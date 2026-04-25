@@ -9,6 +9,7 @@ export const useAuth = () => {
     try {
       const response = await register({ email, contact, password, fullname, isSeller });
       dispatch(setUser(response.user));
+      return response.user
     } catch (error) {
       console.log(error);
     }
@@ -18,6 +19,7 @@ export const useAuth = () => {
     try {
       const response = await login({ email, password });
       dispatch(setUser(response.user));
+      return response.user
     } catch (error) {
       console.log(error);
     }

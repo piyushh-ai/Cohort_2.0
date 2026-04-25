@@ -286,14 +286,18 @@ const Register = () => {
         duration: 0.38,
         ease: "elastic.out(1,0.45)",
       });
-    await handleRegister({
+    const user = await handleRegister({
       email: formData.email,
       contact: formData.phone,
       password: formData.password,
       fullname: formData.fullName,
       isSeller,
     });
-    navigate("/");
+    if (user.role === "buyer") {
+      navigate("/");
+    } else if (user.role === "seller") {
+      navigate("/seller/dashboard");
+    }
   };
 
   const handleTogglePw = () => {
