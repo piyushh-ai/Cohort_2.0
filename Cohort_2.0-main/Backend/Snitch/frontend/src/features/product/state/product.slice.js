@@ -6,6 +6,7 @@ const productSlice = createSlice({
     sellerProducts: [],
     allProducts: [],
     product: null,
+    
   },
   reducers: {
     setSellerProducts: (state, action) => {

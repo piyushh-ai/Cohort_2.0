@@ -37,3 +37,16 @@ export const getProduct = async (productId) => {
     console.log(error);
   }
 };
+
+
+export const createVariant = async (productId, variantData) => {
+  try {
+    const response = await apiInstance.post(
+      `/product/variants/${productId}`,
+      variantData
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

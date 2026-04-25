@@ -6,6 +6,7 @@ import {
   getAllSellerProduct,
   getAllProduct,
   getProduct,
+  createVariants,
 } from "../controllers/product.controller.js";
 import { validateCreateProduct } from "../validators/product.validator.js";
 
@@ -31,5 +32,7 @@ productRouter.get("/seller", authenticateSeller, getAllSellerProduct);
 productRouter.get("/", getAllProduct);
 
 productRouter.get("/:id", getProduct);
+
+productRouter.post("/variants/:productId", upload.array("images", 7), authenticateSeller, createVariants);
 
 export default productRouter;

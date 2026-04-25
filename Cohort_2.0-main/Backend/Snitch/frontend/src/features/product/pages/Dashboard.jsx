@@ -543,7 +543,8 @@ const Dashboard = () => {
                       >
                         {p.images?.length || 0} Images Included
                       </span>
-                      <button
+                      <Link
+                        to={`/seller/product/${p._id}`}
                         style={{
                           background: "transparent",
                           border: "none",
@@ -554,6 +555,7 @@ const Dashboard = () => {
                           display: "flex",
                           alignItems: "center",
                           gap: 4,
+                          textDecoration: "none",
                         }}
                       >
                         EDIT ITEM
@@ -567,7 +569,7 @@ const Dashboard = () => {
                         >
                           <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
