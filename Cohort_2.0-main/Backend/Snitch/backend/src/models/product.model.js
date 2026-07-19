@@ -17,8 +17,8 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     price: {
-      type:priceSchema,
-      required: true, 
+      type: priceSchema,
+      required: true,
     },
     images: [
       {
@@ -32,6 +32,10 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
       default: 0,
+    },
+    attributes: {
+      type: Map,
+      of: String,
     },
     variants: [
       {
@@ -53,8 +57,8 @@ const productSchema = new mongoose.Schema(
           default: 0,
         },
         price: {
-          type:priceSchema,
-          required: true, 
+          type: priceSchema,
+          required: true,
         },
       },
     ],

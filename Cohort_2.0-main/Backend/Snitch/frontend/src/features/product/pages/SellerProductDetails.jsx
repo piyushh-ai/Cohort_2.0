@@ -15,9 +15,11 @@ const SellerProductDetails = () => {
   const [variantForm, setVariantForm] = useState({
     priceAmount: "",
     priceCurrency: "INR",
-    attributesStr: "{\n  \"Color\": \"Black\",\n  \"Size\": \"L\"\n}",
   });
+  const [attributes, setAttributes] = useState([{ key: "", value: "" }]);
   const [variantImages, setVariantImages] = useState([]);
+  const [variantImagePreviews, setVariantImagePreviews] = useState([]);
+  const [fullScreenImage, setFullScreenImage] = useState(null);
 
   const containerRef = useRef(null);
 
@@ -49,31 +51,30 @@ const SellerProductDetails = () => {
     const formData = new FormData();
     formData.append("priceAmount", variantForm.priceAmount);
     formData.append("priceCurrency", variantForm.priceCurrency);
-    
-    try {
-      const parsedAttr = JSON.parse(variantForm.attributesStr);
-      // Mongoose Map might accept object directly if parsed, but multipart sends strings.
-      // We'll append attributes as string or properties
-      formData.append("attributes", JSON.stringify(parsedAttr));
-    } catch(err) {
-      alert("Invalid JSON for Attributes");
-      setSubmitting(false);
-      return;
+
+    // Build attributes object from key-value rows
+    const attrObj = {};
+    for (const { key, value } of attributes) {
+      const k = key.trim();
+      const v = value.trim();
+      if (k) attrObj[k] = v;
     }
+    formData.append("attributes", JSON.stringify(attrObj));
 
     variantImages.forEach((img) => {
       formData.append("images", img);
     });
 
     await handleCreateVariant(id, formData);
-    await handleGetProduct(id); // refresh
+    await handleGetProduct(id);
     setSubmitting(false);
-    setVariantForm({
-      priceAmount: "",
-      priceCurrency: "INR",
-      attributesStr: "{\n  \"Color\": \"\",\n  \"Size\": \"\"\n}",
-    });
+    setVariantForm({ priceAmount: "", priceCurrency: "INR" });
+    setAttributes([{ key: "", value: "" }]);
     setVariantImages([]);
+    
+    // Revoke old previews to avoid memory leaks
+    variantImagePreviews.forEach(preview => URL.revokeObjectURL(preview));
+    setVariantImagePreviews([]);
   };
 
   if (loading) {
@@ -94,14 +95,45 @@ const SellerProductDetails = () => {
 
   return (
     <div
+      className="seller-product-details-page"
       style={{
         background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
         minHeight: "100vh",
-        padding: "4rem 2rem",
         fontFamily: "'Inter', sans-serif",
       }}
       ref={containerRef}
     >
+      <style>{`
+        .seller-product-details-page { padding: 6rem 2rem; }
+        @media (max-width: 600px) {
+          .seller-product-details-page { padding: 5rem 1rem; }
+        }
+        .product-layout-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem;
+        }
+        @media (max-width: 950px) {
+          .product-layout-grid { grid-template-columns: 1fr; }
+        }
+        .form-row { display: flex; gap: 1rem; }
+        @media (max-width: 500px) {
+          .form-row { flex-direction: column; gap: 0.8rem; }
+        }
+        .attr-row { display: flex; gap: 0.5rem; align-items: center; }
+        @media (max-width: 500px) {
+          .attr-row { flex-direction: column; align-items: stretch; gap: 0.4rem; border: 1px solid #e2e8f0; padding: 0.8rem; border-radius: 8px; background: #f8fafc; }
+          .attr-row button { align-self: flex-end; }
+        }
+        .existing-variants-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 1.5rem;
+        }
+        @media (max-width: 500px) {
+          .existing-variants-grid { grid-template-columns: 1fr; }
+        }
+      `}</style>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <button
           onClick={() => navigate("/seller/dashboard")}
@@ -122,7 +154,7 @@ const SellerProductDetails = () => {
           &larr; Back to Dashboard
         </button>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+        <div className="product-layout-grid">
           {/* Base Product Info */}
           <div className="animate-card" style={cardStyle}>
             <h2 style={{ fontSize: "1.8rem", color: "#0f172a", marginBottom: "1rem" }}>{product.title}</h2>
@@ -149,7 +181,7 @@ const SellerProductDetails = () => {
           <div className="animate-card" style={{ ...cardStyle, background: "white" }}>
             <h3 style={{ fontSize: "1.4rem", color: "#0f172a", marginBottom: "1.5rem" }}>Add New Variant</h3>
             <form onSubmit={handleAddVariant} style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-              <div style={{ display: "flex", gap: "1rem" }}>
+              <div className="form-row">
                 <div style={{ flex: 1 }}>
                   <label style={labelStyle}>Price Amount</label>
                   <input
@@ -173,15 +205,70 @@ const SellerProductDetails = () => {
                 </div>
               </div>
 
+              {/* ── Attributes key-value builder ── */}
               <div>
-                <label style={labelStyle}>Attributes (JSON format)</label>
-                <textarea
-                  rows="4"
-                  value={variantForm.attributesStr}
-                  onChange={(e) => setVariantForm({ ...variantForm, attributesStr: e.target.value })}
-                  style={{ ...inputStyle, fontFamily: "monospace", resize: "vertical" }}
-                  required
-                />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.6rem" }}>
+                  <label style={labelStyle}>Attributes</label>
+                  <button
+                    type="button"
+                    onClick={() => setAttributes([...attributes, { key: "", value: "" }])}
+                    style={{
+                      fontSize: "0.78rem", fontWeight: 600,
+                      color: "#7c3aed", background: "rgba(124,58,237,0.07)",
+                      border: "1px solid rgba(124,58,237,0.2)",
+                      borderRadius: "6px", padding: "4px 10px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    + Add Attribute
+                  </button>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.55rem" }}>
+                  {attributes.map((attr, idx) => (
+                    <div key={idx} className="attr-row">
+                      <input
+                        type="text"
+                        placeholder="Key  (e.g. Color)"
+                        value={attr.key}
+                        onChange={(e) => {
+                          const updated = [...attributes];
+                          updated[idx] = { ...updated[idx], key: e.target.value };
+                          setAttributes(updated);
+                        }}
+                        style={{ ...inputStyle, flex: 1 }}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Value  (e.g. Black)"
+                        value={attr.value}
+                        onChange={(e) => {
+                          const updated = [...attributes];
+                          updated[idx] = { ...updated[idx], value: e.target.value };
+                          setAttributes(updated);
+                        }}
+                        style={{ ...inputStyle, flex: 1 }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setAttributes(attributes.filter((_, i) => i !== idx))}
+                        disabled={attributes.length === 1}
+                        style={{
+                          width: "32px", height: "32px", flexShrink: 0,
+                          borderRadius: "6px",
+                          border: "1px solid #fecaca",
+                          background: attributes.length === 1 ? "#f8fafc" : "#fff1f2",
+                          color: attributes.length === 1 ? "#cbd5e1" : "#ef4444",
+                          cursor: attributes.length === 1 ? "not-allowed" : "pointer",
+                          fontSize: "1rem", fontWeight: 700,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div>
@@ -190,7 +277,17 @@ const SellerProductDetails = () => {
                   type="file"
                   multiple
                   accept="image/*"
-                  onChange={(e) => setVariantImages(Array.from(e.target.files))}
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files);
+                    setVariantImages(files);
+                    
+                    // Revoke old previews
+                    variantImagePreviews.forEach(preview => URL.revokeObjectURL(preview));
+                    
+                    // Generate new previews
+                    const newPreviews = files.map(file => URL.createObjectURL(file));
+                    setVariantImagePreviews(newPreviews);
+                  }}
                   style={{
                     display: "block",
                     width: "100%",
@@ -200,8 +297,51 @@ const SellerProductDetails = () => {
                     background: "#f8fafc",
                     cursor: "pointer",
                   }}
-                  required
+                  required={variantImages.length === 0}
                 />
+                
+                {/* Image Previews */}
+                {variantImagePreviews.length > 0 && (
+                  <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginTop: "1rem" }}>
+                    {variantImagePreviews.map((preview, idx) => (
+                      <div key={idx} style={{ position: "relative" }}>
+                        <img
+                          src={preview}
+                          alt={`preview-${idx}`}
+                          onClick={() => setFullScreenImage(preview)}
+                          style={{
+                            width: "80px", height: "80px", objectFit: "cover",
+                            borderRadius: "8px", border: "1px solid #e2e8f0",
+                            cursor: "pointer", transition: "transform 0.2s"
+                          }}
+                          onMouseOver={(e) => e.target.style.transform = "scale(1.05)"}
+                          onMouseOut={(e) => e.target.style.transform = "scale(1)"}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newImages = [...variantImages];
+                            const newPreviews = [...variantImagePreviews];
+                            newImages.splice(idx, 1);
+                            const removedPreview = newPreviews.splice(idx, 1)[0];
+                            URL.revokeObjectURL(removedPreview);
+                            setVariantImages(newImages);
+                            setVariantImagePreviews(newPreviews);
+                          }}
+                          style={{
+                            position: "absolute", top: "-6px", right: "-6px",
+                            background: "#ef4444", color: "white", border: "none",
+                            borderRadius: "50%", width: "20px", height: "20px",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: "12px", cursor: "pointer", boxShadow: "0 2px 5px rgba(0,0,0,0.2)"
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <button
@@ -230,7 +370,7 @@ const SellerProductDetails = () => {
         {/* Existing Variants */}
         <div className="animate-card" style={{ marginTop: "3rem" }}>
           <h3 style={{ fontSize: "1.5rem", color: "#0f172a", marginBottom: "1.5rem" }}>Existing Variants ({product.variants?.length || 0})</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1.5rem" }}>
+          <div className="existing-variants-grid">
             {product.variants?.map((variant, idx) => (
               <div key={idx} style={{ ...cardStyle, background: "white", padding: "1.5rem" }}>
                 <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "1rem" }}>
@@ -261,6 +401,41 @@ const SellerProductDetails = () => {
         </div>
 
       </div>
+
+      {/* Full Screen Image Overlay */}
+      {fullScreenImage && (
+        <div
+          style={{
+            position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+            background: "rgba(0, 0, 0, 0.8)", zIndex: 9999,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            backdropFilter: "blur(5px)"
+          }}
+          onClick={() => setFullScreenImage(null)}
+        >
+          <img
+            src={fullScreenImage}
+            alt="Full Screen Preview"
+            style={{
+              maxHeight: "90%", maxWidth: "90%",
+              objectFit: "contain", borderRadius: "8px",
+              boxShadow: "0 10px 40px rgba(0,0,0,0.3)"
+            }}
+          />
+          <button
+            style={{
+              position: "absolute", top: "2rem", right: "2rem",
+              background: "white", color: "#0f172a", border: "none",
+              borderRadius: "50%", width: "40px", height: "40px",
+              fontSize: "1.5rem", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center"
+            }}
+            onClick={() => setFullScreenImage(null)}
+          >
+            ×
+          </button>
+        </div>
+      )}
     </div>
   );
 };

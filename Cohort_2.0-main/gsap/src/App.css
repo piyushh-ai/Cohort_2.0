@@ -1,0 +1,51 @@
+.box {
+  height: 200px;
+  width: 200px;
+  background-color: red;
+}
+
+.page1 {
+  height: 100vh;
+  background-color: black;
+}
+
+.page2 {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.page3 {
+  height: 100vh;
+  background-color: black;
+}
+
+.page2 .imgDiv {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  scale: 1;
+}
+.page2 .content {
+  z-index: 10;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 60rem;
+}
+.page2 .content h1 {
+  font-size: 6rem;
+  color: white;
+  font-weight: 900;
+  font-family: sans-serif;
+}
+
+.page2 .imgDiv img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  
+}

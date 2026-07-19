@@ -9,15 +9,13 @@ import Footer from "../components/Footer";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
-
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { handleGetProduct } = useProduct();
   const { product } = useSelector((s) => s.product);
 
-  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedVariantId, setSelectedVariantId] = useState("base");
   const [selectedImg, setSelectedImg] = useState(0);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
@@ -38,7 +36,10 @@ const ProductDetail = () => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
-    if (id) handleGetProduct(id);
+    if (id) {
+      handleGetProduct(id);
+      setSelectedVariantId("base");
+    }
   }, [id]);
 
   useEffect(() => {
@@ -129,13 +130,26 @@ const ProductDetail = () => {
     setTimeout(() => setBought(false), 2200);
   };
 
-  const price = product?.price?.amout ?? product?.price?.amount ?? 1999;
-  const currency = product?.price?.currency || "INR";
-  const images = product?.images?.length
-    ? product.images.map((i) => i.url)
-    : [
-        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800&auto=format&fit=crop",
-      ];
+  const activeVariant =
+    selectedVariantId === "base"
+      ? null
+      : product?.variants?.find((v) => v._id === selectedVariantId);
+  const price =
+    activeVariant?.price?.amount ??
+    product?.price?.amout ??
+    product?.price?.amount ??
+    1999;
+  const currency =
+    activeVariant?.price?.currency ?? product?.price?.currency ?? "INR";
+  const stock = activeVariant?.stock ?? product?.stock ?? 0;
+
+  const images = activeVariant?.images?.length
+    ? activeVariant.images.map((i) => i.url)
+    : product?.images?.length
+      ? product.images.map((i) => i.url)
+      : [
+          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=800&auto=format&fit=crop",
+        ];
 
   return (
     <>
@@ -277,12 +291,12 @@ const ProductDetail = () => {
           font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
           text-transform: uppercase; color: #4a4455; margin-bottom: 10px;
         }
-        .pd-sizes { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; opacity: 0; }
+        .pd-sizes { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px;}
         .pd-size-btn {
           width: 48px; height: 48px; border-radius: 12px;
           border: 1.5px solid #e5e7eb;
-          background: #fff; font-size: 12px; font-weight: 700;
-          color: #4a4455; cursor: pointer;
+          background: #4a4455de; font-size: 12px; font-weight: 700;
+          color: #ffffffff; cursor: pointer;
           transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.18s, box-shadow 0.2s;
           display: flex; align-items: center; justify-content: center;
         }
@@ -456,7 +470,7 @@ const ProductDetail = () => {
                 {/* Badge */}
                 <div ref={badgeRef} className="pd-badge">
                   <span className="pd-pulse" />
-                  In Stock · Ships in 2–4 days
+                  {stock > 0 ? `In Stock · ${stock} left` : "Out of Stock"}
                 </div>
 
                 {/* Title */}
@@ -506,16 +520,26 @@ const ProductDetail = () => {
                     "Premium quality streetwear. Crafted for the bold, designed for the culture. Every drop is limited — don't sleep on it."}
                 </p>
 
-                {/* Sizes */}
-                <div ref={sizesRef}>
-                  <div className="pd-sizes-label">Select Size</div>
-                  <div className="pd-sizes">
-                    {SIZES.map((s) => (
+                {/* Variants */}
+                {product?.variants && product.variants.length > 0 && (
+                  <div ref={sizesRef}>
+                    <div
+                      className="pd-sizes-label"
+                      style={{
+                        color: "#475569",
+                        fontSize: "0.9rem",
+                        fontWeight: 500,
+                      }}
+                    >
+                      Select Variant
+                    </div>
+                    <div className="pd-sizes" style={{ flexWrap: "wrap" }}>
                       <button
-                        key={s}
-                        className={`pd-size-btn${selectedSize === s ? " active" : ""}`}
+                        className={`pd-size-btn${selectedVariantId === "base" ? " active" : ""}`}
+                        style={{ padding: "0 16px", width: "auto" }}
                         onClick={() => {
-                          setSelectedSize(s);
+                          setSelectedVariantId("base");
+                          setSelectedImg(0);
                           gsap.fromTo(
                             `.pd-size-btn.active`,
                             { scale: 0.88 },
@@ -523,11 +547,42 @@ const ProductDetail = () => {
                           );
                         }}
                       >
-                        {s}
+                        Default (Base)
                       </button>
-                    ))}
+
+                      {product.variants.map((v) => {
+                        console.log(v);
+                        
+                        const attrLabel =
+                          v.attributes && Object.keys(v.attributes).length > 0
+                            ? Object.values(v.attributes).join(" - ")
+                            : "Variant";
+                        return (
+                          <button
+                            key={v._id}
+                            className={`pd-size-btn${selectedVariantId === v._id ? " active" : ""}`}
+                            style={{ padding: "0 16px", width: "auto" }}
+                            onClick={() => {
+                              setSelectedVariantId(v._id);
+                              setSelectedImg(0); // reset image index to avoid out-of-bounds
+                              gsap.fromTo(
+                                `.pd-size-btn.active`,
+                                { scale: 0.88 },
+                                {
+                                  scale: 1,
+                                  duration: 0.4,
+                                  ease: "back.out(2)",
+                                },
+                              );
+                            }}
+                          >
+                            {attrLabel}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* CTA Row */}
                 <div
@@ -584,7 +639,7 @@ const ProductDetail = () => {
                       }}
                     >
                       <strong style={{ color: "#1a1b21", display: "block" }}>
-                        Only 4 left!
+                        {stock > 0 ? `Only ${stock} left!` : "Unavailable"}
                       </strong>
                       in stock
                     </div>

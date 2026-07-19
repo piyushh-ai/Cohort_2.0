@@ -14,6 +14,7 @@ const CreateProduct = () => {
   const [activePreviewIndex, setActivePreviewIndex] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [attributes, setAttributes] = useState([{ key: "", value: "" }]);
 
   const { handleCreateProduct } = useProduct();
   const navigate = useNavigate();
@@ -34,7 +35,8 @@ const CreateProduct = () => {
   const MAX_IMAGES = 7;
   const defaultImage =
     "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=800&auto=format&fit=crop";
-  const displayImage = previewUrls.length > 0 ? previewUrls[activePreviewIndex] : defaultImage;
+  const displayImage =
+    previewUrls.length > 0 ? previewUrls[activePreviewIndex] : defaultImage;
 
   // ─── Preload Left Panel Image ────────────────────────
   useEffect(() => {
@@ -200,6 +202,14 @@ const CreateProduct = () => {
     selectedImages.forEach((imgObj) => {
       formPayload.append("images", imgObj);
     });
+
+    const attrObj = {};
+    attributes.forEach(attr => {
+      if (attr.key.trim()) {
+        attrObj[attr.key.trim()] = attr.value.trim();
+      }
+    });
+    formPayload.append("attributes", JSON.stringify(attrObj));
 
     await handleCreateProduct(formPayload);
     setIsSubmitting(false);
@@ -572,7 +582,15 @@ const CreateProduct = () => {
 
               {/* Multiple Upload Previews - Left Panel Gallery */}
               {previewUrls.length > 1 && (
-                <div style={{ marginTop: 32, display: "flex", gap: 12, flexWrap: "wrap", zIndex: 10 }}>
+                <div
+                  style={{
+                    marginTop: 32,
+                    display: "flex",
+                    gap: 12,
+                    flexWrap: "wrap",
+                    zIndex: 10,
+                  }}
+                >
                   {previewUrls.map((url, i) => (
                     <div
                       key={i}
@@ -581,7 +599,10 @@ const CreateProduct = () => {
                         width: 54,
                         height: 54,
                         cursor: "pointer",
-                        border: i === activePreviewIndex ? "2px solid #ffffff" : "1px solid rgba(255,255,255,0.2)",
+                        border:
+                          i === activePreviewIndex
+                            ? "2px solid #ffffff"
+                            : "1px solid rgba(255,255,255,0.2)",
                         opacity: i === activePreviewIndex ? 1 : 0.6,
                         transition: "all 0.2s ease",
                         overflow: "hidden",
@@ -591,7 +612,11 @@ const CreateProduct = () => {
                       <img
                         src={url}
                         alt={`Gallery ${i}`}
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
                       />
                     </div>
                   ))}
@@ -875,6 +900,72 @@ const CreateProduct = () => {
                 </label>
               </div>
 
+               {/* ── Attributes key-value builder ── */}
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.6rem" }}>
+                  <label style={labelStyle}>Attributes</label>
+                  <button
+                    type="button"
+                    onClick={() => setAttributes([...attributes, { key: "", value: "" }])}
+                    style={{
+                      fontSize: "0.78rem", fontWeight: 600,
+                      color: "#7c3aed", background: "rgba(124,58,237,0.07)",
+                      border: "1px solid rgba(124,58,237,0.2)",
+                      borderRadius: "6px", padding: "4px 10px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    + Add Attribute
+                  </button>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.55rem" }}>
+                  {attributes.map((attr, idx) => (
+                    <div key={idx} className="attr-row">
+                      <input
+                        type="text"
+                        placeholder="Key  (e.g. Color)"
+                        value={attr.key}
+                        onChange={(e) => {
+                          const updated = [...attributes];
+                          updated[idx] = { ...updated[idx], key: e.target.value };
+                          setAttributes(updated);
+                        }}
+                        style={{ ...inputStyle, flex: 1 }}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Value  (e.g. Black)"
+                        value={attr.value}
+                        onChange={(e) => {
+                          const updated = [...attributes];
+                          updated[idx] = { ...updated[idx], value: e.target.value };
+                          setAttributes(updated);
+                        }}
+                        style={{ ...inputStyle, flex: 1 }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setAttributes(attributes.filter((_, i) => i !== idx))}
+                        disabled={attributes.length === 1}
+                        style={{
+                          width: "32px", height: "32px", flexShrink: 0,
+                          borderRadius: "6px",
+                          border: "1px solid #fecaca",
+                          background: attributes.length === 1 ? "#f8fafc" : "#fff1f2",
+                          color: attributes.length === 1 ? "#cbd5e1" : "#ef4444",
+                          cursor: attributes.length === 1 ? "not-allowed" : "pointer",
+                          fontSize: "1rem", fontWeight: 700,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               {/* Multiple Image Upload / Previews */}
               <div
                 ref={(el) => setFieldRef(el, 3)}
@@ -1005,7 +1096,7 @@ const CreateProduct = () => {
                 {/* Notice text */}
                 {previewUrls.length > 0 && (
                   <p style={{ fontSize: 11, color: "#9ca3af", marginTop: 8 }}>
-                    * Supported limits are 1 to {MAX_IMAGES} images. 
+                    * Supported limits are 1 to {MAX_IMAGES} images.
                   </p>
                 )}
               </div>
@@ -1082,3 +1173,28 @@ const CreateProduct = () => {
 };
 
 export default CreateProduct;
+
+const labelStyle = {
+  display: "block",
+  marginBottom: "0.5rem",
+  color: "#475569",
+  fontSize: "0.9rem",
+  fontWeight: 500,
+};
+
+const inputStyle = {
+  border: "1px solid #e2e8f0",
+  borderRadius: "6px",
+  padding: "10px 12px",
+  fontSize: "0.9rem",
+  color: "#1e293b",
+  background: "#ffffff",
+  outline: "none",
+  transition: "border 0.2s",
+};
+
+const rowStyle = {
+  display: "flex",
+  gap: "12px",
+  alignItems: "center",
+};
